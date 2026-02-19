@@ -18,8 +18,8 @@ add_executable(main
 # todo add source code static lib
 
 # Tests
-add_executable(test
+add_executable(tests
     test/main.c
     test/arena_tests.c
 )
-target_include_directories(test PUBLIC src)
+target_include_directories(tests PUBLIC src)
