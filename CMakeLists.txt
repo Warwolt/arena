@@ -23,9 +23,9 @@ target_include_directories(main PUBLIC src)
 target_link_libraries(main source)
 
 # Tests
-add_executable(test
+add_executable(tests
     test/main.c
     test/arena_tests.c
 )
-target_include_directories(test PUBLIC src)
-target_link_libraries(test source)
+target_include_directories(tests PUBLIC src)
+target_link_libraries(tests source)
