@@ -264,6 +264,21 @@ int rktest_main(int argc, const char* argv[]);
 #define ASSERT_LONG_GT_INFO(lhs, rhs, ...) RKTEST_CHECK_CMP(long, "%ld", lhs, rhs, >, RKTEST_CHECK_ASSERT, __VA_ARGS__)
 #define ASSERT_LONG_GE_INFO(lhs, rhs, ...) RKTEST_CHECK_CMP(long, "%ld", lhs, rhs, >=, RKTEST_CHECK_ASSERT, __VA_ARGS__)
 
+/* Pointer checks */
+#define EXPECT_PTR_EQ(lhs, rhs) RKTEST_CHECK_EQ(void*, "%p", lhs, rhs, RKTEST_CHECK_EXPECT, " ")
+#define EXPECT_PTR_NE(lhs, rhs) RKTEST_CHECK_CMP(void*, "%p", lhs, rhs, !=, RKTEST_CHECK_EXPECT, " ")
+#define EXPECT_PTR_LT(lhs, rhs) RKTEST_CHECK_CMP(void*, "%p", lhs, rhs, <, RKTEST_CHECK_EXPECT, " ")
+#define EXPECT_PTR_LE(lhs, rhs) RKTEST_CHECK_CMP(void*, "%p", lhs, rhs, <=, RKTEST_CHECK_EXPECT, " ")
+#define EXPECT_PTR_GT(lhs, rhs) RKTEST_CHECK_CMP(void*, "%p", lhs, rhs, >, RKTEST_CHECK_EXPECT, " ")
+#define EXPECT_PTR_GE(lhs, rhs) RKTEST_CHECK_CMP(void*, "%p", lhs, rhs, >=, RKTEST_CHECK_EXPECT, " ")
+
+#define ASSERT_PTR_EQ(lhs, rhs) RKTEST_CHECK_EQ(void*, "%p", lhs, rhs, RKTEST_CHECK_ASSERT, " ")
+#define ASSERT_PTR_NE(lhs, rhs) RKTEST_CHECK_CMP(void*, "%p", lhs, rhs, !=, RKTEST_CHECK_ASSERT, " ")
+#define ASSERT_PTR_LT(lhs, rhs) RKTEST_CHECK_CMP(void*, "%p", lhs, rhs, <, RKTEST_CHECK_ASSERT, " ")
+#define ASSERT_PTR_LE(lhs, rhs) RKTEST_CHECK_CMP(void*, "%p", lhs, rhs, <=, RKTEST_CHECK_ASSERT, " ")
+#define ASSERT_PTR_GT(lhs, rhs) RKTEST_CHECK_CMP(void*, "%p", lhs, rhs, >, RKTEST_CHECK_ASSERT, " ")
+#define ASSERT_PTR_GE(lhs, rhs) RKTEST_CHECK_CMP(void*, "%p", lhs, rhs, >=, RKTEST_CHECK_ASSERT, " ")
+
 /* Floating point checks */
 // Checks that two floats are within 4 Units in the Last Place
 // (Based on the same technique used in Google Test)
