@@ -1,4 +1,3 @@
-Language: C
 AccessModifierOffset: -4
 AlignAfterOpenBracket: BlockIndent
 AlignConsecutiveAssignments: false
