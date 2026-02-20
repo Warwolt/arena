@@ -3,8 +3,8 @@
 - Render animated image
 
 # Doing
-- Logging
 
 # Done
+- Logging
 - Integrate Raylib
 - Implement Arena allocator
