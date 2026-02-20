@@ -19,6 +19,11 @@ typedef struct EntityID {
 	int value;
 } EntityID;
 
+EntityID EntityID_new(void) {
+	static int next_id = 1;
+	return (EntityID) { next_id++ };
+}
+
 #define MAX_POSITIONS (int)128
 typedef struct PositionSystem {
 	EntityID keys[MAX_POSITIONS];
@@ -121,12 +126,19 @@ int main(void) {
 	Texture2D pill_texture = load_texture_from_file("resource/image/pill.png");
 
 	/* State */
+	const Vector2 screen_middle = {
+		.x = RESOLUTION_WIDTH / 2,
+		.y = RESOLUTION_HEIGHT / 2,
+	};
+
 	bool show_debug_overlay = false;
 	PositionSystem positions = { 0 };
-	EntityID player_id = { 1 };
+	EntityID player_id = EntityID_new();
+	EntityID coffee_id = EntityID_new();
 
 	// add position to player
 	PositionSystem_add_position(&positions, player_id, Vector2Zero());
+	PositionSystem_add_position(&positions, coffee_id, (Vector2) { screen_middle.x + 48, screen_middle.y });
 
 	/* Run program */
 	while (!WindowShouldClose()) {
@@ -175,10 +187,6 @@ int main(void) {
 			const int frame_time = 70; // ms
 			const int num_frames = 12;
 			const int index = (time_now % (num_frames * frame_time)) / frame_time;
-			const Vector2 screen_middle = {
-				.x = RESOLUTION_WIDTH / 2,
-				.y = RESOLUTION_HEIGHT / 2,
-			};
 
 			// Draw donut
 			if (0) {
@@ -188,7 +196,8 @@ int main(void) {
 
 			// Draw coffee
 			if (1) {
-				Vector2 position = { screen_middle.x + 48, screen_middle.y };
+				Vector2 position = { 0 };
+				PositionSystem_get_position(&positions, coffee_id, &position);
 				draw_sprite_centered(coffee_spritesheet, index, position, WHITE);
 			}
 
