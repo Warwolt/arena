@@ -2,8 +2,10 @@
 #include <raymath.h>
 
 #include "logging.h"
+#include "win32.h"
 
 #include <math.h>
+#include <stdint.h>
 #include <stdio.h>
 
 typedef struct Spritesheet {
@@ -63,6 +65,10 @@ int main(void) {
 
 	/* Run program */
 	while (!WindowShouldClose()) {
+		if (IsKeyPressed(KEY_F11)) {
+			toggle_fullscreen();
+		}
+
 		BeginDrawing();
 		{
 			ClearBackground(LIME);
@@ -75,8 +81,8 @@ int main(void) {
 			// Draw donut
 			{
 				Vector2 position = {
-					GetScreenWidth() / 2 - 48,
-					GetScreenHeight() / 2,
+					RESOLUTION_WIDTH / 2 - 48,
+					RESOLUTION_HEIGHT / 2,
 				};
 				draw_sprite_centered(&donut_spritesheet, index, position, WHITE);
 			}
@@ -84,8 +90,8 @@ int main(void) {
 			// Draw coffee
 			{
 				Vector2 position = {
-					GetScreenWidth() / 2 + 48,
-					GetScreenHeight() / 2,
+					RESOLUTION_WIDTH / 2 + 48,
+					RESOLUTION_HEIGHT / 2,
 				};
 				draw_sprite_centered(&coffee_spritesheet, index, position, WHITE);
 			}

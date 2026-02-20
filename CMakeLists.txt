@@ -18,6 +18,7 @@ endif()
 add_library(source
     src/arena.c
     src/logging.c
+    src/win32.c
 )
 target_include_directories(source PUBLIC src lib)
 target_link_libraries(source raylib)
