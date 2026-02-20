@@ -80,33 +80,37 @@ int main(void) {
 
 	/* Run program */
 	while (!WindowShouldClose()) {
-		if (IsKeyPressed(KEY_F11)) {
-			toggle_fullscreen();
+		/* Update */
+		{
+			if (IsKeyPressed(KEY_F11)) {
+				toggle_fullscreen();
+			}
+
+			if (IsKeyPressed(KEY_F3)) {
+				show_debug_overlay = !show_debug_overlay;
+			}
+
+			Vector2 input_vector = Vector2Zero();
+			if (IsKeyDown('A')) {
+				input_vector = Vector2Add(input_vector, (Vector2) { -1, 0 });
+			}
+			if (IsKeyDown('D')) {
+				input_vector = Vector2Add(input_vector, (Vector2) { 1, 0 });
+			}
+			if (IsKeyDown('W')) {
+				input_vector = Vector2Add(input_vector, (Vector2) { 0, -1 });
+			}
+			if (IsKeyDown('S')) {
+				input_vector = Vector2Add(input_vector, (Vector2) { 0, 1 });
+			}
+			input_vector = Vector2Normalize(input_vector);
+
+			const float delta_time = GetFrameTime();
+			const float player_speed = 200; // px / second
+			player_position = Vector2Add(player_position, Vector2Scale(input_vector, delta_time * player_speed));
 		}
 
-		if (IsKeyPressed(KEY_F3)) {
-			show_debug_overlay = !show_debug_overlay;
-		}
-
-		Vector2 input_vector = Vector2Zero();
-		if (IsKeyDown('A')) {
-			input_vector = Vector2Add(input_vector, (Vector2) { -1, 0 });
-		}
-		if (IsKeyDown('D')) {
-			input_vector = Vector2Add(input_vector, (Vector2) { 1, 0 });
-		}
-		if (IsKeyDown('W')) {
-			input_vector = Vector2Add(input_vector, (Vector2) { 0, -1 });
-		}
-		if (IsKeyDown('S')) {
-			input_vector = Vector2Add(input_vector, (Vector2) { 0, 1 });
-		}
-		input_vector = Vector2Normalize(input_vector);
-
-		const float delta_time = GetFrameTime();
-		const float player_speed = 200; // px / second
-		player_position = Vector2Add(player_position, Vector2Scale(input_vector, delta_time * player_speed));
-
+		/* Render scene */
 		BeginTextureMode(screen_texture);
 		{
 			// Draw background
@@ -148,6 +152,7 @@ int main(void) {
 		}
 		EndTextureMode();
 
+		/* Render window */
 		BeginDrawing();
 		{
 			// Draw background
