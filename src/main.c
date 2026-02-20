@@ -50,6 +50,7 @@ int main(void) {
 	LOG_INFO("Created window");
 
 	// Render texture
+	RenderTexture2D screen_texture = LoadRenderTexture(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
 
 	/* Load resources */
 	Spritesheet donut_spritesheet = {
@@ -69,7 +70,7 @@ int main(void) {
 			toggle_fullscreen();
 		}
 
-		BeginDrawing();
+		BeginTextureMode(screen_texture);
 		{
 			ClearBackground(LIME);
 
@@ -103,6 +104,20 @@ int main(void) {
 				snprintf(text, 128, "FPS: %d", GetFPS());
 				DrawText(text, 0, 0, 16, WHITE);
 			}
+		}
+		EndTextureMode();
+
+		BeginDrawing();
+		{
+			ClearBackground(BLACK);
+			DrawTexturePro(
+				screen_texture.texture,
+				(Rectangle) { 0, 0, screen_texture.texture.width, -screen_texture.texture.height },
+				(Rectangle) { 0, 0, screen_texture.texture.width, screen_texture.texture.height },
+				Vector2Zero(),
+				0,
+				WHITE
+			);
 		}
 		EndDrawing();
 	}
