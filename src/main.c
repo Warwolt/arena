@@ -15,6 +15,27 @@ typedef struct Spritesheet {
 	int sprite_height;
 } Spritesheet;
 
+typedef struct EntityID {
+	int value;
+} EntityID;
+
+// UFO 50 is 16:9 at 384x216 resolution
+#define RESOLUTION_WIDTH (int)768
+#define RESOLUTION_HEIGHT (int)432
+
+#define MAX_POSITIONS (int)128
+
+#define INDEX_NOT_FOUND (int)-1
+
+int find_entity_index(EntityID* ids, size_t len, EntityID id) {
+	for (size_t i = 0; i < len; i++) {
+		if (ids[i].value == id.value) {
+			return (int)i;
+		}
+	}
+	return -1;
+}
+
 Texture2D load_texture_from_file(const char* filename) {
 	Image image = LoadImage(filename);
 	if (image.data == NULL) {
@@ -47,10 +68,6 @@ void draw_texture_centered(Texture2D texture, Vector2 position, Color tint) {
 	DrawTexture(texture, centered_position.x, centered_position.y, tint);
 }
 
-// UFO 50 is 16:9 at 384x216 resolution
-#define RESOLUTION_WIDTH (int)768
-#define RESOLUTION_HEIGHT (int)432
-
 int main(void) {
 	/* Init */
 	initialize_logging();
@@ -76,10 +93,31 @@ int main(void) {
 
 	/* State */
 	bool show_debug_overlay = false;
-	Vector2 player_position = { 0, 0 };
+
+	EntityID position_keys[MAX_POSITIONS];
+	Vector2 positions_values[MAX_POSITIONS];
+	int positions_size = 0;
+
+	// create player entity
+	EntityID player_id = { 1 };
+
+	// add position to player
+	position_keys[0] = player_id;
+	positions_values[0] = Vector2Zero();
+	positions_size++;
 
 	/* Run program */
 	while (!WindowShouldClose()) {
+		// retreive player position
+		Vector2 position_value = Vector2Zero();
+		{
+			int position_index = find_entity_index(position_keys, MAX_POSITIONS, player_id);
+			if (position_index != INDEX_NOT_FOUND) {
+				position_value = positions_values[0];
+			}
+		}
+		const Vector2 player_position = position_value;
+
 		/* Update */
 		{
 			if (IsKeyPressed(KEY_F11)) {
@@ -107,7 +145,15 @@ int main(void) {
 
 			const float delta_time = GetFrameTime();
 			const float player_speed = 200; // px / second
-			player_position = Vector2Add(player_position, Vector2Scale(input_vector, delta_time * player_speed));
+			Vector2 new_player_position = Vector2Add(player_position, Vector2Scale(input_vector, delta_time * player_speed));
+
+			// set player position
+			{
+				int position_index = find_entity_index(position_keys, MAX_POSITIONS, player_id);
+				if (position_index != INDEX_NOT_FOUND) {
+					positions_values[0] = new_player_position;
+				}
+			}
 		}
 
 		/* Render scene */
