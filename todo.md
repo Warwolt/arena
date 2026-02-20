@@ -1,11 +1,11 @@
 # TODO
-- Render animated image
 - Fix resolution rendering
 
 # Doing
-- Render image
 
 # Done
+- Render animated image
+- Render image
 - Logging
 - Integrate Raylib
 - Implement Arena allocator
