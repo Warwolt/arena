@@ -25,18 +25,26 @@ Texture2D load_texture_from_file(const char* filename) {
 	return texture;
 }
 
-void draw_sprite_centered(const Spritesheet* spritesheet, int sprite_index, Vector2 position, Color tint) {
+void draw_sprite_centered(Spritesheet spritesheet, int sprite_index, Vector2 position, Color tint) {
 	Rectangle rect = {
-		.x = spritesheet->sprite_width * sprite_index,
-		.y = spritesheet->sprite_height * sprite_index,
-		.width = spritesheet->sprite_width,
-		.height = spritesheet->sprite_height,
+		.x = spritesheet.sprite_width * sprite_index,
+		.y = spritesheet.sprite_height * sprite_index,
+		.width = spritesheet.sprite_width,
+		.height = spritesheet.sprite_height,
 	};
 	Vector2 centered_position = {
 		.x = position.x - rect.width / 2,
 		.y = position.y - rect.height / 2,
 	};
-	DrawTextureRec(spritesheet->texture, rect, centered_position, tint);
+	DrawTextureRec(spritesheet.texture, rect, centered_position, tint);
+}
+
+void draw_texture_centered(Texture2D texture, Vector2 position, Color tint) {
+	Vector2 centered_position = {
+		.x = position.x - texture.width / 2,
+		.y = position.y - texture.height / 2,
+	};
+	DrawTexture(texture, centered_position.x, centered_position.y, tint);
 }
 
 // UFO 50 is 16:9 at 384x216 resolution
@@ -64,11 +72,30 @@ int main(void) {
 		.sprite_width = 64,
 		.sprite_height = 64,
 	};
+	Texture2D pill_texture = load_texture_from_file("resource/image/pill.png");
+
+	/* State */
+	Vector2 player_position = { 0, 0 };
 
 	/* Run program */
 	while (!WindowShouldClose()) {
 		if (IsKeyPressed(KEY_F11)) {
 			toggle_fullscreen();
+		}
+
+		const float delta_time = GetFrameTime();
+		const float speed = 150;
+		if (IsKeyDown('A')) {
+			player_position.x -= speed * delta_time;
+		}
+		if (IsKeyDown('D')) {
+			player_position.x += speed * delta_time;
+		}
+		if (IsKeyDown('W')) {
+			player_position.y -= speed * delta_time;
+		}
+		if (IsKeyDown('S')) {
+			player_position.y += speed * delta_time;
 		}
 
 		BeginTextureMode(screen_texture);
@@ -80,23 +107,27 @@ int main(void) {
 			const int frame_time = 70; // ms
 			const int num_frames = 12;
 			const int index = (time_now % (num_frames * frame_time)) / frame_time;
+			const Vector2 screen_middle = {
+				.x = RESOLUTION_WIDTH / 2,
+				.y = RESOLUTION_HEIGHT / 2,
+			};
 
 			// Draw donut
-			{
-				Vector2 position = {
-					RESOLUTION_WIDTH / 2 - 48,
-					RESOLUTION_HEIGHT / 2,
-				};
-				draw_sprite_centered(&donut_spritesheet, index, position, WHITE);
+			if (0) {
+				Vector2 position = { screen_middle.x - 48, screen_middle.y };
+				draw_sprite_centered(donut_spritesheet, index, position, WHITE);
 			}
 
 			// Draw coffee
+			if (0) {
+				Vector2 position = { screen_middle.x + 48, screen_middle.y };
+				draw_sprite_centered(coffee_spritesheet, index, position, WHITE);
+			}
+
+			// Draw pill
 			{
-				Vector2 position = {
-					RESOLUTION_WIDTH / 2 + 48,
-					RESOLUTION_HEIGHT / 2,
-				};
-				draw_sprite_centered(&coffee_spritesheet, index, position, WHITE);
+				Vector2 position = Vector2Add(player_position, screen_middle);
+				draw_texture_centered(pill_texture, position, WHITE);
 			}
 
 			// Draw FPS
