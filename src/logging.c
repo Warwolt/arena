@@ -2,6 +2,7 @@
 
 #include <stdbool.h>
 #include <stdio.h>
+#include <time.h>
 #include <windows.h>
 
 #pragma warning(disable: 4005) // consoleapi2.h from windows.h has conflicting macros
@@ -93,6 +94,12 @@ void debug_log(LogLevel log_level, const char* filename, int line, const char* f
 	if (!debugger_is_present) {
 		offset += snprintf(buffer + offset, 1024 - offset, log_level_color(log_level));
 	}
+
+	/* Add timestamp */
+	time_t t = time(0); // get time now
+	struct tm* now = localtime(&t);
+	offset += snprintf(buffer + offset, 1024 - offset, "%02d-%02d-%02d ", now->tm_year + 1900, now->tm_mon + 1, now->tm_mday); // year
+	offset += snprintf(buffer + offset, 1024 - offset, "%02d:%02d ", now->tm_hour, now->tm_min); // hour
 
 	/* File and line */
 	offset += snprintf(buffer + offset, 1024 - offset, "%s:%d ", filename_from_path(filename), line);
