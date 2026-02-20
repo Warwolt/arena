@@ -115,12 +115,16 @@ int main(void) {
 			ClearBackground(BLACK);
 
 			// Draw stretched screen texture
-			int scale = GetScreenHeight() / RESOLUTION_HEIGHT;
+			int screen_width = GetScreenWidth();
+			int screen_height = GetScreenHeight();
+			int scale = min(screen_width / RESOLUTION_WIDTH, screen_height / RESOLUTION_HEIGHT);
+			int scaled_width = scale * screen_texture.texture.width;
+			int scaled_height = scale * screen_texture.texture.height;
 			Rectangle scaled_screen_rect = {
-				.x = 0,
-				.y = 0,
-				.width = screen_texture.texture.width * scale,
-				.height = screen_texture.texture.height * scale,
+				.x = (screen_width - scaled_width) / 2,
+				.y = (screen_height - scaled_height) / 2,
+				.width = scaled_width,
+				.height = scaled_height,
 			};
 			DrawTexturePro(
 				screen_texture.texture,
