@@ -1,7 +1,7 @@
 # TODO
-- Fix resolution rendering
 
 # Doing
+- Fix resolution rendering
 
 # Done
 - Add format check in CI

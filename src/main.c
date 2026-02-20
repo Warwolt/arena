@@ -36,12 +36,18 @@ void draw_sprite_centered(const Spritesheet* spritesheet, int sprite_index, Vect
 	DrawTextureRec(spritesheet->texture, rect, centered_position, tint);
 }
 
+// UFO 50 is 16:9 at 384x216 resolution
+#define RESOLUTION_WIDTH (int)768
+#define RESOLUTION_HEIGHT (int)432
+
 int main(void) {
 	/* Init */
 	initialize_logging();
 	SetTraceLogLevel(LOG_WARNING);
-	InitWindow(800, 450, "Program");
+	InitWindow(RESOLUTION_WIDTH, RESOLUTION_HEIGHT, "Program");
 	LOG_INFO("Created window");
+
+	// Render texture
 
 	/* Load resources */
 	Spritesheet donut_spritesheet = {
