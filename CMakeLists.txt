@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.16.0)
-project(rktest)
+project(arena)
 enable_language(C)
 include(CheckCCompilerFlag)
 
 # Add Raylib
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD 23)
 add_subdirectory(lib/raylib)
 
 # Set warnings
@@ -17,6 +17,7 @@ endif()
 # Source
 add_library(source
     src/arena.c
+    src/logging.c
 )
 target_include_directories(source PUBLIC src)
 target_link_libraries(source raylib)

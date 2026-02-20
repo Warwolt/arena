@@ -1,8 +1,10 @@
 # TODO
-- Logging
+- Render image
+- Render animated image
 
 # Doing
 
 # Done
-- Implement Arena allocator
+- Logging
 - Integrate Raylib
+- Implement Arena allocator

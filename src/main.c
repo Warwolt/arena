@@ -1,8 +1,12 @@
 #include <raylib.h>
 
+#include "logging.h"
+
 int main(void) {
-	SetTraceLogLevel(LOG_NONE);
+	initialize_logging();
+	SetTraceLogLevel(LOG_WARNING);
 	InitWindow(800, 450, "Program");
+	LOG_INFO("Created window");
 
 	while (!WindowShouldClose()) {
 		BeginDrawing();
@@ -12,6 +16,5 @@ int main(void) {
 	}
 
 	CloseWindow();
-
 	return 0;
 }
