@@ -4,14 +4,9 @@
 
 int main(void) {
 	initialize_logging();
-	debug_log(LogLevel_Debug, __FILE__, __LINE__, "Hello World!");
-	debug_log(LogLevel_Info, "main.c", __LINE__, "Hello World!");
-	debug_log(LogLevel_Warning, "main.c", __LINE__, "Hello World!");
-	debug_log(LogLevel_Error, "main.c", __LINE__, "Hello World!");
-	debug_log(LogLevel_Fatal, "main.c", __LINE__, "Hello World!");
-
-	SetTraceLogLevel(LOG_NONE);
+	SetTraceLogLevel(LOG_WARNING);
 	InitWindow(800, 450, "Program");
+	LOG_INFO("Created window");
 
 	while (!WindowShouldClose()) {
 		BeginDrawing();
