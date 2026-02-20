@@ -1,6 +1,11 @@
 #include <raylib.h>
 
+#include "logging.h"
+
 int main(void) {
+	initialize_logging();
+	debug_log(LogLevel_Info, "main.c", __LINE__, "Hello World!");
+
 	SetTraceLogLevel(LOG_NONE);
 	InitWindow(800, 450, "Program");
 
