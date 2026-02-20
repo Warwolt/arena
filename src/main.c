@@ -37,11 +37,13 @@ void draw_sprite_centered(const Spritesheet* spritesheet, int sprite_index, Vect
 }
 
 int main(void) {
+	/* Init */
 	initialize_logging();
 	SetTraceLogLevel(LOG_WARNING);
 	InitWindow(800, 450, "Program");
 	LOG_INFO("Created window");
 
+	/* Load resources */
 	Spritesheet donut_spritesheet = {
 		.texture = load_texture_from_file("resource/image/spinning_donut.png"),
 		.sprite_width = 64,
@@ -53,6 +55,7 @@ int main(void) {
 		.sprite_height = 64,
 	};
 
+	/* Run program */
 	while (!WindowShouldClose()) {
 		BeginDrawing();
 		{
@@ -92,6 +95,7 @@ int main(void) {
 		EndDrawing();
 	}
 
+	/* Shutdown */
 	CloseWindow();
 	return 0;
 }
