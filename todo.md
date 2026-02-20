@@ -1,9 +1,9 @@
 # TODO
 
 # Doing
-- Fix resolution rendering
 
 # Done
+- Fix resolution rendering
 - Add format check in CI
 - Render animated image
 - Render image
