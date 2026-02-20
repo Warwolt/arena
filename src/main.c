@@ -1,4 +1,5 @@
 #include <raylib.h>
+#include <raymath.h>
 
 #include "logging.h"
 
@@ -34,6 +35,7 @@ int main(void) {
 			const Vector2 sprite_size = { 64, 64 };
 			Rectangle sprite_rect = { 64 * index, 64 * index, 64, 64 };
 			Vector2 sprite_pos = { (GetScreenWidth() - sprite_size.x) / 2, (GetScreenHeight() - sprite_size.y) / 2 };
+			DrawTextureRec(spinning_donut_texture, sprite_rect, Vector2Add(sprite_pos, (Vector2) { -8, 12 }), (Color) { 0, 0, 0, 16 });
 			DrawTextureRec(spinning_donut_texture, sprite_rect, sprite_pos, WHITE);
 		}
 		EndDrawing();
