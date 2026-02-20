@@ -2,9 +2,12 @@
 #include <raymath.h>
 
 #include "logging.h"
+#include "win32.h"
 
 #include <math.h>
+#include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 typedef struct Spritesheet {
 	Texture2D texture;
@@ -36,12 +39,19 @@ void draw_sprite_centered(const Spritesheet* spritesheet, int sprite_index, Vect
 	DrawTextureRec(spritesheet->texture, rect, centered_position, tint);
 }
 
+// UFO 50 is 16:9 at 384x216 resolution
+#define RESOLUTION_WIDTH (int)768
+#define RESOLUTION_HEIGHT (int)432
+
 int main(void) {
 	/* Init */
 	initialize_logging();
 	SetTraceLogLevel(LOG_WARNING);
-	InitWindow(800, 450, "Program");
+	InitWindow(RESOLUTION_WIDTH, RESOLUTION_HEIGHT, "Program");
 	LOG_INFO("Created window");
+
+	// Render texture
+	RenderTexture2D screen_texture = LoadRenderTexture(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
 
 	/* Load resources */
 	Spritesheet donut_spritesheet = {
@@ -57,8 +67,13 @@ int main(void) {
 
 	/* Run program */
 	while (!WindowShouldClose()) {
-		BeginDrawing();
+		if (IsKeyPressed(KEY_F11)) {
+			toggle_fullscreen();
+		}
+
+		BeginTextureMode(screen_texture);
 		{
+			// Draw background
 			ClearBackground(LIME);
 
 			const int time_now = GetTime() * 1000; // ms
@@ -69,8 +84,8 @@ int main(void) {
 			// Draw donut
 			{
 				Vector2 position = {
-					GetScreenWidth() / 2 - 48,
-					GetScreenHeight() / 2,
+					RESOLUTION_WIDTH / 2 - 48,
+					RESOLUTION_HEIGHT / 2,
 				};
 				draw_sprite_centered(&donut_spritesheet, index, position, WHITE);
 			}
@@ -78,8 +93,8 @@ int main(void) {
 			// Draw coffee
 			{
 				Vector2 position = {
-					GetScreenWidth() / 2 + 48,
-					GetScreenHeight() / 2,
+					RESOLUTION_WIDTH / 2 + 48,
+					RESOLUTION_HEIGHT / 2,
 				};
 				draw_sprite_centered(&coffee_spritesheet, index, position, WHITE);
 			}
@@ -91,6 +106,34 @@ int main(void) {
 				snprintf(text, 128, "FPS: %d", GetFPS());
 				DrawText(text, 0, 0, 16, WHITE);
 			}
+		}
+		EndTextureMode();
+
+		BeginDrawing();
+		{
+			// Draw background
+			ClearBackground(BLACK);
+
+			// Draw stretched screen texture
+			int screen_width = GetScreenWidth();
+			int screen_height = GetScreenHeight();
+			int scale = min(screen_width / RESOLUTION_WIDTH, screen_height / RESOLUTION_HEIGHT);
+			int scaled_width = scale * screen_texture.texture.width;
+			int scaled_height = scale * screen_texture.texture.height;
+			Rectangle scaled_screen_rect = {
+				.x = (screen_width - scaled_width) / 2,
+				.y = (screen_height - scaled_height) / 2,
+				.width = scaled_width,
+				.height = scaled_height,
+			};
+			DrawTexturePro(
+				screen_texture.texture,
+				(Rectangle) { 0, 0, screen_texture.texture.width, -screen_texture.texture.height },
+				scaled_screen_rect,
+				Vector2Zero(),
+				0,
+				WHITE
+			);
 		}
 		EndDrawing();
 	}
