@@ -1,8 +1,8 @@
 # TODO
-- Render image
 - Render animated image
 
 # Doing
+- Render image
 
 # Done
 - Logging
