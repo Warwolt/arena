@@ -21,11 +21,13 @@ int main(void) {
 	while (!WindowShouldClose()) {
 		BeginDrawing();
 		{
-			ClearBackground(RAYWHITE);
-			DrawText("Mmmmmm... donuts!", 190, 200, 20, BLACK);
+			ClearBackground(BLACK);
 
 			// Draw sprite sheet
-			DrawTexture(spinning_donut_texture, 0, 0, WHITE);
+			const Vector2 sprite_size = { 64, 64 };
+			Rectangle sprite_rect = { 0, 0, 64, 64 };
+			Vector2 sprite_pos = { (GetScreenWidth() - sprite_size.x) / 2, (GetScreenHeight() - sprite_size.y) / 2 };
+			DrawTextureRec(spinning_donut_texture, sprite_rect, sprite_pos, WHITE);
 		}
 		EndDrawing();
 	}
