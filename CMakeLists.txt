@@ -19,14 +19,14 @@ add_library(source
     src/arena.c
     src/logging.c
 )
-target_include_directories(source PUBLIC src)
+target_include_directories(source PUBLIC src lib)
 target_link_libraries(source raylib)
 
 # Main
 add_executable(main
     src/main.c
 )
-target_include_directories(main PUBLIC src)
+target_include_directories(main PUBLIC src lib)
 target_link_libraries(main source)
 
 # Tests
@@ -34,5 +34,5 @@ add_executable(tests
     test/main.c
     test/arena_tests.c
 )
-target_include_directories(tests PUBLIC src)
+target_include_directories(tests PUBLIC src lib)
 target_link_libraries(tests source)
