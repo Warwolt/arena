@@ -59,6 +59,16 @@ static const char* log_level_color(LogLevel level) {
 	return "";
 }
 
+static char* filename_from_path(const char* path_str) {
+	char* filename = (char*)path_str;
+	for (char* c = (char*)path_str; *c != '\0'; c++) {
+		if (*c == '\\') {
+			filename = c + 1;
+		}
+	}
+	return filename;
+}
+
 void initialize_logging() {
 	// If we're debugging, we're using the Visual Studio debug output window
 	// instead of a terminal that uses stdout. Skip color init in that case.
@@ -79,8 +89,13 @@ void debug_log(LogLevel log_level, const char* filename, int line, const char* f
 	char buffer[1024] = { 0 };
 	int offset = 0;
 
+	/* Add color */
+	if (!debugger_is_present) {
+		offset += snprintf(buffer + offset, 1024 - offset, log_level_color(log_level));
+	}
+
 	/* File and line */
-	offset += snprintf(buffer + offset, 1024 - offset, "%s:%d ", filename, line);
+	offset += snprintf(buffer + offset, 1024 - offset, "%s:%d ", filename_from_path(filename), line);
 
 	/* Log level */
 	offset += snprintf(buffer + offset, 1024 - offset, "%s ", log_level_to_str(log_level));
@@ -98,11 +113,9 @@ void debug_log(LogLevel log_level, const char* filename, int line, const char* f
 		OutputDebugStringA(buffer);
 	} else {
 		// log to console
-		if (log_level == LogLevel_Error || log_level == LogLevel_Fatal) {
-			fprintf(stderr, "%s%s", buffer, COLOR_RESET);
-		} else {
-			printf("%s%s", buffer, COLOR_RESET);
-		}
-		fflush(stdout);
+		bool is_error = log_level == LogLevel_Error || log_level == LogLevel_Fatal;
+		FILE* stream = is_error ? stderr : stdout;
+		fprintf(stream, "%s%s", buffer, COLOR_RESET);
+		fflush(stream);
 	}
 }
