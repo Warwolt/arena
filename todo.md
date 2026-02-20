@@ -1,8 +1,9 @@
 # TODO
-- Render image
 - Render animated image
+- Fix resolution rendering
 
 # Doing
+- Render image
 
 # Done
 - Logging
