@@ -29,6 +29,8 @@ add_executable(main
 )
 target_include_directories(main PUBLIC src lib)
 target_link_libraries(main source)
+set_property(TARGET main PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT main)
 
 # Tests
 add_executable(tests
