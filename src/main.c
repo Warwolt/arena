@@ -19,11 +19,16 @@ typedef struct EntityID {
 	int value;
 } EntityID;
 
+#define MAX_POSITIONS (int)128
+typedef struct PositionSystem {
+	EntityID keys[MAX_POSITIONS];
+	Vector2 values[MAX_POSITIONS];
+	int size;
+} PositionSystem;
+
 // UFO 50 is 16:9 at 384x216 resolution
 #define RESOLUTION_WIDTH (int)768
 #define RESOLUTION_HEIGHT (int)432
-
-#define MAX_POSITIONS (int)128
 
 #define INDEX_NOT_FOUND (int)-1
 
@@ -34,6 +39,30 @@ int find_entity_index(EntityID* ids, size_t len, EntityID id) {
 		}
 	}
 	return -1;
+}
+
+void PositionSystem_add_position(PositionSystem* system, EntityID id, Vector2 position) {
+	system->keys[system->size] = id;
+	system->values[system->size] = position;
+	system->size++;
+}
+
+bool PositionSystem_get_position(PositionSystem* system, EntityID id, Vector2* position) {
+	int index = find_entity_index(system->keys, MAX_POSITIONS, id);
+	if (index != INDEX_NOT_FOUND) {
+		*position = system->values[index];
+		return true;
+	}
+	return false;
+}
+
+bool PositionSystem_set_position(PositionSystem* system, EntityID id, Vector2 position) {
+	int index = find_entity_index(system->keys, MAX_POSITIONS, id);
+	if (index != INDEX_NOT_FOUND) {
+		system->values[index] = position;
+		return true;
+	}
+	return false;
 }
 
 Texture2D load_texture_from_file(const char* filename) {
@@ -93,30 +122,17 @@ int main(void) {
 
 	/* State */
 	bool show_debug_overlay = false;
-
-	EntityID position_keys[MAX_POSITIONS];
-	Vector2 positions_values[MAX_POSITIONS];
-	int positions_size = 0;
-
-	// create player entity
+	PositionSystem positions = { 0 };
 	EntityID player_id = { 1 };
 
 	// add position to player
-	position_keys[0] = player_id;
-	positions_values[0] = Vector2Zero();
-	positions_size++;
+	PositionSystem_add_position(&positions, player_id, Vector2Zero());
 
 	/* Run program */
 	while (!WindowShouldClose()) {
 		// retreive player position
-		Vector2 position_value = Vector2Zero();
-		{
-			int position_index = find_entity_index(position_keys, MAX_POSITIONS, player_id);
-			if (position_index != INDEX_NOT_FOUND) {
-				position_value = positions_values[0];
-			}
-		}
-		const Vector2 player_position = position_value;
+		Vector2 player_pos = Vector2Zero();
+		PositionSystem_get_position(&positions, player_id, &player_pos);
 
 		/* Update */
 		{
@@ -128,32 +144,25 @@ int main(void) {
 				show_debug_overlay = !show_debug_overlay;
 			}
 
-			Vector2 input_vector = Vector2Zero();
+			Vector2 input_vec = Vector2Zero();
 			if (IsKeyDown('A')) {
-				input_vector = Vector2Add(input_vector, (Vector2) { -1, 0 });
+				input_vec = Vector2Add(input_vec, (Vector2) { -1, 0 });
 			}
 			if (IsKeyDown('D')) {
-				input_vector = Vector2Add(input_vector, (Vector2) { 1, 0 });
+				input_vec = Vector2Add(input_vec, (Vector2) { 1, 0 });
 			}
 			if (IsKeyDown('W')) {
-				input_vector = Vector2Add(input_vector, (Vector2) { 0, -1 });
+				input_vec = Vector2Add(input_vec, (Vector2) { 0, -1 });
 			}
 			if (IsKeyDown('S')) {
-				input_vector = Vector2Add(input_vector, (Vector2) { 0, 1 });
+				input_vec = Vector2Add(input_vec, (Vector2) { 0, 1 });
 			}
-			input_vector = Vector2Normalize(input_vector);
+			input_vec = Vector2Normalize(input_vec);
 
 			const float delta_time = GetFrameTime();
 			const float player_speed = 200; // px / second
-			Vector2 new_player_position = Vector2Add(player_position, Vector2Scale(input_vector, delta_time * player_speed));
-
-			// set player position
-			{
-				int position_index = find_entity_index(position_keys, MAX_POSITIONS, player_id);
-				if (position_index != INDEX_NOT_FOUND) {
-					positions_values[0] = new_player_position;
-				}
-			}
+			const Vector2 moved_player_pos = Vector2Add(player_pos, Vector2Scale(input_vec, delta_time * player_speed));
+			PositionSystem_set_position(&positions, player_id, moved_player_pos);
 		}
 
 		/* Render scene */
@@ -185,7 +194,7 @@ int main(void) {
 
 			// Draw player pill
 			{
-				Vector2 position = Vector2Add(player_position, screen_middle);
+				Vector2 position = Vector2Add(player_pos, screen_middle);
 				draw_texture_centered(pill_texture, position, WHITE);
 			}
 
