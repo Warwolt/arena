@@ -3,6 +3,11 @@ project(rktest)
 enable_language(C)
 include(CheckCCompilerFlag)
 
+# Add Raylib
+set(CMAKE_C_STANDARD 11)
+add_subdirectory(lib/raylib)
+
+# Set warnings
 if(MSVC)
     add_compile_options(/W4 /WX)
 else()
@@ -14,6 +19,7 @@ add_library(source
     src/arena.c
 )
 target_include_directories(source PUBLIC src)
+target_link_libraries(source raylib)
 
 # Main
 add_executable(main
