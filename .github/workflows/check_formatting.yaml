@@ -9,4 +9,6 @@ jobs:
       uses: jidicula/clang-format-action@v4.16.0
       with:
         clang-format-version: '20'
-        check-path: ['src', 'test']
+        check-path: |
+          src
+          test
