@@ -18,7 +18,8 @@ int main(void) {
 		LOG_ERROR("Couldn't load image \"%s\"!", image_path);
 		goto exit_program;
 	}
-	Texture2D spinning_donut_texture = LoadTextureFromImage(spinning_donut_image);
+	Texture2D 
+	spinning_donut_texture = LoadTextureFromImage(spinning_donut_image);
 	UnloadImage(spinning_donut_image);
 
 	while (!WindowShouldClose()) {
