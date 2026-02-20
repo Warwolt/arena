@@ -25,7 +25,8 @@ int main(void) {
 
 			// Draw sprite sheet
 			const Vector2 sprite_size = { 64, 64 };
-			Rectangle sprite_rect = { 0, 0, 64, 64 };
+			int index = 5;
+			Rectangle sprite_rect = { 64 * index, 64 * index, 64, 64 };
 			Vector2 sprite_pos = { (GetScreenWidth() - sprite_size.x) / 2, (GetScreenHeight() - sprite_size.y) / 2 };
 			DrawTextureRec(spinning_donut_texture, sprite_rect, sprite_pos, WHITE);
 		}
