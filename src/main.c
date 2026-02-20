@@ -4,6 +4,7 @@
 #include "logging.h"
 
 #include <math.h>
+#include <stdio.h>
 
 Texture2D load_texture_from_file(const char* filename) {
 	Image image = LoadImage(filename);
@@ -55,6 +56,14 @@ int main(void) {
 				};
 				DrawTextureRec(coffee_texture, sprite_rect, Vector2Add(sprite_pos, (Vector2) { -4, 8 }), (Color) { 0, 0, 0, 16 });
 				DrawTextureRec(coffee_texture, sprite_rect, sprite_pos, WHITE);
+			}
+
+			// Draw FPS
+			const bool draw_debug_overlay = false;
+			if (draw_debug_overlay) {
+				char text[128] = { 0 };
+				snprintf(text, 128, "FPS: %d", GetFPS());
+				DrawText(text, 0, 0, 16, WHITE);
 			}
 		}
 		EndDrawing();
