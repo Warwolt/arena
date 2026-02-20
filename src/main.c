@@ -7,6 +7,7 @@
 #include <math.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 typedef struct Spritesheet {
 	Texture2D texture;
@@ -72,6 +73,7 @@ int main(void) {
 
 		BeginTextureMode(screen_texture);
 		{
+			// Draw background
 			ClearBackground(LIME);
 
 			const int time_now = GetTime() * 1000; // ms
@@ -109,11 +111,21 @@ int main(void) {
 
 		BeginDrawing();
 		{
+			// Draw background
 			ClearBackground(BLACK);
+
+			// Draw stretched screen texture
+			int scale = GetScreenHeight() / RESOLUTION_HEIGHT;
+			Rectangle scaled_screen_rect = {
+				.x = 0,
+				.y = 0,
+				.width = screen_texture.texture.width * scale,
+				.height = screen_texture.texture.height * scale,
+			};
 			DrawTexturePro(
 				screen_texture.texture,
 				(Rectangle) { 0, 0, screen_texture.texture.width, -screen_texture.texture.height },
-				(Rectangle) { 0, 0, screen_texture.texture.width, screen_texture.texture.height },
+				scaled_screen_rect,
 				Vector2Zero(),
 				0,
 				WHITE
