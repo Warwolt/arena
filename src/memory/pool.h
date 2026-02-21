@@ -4,6 +4,13 @@
 // - Define a Pool struct for your component
 // - Use these macros to simplify usage
 //
+// Interface:
+// 		struct Pool<T,N> {
+// 	        EntityID keys[N];
+// 	        T values[N];
+// 	        int size;
+// 		}
+//
 // Example:
 //      #define MAX_POSITIONS (int)128
 //      typedef struct PositionPool {
@@ -19,7 +26,7 @@
 
 #include "entity.h"
 
-// pool: Pool*
+// pool: Pool<T>*
 // id: EntityID
 // item: T
 #define Pool_add_item(pool, id, item)        \
@@ -29,7 +36,7 @@
 		(pool)->size++;                      \
 	} while (0)
 
-// pool: Pool*
+// pool: Pool<T>*
 // id: EntityID
 #define Pool_remove_item(pool, id)                                              \
 	do {                                                                        \
@@ -45,7 +52,7 @@
 		}                                                                       \
 	} while (0)
 
-// pool: Pool*
+// pool: Pool<T>*
 // id: EntityID
 // item: T*
 #define Pool_get_item(pool, id, item)                          \
@@ -60,7 +67,7 @@
 		}                                                      \
 	} while (0)
 
-// pool: Pool*
+// pool: Pool<T>*
 // id: EntityID
 // item: T
 #define Pool_set_item(pool, id, item)                          \
