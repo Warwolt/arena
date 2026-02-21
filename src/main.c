@@ -124,7 +124,7 @@ int main(void) {
 	RenderTexture2D screen_texture = LoadRenderTexture(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
 
 	/* Load resources */
-	Spritesheet donut_spritesheet_OLD = {
+	Spritesheet donut_spritesheet = {
 		.texture = load_texture_from_file("resource/image/spinning_donut.png"),
 		.sprite_width = 64,
 		.sprite_height = 64,
@@ -141,11 +141,16 @@ int main(void) {
 	TexturePool textures = { 0 };
 	SpritesheetPool spritesheets = { 0 };
 	EntityID player_id = EntityID_new();
+	EntityID donut_id = EntityID_new();
 	EntityID coffee_id = EntityID_new();
 
 	// add player
 	PositionPool_add_position(&positions, player_id, Vector2Zero());
 	TexturePool_add_texture(&textures, player_id, load_texture_from_file("resource/image/pill.png"));
+
+	// add donut
+	PositionPool_add_position(&positions, donut_id, (Vector2) { -48, 0 });
+	SpritesheetPool_add_spritesheet(&spritesheets, donut_id, donut_spritesheet);
 
 	// add coffee
 	PositionPool_add_position(&positions, coffee_id, (Vector2) { 48, 0 });
@@ -202,12 +207,6 @@ int main(void) {
 				.x = RESOLUTION_WIDTH / 2,
 				.y = RESOLUTION_HEIGHT / 2,
 			};
-
-			// Draw donut
-			if (0) {
-				Vector2 position = { screen_middle.x - 48, screen_middle.y };
-				draw_sprite_centered(donut_spritesheet_OLD, sprite_index, position, WHITE);
-			}
 
 			for (int i = 0; i < EntityID_count(); i++) {
 				EntityID id = { i + 1 };
