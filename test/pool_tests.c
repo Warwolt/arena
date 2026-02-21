@@ -4,31 +4,58 @@
 
 #include <stdbool.h>
 
-#define TEST_POOL_CAPACITY (int)128
+#define MAX_TEST_ITEMS (int)128
 typedef struct TestPool {
-	EntityID keys[TEST_POOL_CAPACITY];
-	int values[TEST_POOL_CAPACITY];
+	EntityID keys[MAX_TEST_ITEMS];
+	int values[MAX_TEST_ITEMS];
 	int size;
 } TestPool;
 
-// Pool_add_item
-// Pool_remove_item
-// Pool_get_item
-// Pool_set_item
+TEST(PoolTests, EmptyPool_GetItem_DoesNothing) {
+	TestPool pool = { 0 };
+	EntityID id = { 1 };
 
-#define Pool_get_item(pool, item) Pool_get_item_impl((pool)->keys, item)
+	int item = -1;
+	Pool_get_item(&pool, id, &item);
 
-bool Pool_get_item_impl(EntityID* keys, void* item) {
-	(void)(keys);
-	(void)(item);
-	return false;
+	EXPECT_EQ(item, -1);
 }
 
-TEST(PoolTests, GetItem_EmptyPool_DoesNothing) {
+TEST(PoolTests, AddItem_GetItem_ItemRetrieved) {
 	TestPool pool = { 0 };
+	EntityID id = { 1 };
+	int item = 123;
 
+	Pool_add_item(&pool, id, item);
+	int retrieved_item = 0;
+	Pool_get_item(&pool, id, &retrieved_item);
+
+	EXPECT_EQ(item, retrieved_item);
+}
+
+TEST(PoolTests, AddItem_RemoveItem_CannotGetItem) {
+	TestPool pool = { 0 };
+	EntityID id = { 1 };
+
+	const int item = 123;
+	Pool_add_item(&pool, id, item);
+
+	Pool_remove_item(&pool, id);
+
+	int retrieved_item = 0;
+	Pool_get_item(&pool, id, &retrieved_item);
+
+	EXPECT_EQ(item, retrieved_item);
+}
+
+TEST(PoolTests, SetItem_GetItem_RetrievesUpdatedItem) {
+	TestPool pool = { 0 };
+	EntityID id = { 1 };
+
+	Pool_add_item(&pool, id, 123);
+	Pool_set_item(&pool, id, 456);
 	int item = 0;
-	bool did_get = Pool_get_item(&pool, &item);
+	Pool_get_item(&pool, id, &item);
 
-	EXPECT_FALSE_INFO(did_get, "Empty pool unexpectedly returned item %d\n", item);
+	EXPECT_EQ(item, 456);
 }
