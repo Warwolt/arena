@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct Spritesheet {
 	Texture2D texture;
@@ -113,6 +114,23 @@ void draw_texture_centered(Texture2D texture, Vector2 position, Color tint) {
 	DrawTexture(texture, centered_position.x, centered_position.y, tint);
 }
 
+int compare_position_ids_by_y_coordinate(void* ctx, const void* lhs, const void* rhs) {
+	PositionPool* positions = (PositionPool*)ctx;
+	EntityID lhs_id = *(const EntityID*)lhs;
+	EntityID rhs_id = *(const EntityID*)rhs;
+	Vector2 lhs_pos = { 0 };
+	Vector2 rhs_pos = { 0 };
+	PositionPool_get_position(positions, lhs_id, &lhs_pos);
+	PositionPool_get_position(positions, rhs_id, &rhs_pos);
+	if (lhs_pos.y < rhs_pos.y) {
+		return -1;
+	} else if (lhs_pos.y == rhs_pos.y) {
+		return 0;
+	} else {
+		return 1;
+	}
+}
+
 int main(void) {
 	/* Init */
 	initialize_logging();
@@ -208,8 +226,14 @@ int main(void) {
 				.y = RESOLUTION_HEIGHT / 2,
 			};
 
-			for (int i = 0; i < EntityID_count(); i++) {
-				EntityID id = { i + 1 };
+			// sort entities based on position
+			EntityID y_sorted_entities[MAX_POSITIONS] = { 0 };
+			memcpy(y_sorted_entities, positions.keys, MAX_POSITIONS * sizeof(EntityID));
+			qsort_s(y_sorted_entities, positions.size, sizeof(EntityID), compare_position_ids_by_y_coordinate, &positions);
+
+			// render entities
+			for (int i = 0; i < positions.size; i++) {
+				EntityID id = y_sorted_entities[i];
 				Vector2 position = { 0 };
 				PositionPool_get_position(&positions, id, &position);
 				Vector2 centered_pos = Vector2Add(position, screen_middle);
