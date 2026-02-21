@@ -1,6 +1,11 @@
 #include "entity.h"
 
+static int g_num_entities;
+
 EntityID EntityID_new(void) {
-	static int next_id = 1;
-	return (EntityID) { next_id++ };
+	return (EntityID) { ++g_num_entities };
+}
+
+int EntityID_count(void) {
+	return g_num_entities;
 }

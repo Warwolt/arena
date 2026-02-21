@@ -5,3 +5,4 @@ typedef struct EntityID {
 } EntityID;
 
 EntityID EntityID_new(void);
+int EntityID_count(void);

@@ -136,11 +136,6 @@ int main(void) {
 	};
 
 	/* State */
-	const Vector2 screen_middle = {
-		.x = RESOLUTION_WIDTH / 2,
-		.y = RESOLUTION_HEIGHT / 2,
-	};
-
 	bool show_debug_overlay = false;
 	PositionPool positions = { 0 };
 	TexturePool textures = { 0 };
@@ -153,7 +148,7 @@ int main(void) {
 	TexturePool_add_texture(&textures, player_id, load_texture_from_file("resource/image/pill.png"));
 
 	// add coffee
-	PositionPool_add_position(&positions, coffee_id, (Vector2) { screen_middle.x + 48, screen_middle.y });
+	PositionPool_add_position(&positions, coffee_id, (Vector2) { 48, 0 });
 	SpritesheetPool_add_spritesheet(&spritesheets, coffee_id, coffee_spritesheet);
 
 	/* Run program */
@@ -202,29 +197,36 @@ int main(void) {
 			const int time_now = GetTime() * 1000; // ms
 			const int frame_time = 70; // ms
 			const int num_frames = 12;
-			const int index = (time_now % (num_frames * frame_time)) / frame_time;
+			const int sprite_index = (time_now % (num_frames * frame_time)) / frame_time;
+			const Vector2 screen_middle = {
+				.x = RESOLUTION_WIDTH / 2,
+				.y = RESOLUTION_HEIGHT / 2,
+			};
 
 			// Draw donut
 			if (0) {
 				Vector2 position = { screen_middle.x - 48, screen_middle.y };
-				draw_sprite_centered(donut_spritesheet_OLD, index, position, WHITE);
+				draw_sprite_centered(donut_spritesheet_OLD, sprite_index, position, WHITE);
 			}
 
-			// Draw coffee
-			if (1) {
+			for (int i = 0; i < EntityID_count(); i++) {
+				EntityID id = { i + 1 };
 				Vector2 position = { 0 };
-				Spritesheet spritesheet = { 0 };
-				PositionPool_get_position(&positions, coffee_id, &position);
-				SpritesheetPool_get_spritesheet(&spritesheets, coffee_id, &spritesheet);
-				draw_sprite_centered(coffee_spritesheet, index, position, WHITE);
-			}
+				PositionPool_get_position(&positions, id, &position);
+				Vector2 centered_pos = Vector2Add(position, screen_middle);
 
-			// Draw player pill
-			{
-				Vector2 position = Vector2Add(player_pos, screen_middle);
 				Texture2D texture = { 0 };
-				TexturePool_get_texture(&textures, player_id, &texture);
-				draw_texture_centered(texture, position, WHITE);
+				TexturePool_get_texture(&textures, id, &texture);
+				if (texture.id != 0) {
+					draw_texture_centered(texture, centered_pos, WHITE);
+					continue;
+				}
+
+				Spritesheet spritesheet = { 0 };
+				SpritesheetPool_get_spritesheet(&spritesheets, id, &spritesheet);
+				if (spritesheet.texture.id != 0) {
+					draw_sprite_centered(spritesheet, sprite_index, centered_pos, WHITE);
+				}
 			}
 
 			// Draw FPS
