@@ -1,6 +1,6 @@
 #include <rktest/rktest.h>
 
-#include "arena.h"
+#include "memory/arena.h"
 
 TEST(ArenaTests, PushedAllocationsAreConsecutive) {
 	Arena* arena = Arena_allocate(100);
