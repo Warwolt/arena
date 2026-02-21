@@ -17,11 +17,6 @@ typedef struct Spritesheet_OLD {
 	int sprite_height;
 } Spritesheet_OLD;
 
-typedef struct TextureComponent {
-	Texture2D texture;
-	Rectangle clip_rect;
-} TextureComponent;
-
 #define MAX_POSITIONS (int)128
 typedef struct PositionPool {
 	EntityID keys[MAX_POSITIONS];
@@ -32,7 +27,7 @@ typedef struct PositionPool {
 #define MAX_TEXTURES (int)128
 typedef struct TexturePool {
 	EntityID keys[MAX_TEXTURES];
-	TextureComponent values[MAX_TEXTURES];
+	Texture2D values[MAX_TEXTURES];
 	int size;
 } TexturePool;
 
@@ -41,7 +36,7 @@ typedef struct TexturePool {
 #define RESOLUTION_HEIGHT (int)432
 
 // ComponentPool_add_position(ComponentPool* components, EntityID id, Vector2 position)
-// ComponentPool_add_texture(ComponentPool* components, EntityID id, TextureComponent texture)
+// ComponentPool_add_texture(ComponentPool* components, EntityID id, Texture2D texture)
 
 void PositionPool_add_position(PositionPool* pool, EntityID id, Vector2 position) {
 	Pool_add_item(pool, id, position);
@@ -55,15 +50,15 @@ void PositionPool_set_position(PositionPool* pool, EntityID id, Vector2 position
 	Pool_set_item(pool, id, position);
 }
 
-void TexturePool_add_texture(TexturePool* pool, EntityID id, TextureComponent texture) {
+void TexturePool_add_texture(TexturePool* pool, EntityID id, Texture2D texture) {
 	Pool_add_item(pool, id, texture);
 }
 
-void TexturePool_get_texture(TexturePool* pool, EntityID id, TextureComponent* texture) {
+void TexturePool_get_texture(TexturePool* pool, EntityID id, Texture2D* texture) {
 	Pool_get_item(pool, id, texture);
 }
 
-void TexturePool_set_texture(TexturePool* pool, EntityID id, TextureComponent texture) {
+void TexturePool_set_texture(TexturePool* pool, EntityID id, Texture2D texture) {
 	Pool_set_item(pool, id, texture);
 }
 
@@ -134,20 +129,12 @@ int main(void) {
 	EntityID coffee_id = EntityID_new();
 
 	// add player
-	TextureComponent player_texture = {
-		.texture = load_texture_from_file("resource/image/pill.png"),
-		.clip_rect = {
-			.x = 0,
-			.y = 0,
-			.width = 64,
-			.height = 64,
-		},
-	};
 	PositionPool_add_position(&positions, player_id, Vector2Zero());
-	TexturePool_add_texture(&textures, player_id, player_texture);
+	TexturePool_add_texture(&textures, player_id, load_texture_from_file("resource/image/pill.png"));
 
 	// add coffee
 	PositionPool_add_position(&positions, coffee_id, (Vector2) { screen_middle.x + 48, screen_middle.y });
+	// add sprite sheet
 
 	/* Run program */
 	while (!WindowShouldClose()) {
@@ -213,9 +200,9 @@ int main(void) {
 			// Draw player pill
 			{
 				Vector2 position = Vector2Add(player_pos, screen_middle);
-				TextureComponent texture = { 0 };
+				Texture2D texture = { 0 };
 				TexturePool_get_texture(&textures, player_id, &texture);
-				draw_texture_centered(texture.texture, position, WHITE);
+				draw_texture_centered(texture, position, WHITE);
 			}
 
 			// Draw FPS
