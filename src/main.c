@@ -25,11 +25,11 @@ EntityID EntityID_new(void) {
 }
 
 #define MAX_POSITIONS (int)128
-typedef struct PositionSystem {
+typedef struct PositionPool {
 	EntityID keys[MAX_POSITIONS];
 	Vector2 values[MAX_POSITIONS];
 	int size;
-} PositionSystem;
+} PositionPool;
 
 // UFO 50 is 16:9 at 384x216 resolution
 #define RESOLUTION_WIDTH (int)768
@@ -46,25 +46,25 @@ int find_entity_index(EntityID* ids, size_t len, EntityID id) {
 	return -1;
 }
 
-void PositionSystem_add_position(PositionSystem* system, EntityID id, Vector2 position) {
-	system->keys[system->size] = id;
-	system->values[system->size] = position;
-	system->size++;
+void PositionPool_add_position(PositionPool* pool, EntityID id, Vector2 position) {
+	pool->keys[pool->size] = id;
+	pool->values[pool->size] = position;
+	pool->size++;
 }
 
-bool PositionSystem_get_position(PositionSystem* system, EntityID id, Vector2* position) {
-	int index = find_entity_index(system->keys, MAX_POSITIONS, id);
+bool PositionPool_get_position(PositionPool* pool, EntityID id, Vector2* position) {
+	int index = find_entity_index(pool->keys, MAX_POSITIONS, id);
 	if (index != INDEX_NOT_FOUND) {
-		*position = system->values[index];
+		*position = pool->values[index];
 		return true;
 	}
 	return false;
 }
 
-bool PositionSystem_set_position(PositionSystem* system, EntityID id, Vector2 position) {
-	int index = find_entity_index(system->keys, MAX_POSITIONS, id);
+bool PositionPool_set_position(PositionPool* pool, EntityID id, Vector2 position) {
+	int index = find_entity_index(pool->keys, MAX_POSITIONS, id);
 	if (index != INDEX_NOT_FOUND) {
-		system->values[index] = position;
+		pool->values[index] = position;
 		return true;
 	}
 	return false;
@@ -132,19 +132,19 @@ int main(void) {
 	};
 
 	bool show_debug_overlay = false;
-	PositionSystem positions = { 0 };
+	PositionPool positions = { 0 };
 	EntityID player_id = EntityID_new();
 	EntityID coffee_id = EntityID_new();
 
 	// add position to player
-	PositionSystem_add_position(&positions, player_id, Vector2Zero());
-	PositionSystem_add_position(&positions, coffee_id, (Vector2) { screen_middle.x + 48, screen_middle.y });
+	PositionPool_add_position(&positions, player_id, Vector2Zero());
+	PositionPool_add_position(&positions, coffee_id, (Vector2) { screen_middle.x + 48, screen_middle.y });
 
 	/* Run program */
 	while (!WindowShouldClose()) {
 		// retreive player position
 		Vector2 player_pos = Vector2Zero();
-		PositionSystem_get_position(&positions, player_id, &player_pos);
+		PositionPool_get_position(&positions, player_id, &player_pos);
 
 		/* Update */
 		{
@@ -174,7 +174,7 @@ int main(void) {
 			const float delta_time = GetFrameTime();
 			const float player_speed = 200; // px / second
 			const Vector2 moved_player_pos = Vector2Add(player_pos, Vector2Scale(input_vec, delta_time * player_speed));
-			PositionSystem_set_position(&positions, player_id, moved_player_pos);
+			PositionPool_set_position(&positions, player_id, moved_player_pos);
 		}
 
 		/* Render scene */
@@ -188,6 +188,12 @@ int main(void) {
 			const int num_frames = 12;
 			const int index = (time_now % (num_frames * frame_time)) / frame_time;
 
+			// for each entity:
+			// 		if entity has spritesheet:
+			// 			render entity spritesheet
+			// 		elif entity has texture:
+			//			render texture
+
 			// Draw donut
 			if (0) {
 				Vector2 position = { screen_middle.x - 48, screen_middle.y };
@@ -197,7 +203,7 @@ int main(void) {
 			// Draw coffee
 			if (1) {
 				Vector2 position = { 0 };
-				PositionSystem_get_position(&positions, coffee_id, &position);
+				PositionPool_get_position(&positions, coffee_id, &position);
 				draw_sprite_centered(coffee_spritesheet, index, position, WHITE);
 			}
 
