@@ -10,26 +10,30 @@ typedef struct TestDict {
 	size_t size;
 } TestDict;
 
-bool TestDict_insert(TestDict* dict, int key, int value) {
+bool Dict_insert_impl(size_t elem_size, size_t* dict_indices, int* dict_keys, char* dict_values, size_t* dict_size, int key, char* value) {
 	/* Skip the zero-key */
 	if (key == 0) {
 		return false;
 	}
 
 	/* Check if key already exists */
-	const size_t maybe_index = dict->indices[key - 1];
-	const bool key_exists = dict->keys[maybe_index] == key;
+	const size_t maybe_index = dict_indices[key - 1];
+	const bool key_exists = dict_keys[maybe_index] == key;
 	if (key_exists) {
 		return false;
 	}
 
 	/* Insert new key */
-	const size_t index = dict->size;
-	dict->indices[key - 1] = index;
-	dict->keys[index] = key;
-	dict->values[index] = value;
-	dict->size += 1;
+	const size_t index = *dict_size;
+	dict_indices[key - 1] = index;
+	dict_keys[index] = key;
+	memcpy(dict_values + index * elem_size, value, elem_size);
+	*dict_size += 1;
 	return true;
+}
+
+bool TestDict_insert(TestDict* dict, int key, int value) {
+	return Dict_insert_impl(sizeof(dict->values[0]), dict->indices, dict->keys, (char*)dict->values, &dict->size, key, (char*)&value);
 }
 
 void TestDict_remove(TestDict* dict, int key) {
