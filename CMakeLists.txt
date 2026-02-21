@@ -3,15 +3,16 @@ project(arena)
 enable_language(C)
 include(CheckCCompilerFlag)
 
+option(WARNINGS_AS_ERRORS "Compile with warnings as errors" ON)
+
 # Add Raylib
 set(CMAKE_C_STANDARD 23)
 add_subdirectory(lib/raylib)
 
 # Set warnings
-if(MSVC)
-    add_compile_options(/W4 /WX /wd4244)
-else()
-    add_compile_options(-Wall -Wextra -Wpedantic -Werror)
+add_compile_options(/W4 /wd4244)
+if (WARNINGS_AS_ERRORS)
+    add_compile_options(/WX)
 endif()
 
 # Source
@@ -37,6 +38,7 @@ set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT m
 add_executable(tests
     test/main.c
     test/arena_tests.c
+    test/pool_tests.c
 )
 target_include_directories(tests PUBLIC src lib)
 target_link_libraries(tests source)

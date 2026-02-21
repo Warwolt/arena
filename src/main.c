@@ -16,10 +16,10 @@ typedef struct Spritesheet {
 	int sprite_height;
 } Spritesheet;
 
-#define MAX_POSITIONS (int)128
+#define POSITION_POOL_CAPACITY (int)128
 typedef struct PositionPool {
-	EntityID keys[MAX_POSITIONS];
-	Vector2 values[MAX_POSITIONS];
+	EntityID keys[POSITION_POOL_CAPACITY];
+	Vector2 values[POSITION_POOL_CAPACITY];
 	int size;
 } PositionPool;
 
@@ -45,7 +45,7 @@ void PositionPool_add_position(PositionPool* pool, EntityID id, Vector2 position
 }
 
 bool PositionPool_get_position(PositionPool* pool, EntityID id, Vector2* position) {
-	int index = find_entity_index(pool->keys, MAX_POSITIONS, id);
+	int index = find_entity_index(pool->keys, POSITION_POOL_CAPACITY, id);
 	if (index != INDEX_NOT_FOUND) {
 		*position = pool->values[index];
 		return true;
@@ -54,7 +54,7 @@ bool PositionPool_get_position(PositionPool* pool, EntityID id, Vector2* positio
 }
 
 bool PositionPool_set_position(PositionPool* pool, EntityID id, Vector2 position) {
-	int index = find_entity_index(pool->keys, MAX_POSITIONS, id);
+	int index = find_entity_index(pool->keys, POSITION_POOL_CAPACITY, id);
 	if (index != INDEX_NOT_FOUND) {
 		pool->values[index] = position;
 		return true;
