@@ -11,11 +11,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct Spritesheet_OLD {
+typedef struct Spritesheet {
 	Texture2D texture;
 	int sprite_width;
 	int sprite_height;
-} Spritesheet_OLD;
+} Spritesheet;
 
 #define MAX_POSITIONS (int)128
 typedef struct PositionPool {
@@ -30,6 +30,13 @@ typedef struct TexturePool {
 	Texture2D values[MAX_TEXTURES];
 	int size;
 } TexturePool;
+
+#define MAX_SPRITESHEETS (int)128
+typedef struct SpritesheetPool {
+	EntityID keys[MAX_SPRITESHEETS];
+	Spritesheet values[MAX_SPRITESHEETS];
+	int size;
+} SpritesheetPool;
 
 // UFO 50 is 16:9 at 384x216 resolution
 #define RESOLUTION_WIDTH (int)768
@@ -62,6 +69,18 @@ void TexturePool_set_texture(TexturePool* pool, EntityID id, Texture2D texture) 
 	Pool_set_item(pool, id, texture);
 }
 
+void SpritesheetPool_add_spritesheet(SpritesheetPool* pool, EntityID id, Spritesheet spritesheet) {
+	Pool_add_item(pool, id, spritesheet);
+}
+
+void SpritesheetPool_get_spritesheet(SpritesheetPool* pool, EntityID id, Spritesheet* spritesheet) {
+	Pool_get_item(pool, id, spritesheet);
+}
+
+void SpritesheetPool_set_spritesheet(SpritesheetPool* pool, EntityID id, Spritesheet spritesheet) {
+	Pool_set_item(pool, id, spritesheet);
+}
+
 Texture2D load_texture_from_file(const char* filename) {
 	Image image = LoadImage(filename);
 	if (image.data == NULL) {
@@ -72,7 +91,7 @@ Texture2D load_texture_from_file(const char* filename) {
 	return texture;
 }
 
-void draw_sprite_centered(Spritesheet_OLD spritesheet, int sprite_index, Vector2 position, Color tint) {
+void draw_sprite_centered(Spritesheet spritesheet, int sprite_index, Vector2 position, Color tint) {
 	Rectangle rect = {
 		.x = spritesheet.sprite_width * sprite_index,
 		.y = spritesheet.sprite_height * sprite_index,
@@ -105,12 +124,12 @@ int main(void) {
 	RenderTexture2D screen_texture = LoadRenderTexture(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
 
 	/* Load resources */
-	Spritesheet_OLD donut_spritesheet_OLD = {
+	Spritesheet donut_spritesheet_OLD = {
 		.texture = load_texture_from_file("resource/image/spinning_donut.png"),
 		.sprite_width = 64,
 		.sprite_height = 64,
 	};
-	Spritesheet_OLD coffee_spritesheet_OLD = {
+	Spritesheet coffee_spritesheet = {
 		.texture = load_texture_from_file("resource/image/spinning_coffee.png"),
 		.sprite_width = 64,
 		.sprite_height = 64,
@@ -125,6 +144,7 @@ int main(void) {
 	bool show_debug_overlay = false;
 	PositionPool positions = { 0 };
 	TexturePool textures = { 0 };
+	SpritesheetPool spritesheets = { 0 };
 	EntityID player_id = EntityID_new();
 	EntityID coffee_id = EntityID_new();
 
@@ -134,7 +154,7 @@ int main(void) {
 
 	// add coffee
 	PositionPool_add_position(&positions, coffee_id, (Vector2) { screen_middle.x + 48, screen_middle.y });
-	// add sprite sheet
+	SpritesheetPool_add_spritesheet(&spritesheets, coffee_id, coffee_spritesheet);
 
 	/* Run program */
 	while (!WindowShouldClose()) {
@@ -193,8 +213,10 @@ int main(void) {
 			// Draw coffee
 			if (1) {
 				Vector2 position = { 0 };
+				Spritesheet spritesheet = { 0 };
 				PositionPool_get_position(&positions, coffee_id, &position);
-				draw_sprite_centered(coffee_spritesheet_OLD, index, position, WHITE);
+				SpritesheetPool_get_spritesheet(&spritesheets, coffee_id, &spritesheet);
+				draw_sprite_centered(coffee_spritesheet, index, position, WHITE);
 			}
 
 			// Draw player pill
