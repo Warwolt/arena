@@ -1,6 +1,7 @@
 #include <raylib.h>
 #include <raymath.h>
 
+#include "entity.h"
 #include "logging.h"
 #include "win32.h"
 
@@ -14,15 +15,6 @@ typedef struct Spritesheet {
 	int sprite_width;
 	int sprite_height;
 } Spritesheet;
-
-typedef struct EntityID {
-	int value;
-} EntityID;
-
-EntityID EntityID_new(void) {
-	static int next_id = 1;
-	return (EntityID) { next_id++ };
-}
 
 #define MAX_POSITIONS (int)128
 typedef struct PositionPool {

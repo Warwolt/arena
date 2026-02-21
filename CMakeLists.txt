@@ -17,6 +17,7 @@ endif()
 # Source
 add_library(source
     src/memory/arena.c
+    src/entity.c
     src/logging.c
     src/win32.c
 )
