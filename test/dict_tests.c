@@ -4,9 +4,9 @@
 
 #define MAX_TEST_ITEMS 64
 typedef struct TestDict {
-	size_t indices[MAX_TEST_ITEMS];
-	int keys[MAX_TEST_ITEMS];
-	int values[MAX_TEST_ITEMS];
+	size_t indices[MAX_TEST_ITEMS]; // key -> index
+	int keys[MAX_TEST_ITEMS]; // index -> key
+	int values[MAX_TEST_ITEMS]; // index -> value
 	size_t size;
 } TestDict;
 
@@ -48,9 +48,14 @@ void TestDict_remove(TestDict* dict, int key) {
 	/* Replace element to remove with last element */
 	const size_t last_index = dict->size - 1;
 	const int last_key = dict->keys[last_index];
-	dict->indices[key - 1] = dict->indices[last_key - 1];
+	dict->indices[key - 1] = 0;
+	dict->indices[last_key - 1] = index;
 	dict->keys[index] = dict->keys[last_index];
 	dict->values[index] = dict->values[last_index];
+
+	/* Remove last element */
+	dict->keys[last_index] = 0;
+	dict->values[last_index] = 0;
 	dict->size -= 1;
 }
 
@@ -185,15 +190,30 @@ TEST(DictTests, SetElement_ExistingKey_UpdatesValue) {
 	EXPECT_EQ(value, 5678);
 }
 
-TEST(DictTests, InsertElements_RemoveOneElement_CanStillGetRemaining) {
+TEST(DictTests, InsertElements_RemoveElement) {
+	TestDict dict = { 0 };
+	int key = 1;
+
+	TestDict_insert(&dict, key, 1001);
+	TestDict_remove(&dict, key);
+
+	int value = 0;
+	bool did_get = TestDict_get(&dict, key, &value);
+
+	EXPECT_FALSE(did_get);
+	EXPECT_EQ(value, 0);
+	EXPECT_EQ((int)dict.size, 0);
+}
+
+TEST(DictTests, InsertMultipleElements_RemoveOneElement_GetRemaining) {
 	TestDict dict = { 0 };
 	int key1 = 1;
 	int key2 = 2;
 	int key3 = 3;
 
-	TestDict_insert(&dict, key1, 1001);
-	TestDict_insert(&dict, key2, 2002);
-	TestDict_insert(&dict, key3, 3003);
+	TestDict_insert(&dict, key1, 10);
+	TestDict_insert(&dict, key2, 20);
+	TestDict_insert(&dict, key3, 30);
 	TestDict_remove(&dict, key2);
 
 	int value1 = 0;
@@ -206,8 +226,8 @@ TEST(DictTests, InsertElements_RemoveOneElement_CanStillGetRemaining) {
 	EXPECT_TRUE(did_get1);
 	EXPECT_FALSE(did_get2);
 	EXPECT_TRUE(did_get3);
-	EXPECT_EQ(value1, 1001);
+	EXPECT_EQ(value1, 10);
 	EXPECT_EQ(value2, 0);
-	EXPECT_EQ(value3, 3003);
+	EXPECT_EQ(value3, 30);
 	EXPECT_EQ((int)dict.size, 2);
 }
