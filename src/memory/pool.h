@@ -6,7 +6,7 @@
 //
 // Interface:
 // 		struct Pool<T,N> {
-// 	        EntityID keys[N];
+// 	        int keys[N];
 // 	        T values[N];
 // 	        int size;
 // 		}
@@ -14,7 +14,7 @@
 // Example:
 //      #define MAX_POSITIONS (int)128
 //      typedef struct PositionPool {
-// 	        EntityID keys[MAX_POSITIONS];
+// 	        int keys[MAX_POSITIONS];
 // 	        Vector2 values[MAX_POSITIONS];
 // 	        int size;
 //      } PositionPool;
@@ -24,10 +24,8 @@
 
 #pragma once
 
-#include "entity.h"
-
 // pool: Pool<T>*
-// id: EntityID
+// id: int
 // item: T
 #define Pool_add_item(pool, id, item)        \
 	do {                                     \
@@ -37,47 +35,47 @@
 	} while (0)
 
 // pool: Pool<T>*
-// id: EntityID
-#define Pool_remove_item(pool, id)                                              \
-	do {                                                                        \
-		size_t _pool_index = 0;                                                 \
-		while ((pool)->keys[_pool_index].value != 0) {                          \
-			if ((pool)->keys[_pool_index].value == id.value) {                  \
-				(pool)->keys[_pool_index] = (pool)->keys[(pool)->size - 1];     \
-				(pool)->values[_pool_index] = (pool)->values[(pool)->size - 1]; \
-				(pool)->size--;                                                 \
-				break;                                                          \
-			}                                                                   \
-			_pool_index++;                                                      \
-		}                                                                       \
+// id: int
+#define Pool_remove_item(pool, id)                                    \
+	do {                                                              \
+		size_t i = 0;                                                 \
+		while ((pool)->keys[i] != 0) {                                \
+			if ((pool)->keys[i] == id) {                              \
+				(pool)->keys[i] = (pool)->keys[(pool)->size - 1];     \
+				(pool)->values[i] = (pool)->values[(pool)->size - 1]; \
+				(pool)->size--;                                       \
+				break;                                                \
+			}                                                         \
+			i++;                                                      \
+		}                                                             \
 	} while (0)
 
 // pool: Pool<T>*
-// id: EntityID
+// id: int
 // item: T*
-#define Pool_get_item(pool, id, item)                          \
-	do {                                                       \
-		size_t _pool_index = 0;                                \
-		while ((pool)->keys[_pool_index].value != 0) {         \
-			if ((pool)->keys[_pool_index].value == id.value) { \
-				*(item) = (pool)->values[_pool_index];         \
-				break;                                         \
-			}                                                  \
-			_pool_index++;                                     \
-		}                                                      \
+#define Pool_get_item(pool, id, item)        \
+	do {                                     \
+		size_t i = 0;                        \
+		while ((pool)->keys[i] != 0) {       \
+			if ((pool)->keys[i] == id) {     \
+				*(item) = (pool)->values[i]; \
+				break;                       \
+			}                                \
+			i++;                             \
+		}                                    \
 	} while (0)
 
 // pool: Pool<T>*
-// id: EntityID
+// id: int
 // item: T
-#define Pool_set_item(pool, id, item)                          \
-	do {                                                       \
-		size_t _pool_index = 0;                                \
-		while ((pool)->keys[_pool_index].value != 0) {         \
-			if ((pool)->keys[_pool_index].value == id.value) { \
-				(pool)->values[_pool_index] = (item);          \
-				break;                                         \
-			}                                                  \
-			_pool_index++;                                     \
-		}                                                      \
+#define Pool_set_item(pool, id, item)       \
+	do {                                    \
+		size_t i = 0;                       \
+		while ((pool)->keys[i] != 0) {      \
+			if ((pool)->keys[i] == id) {    \
+				(pool)->values[i] = (item); \
+				break;                      \
+			}                               \
+			i++;                            \
+		}                                   \
 	} while (0)

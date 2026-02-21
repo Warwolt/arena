@@ -20,24 +20,37 @@ typedef struct Spritesheet {
 
 #define MAX_POSITIONS (int)128
 typedef struct PositionPool {
-	EntityID keys[MAX_POSITIONS];
+	int keys[MAX_POSITIONS];
 	Vector2 values[MAX_POSITIONS];
 	int size;
 } PositionPool;
 
 #define MAX_TEXTURES (int)128
 typedef struct TexturePool {
-	EntityID keys[MAX_TEXTURES];
+	int keys[MAX_TEXTURES];
 	Texture2D values[MAX_TEXTURES];
 	int size;
 } TexturePool;
 
 #define MAX_SPRITESHEETS (int)128
 typedef struct SpritesheetPool {
-	EntityID keys[MAX_SPRITESHEETS];
+	int keys[MAX_SPRITESHEETS];
 	Spritesheet values[MAX_SPRITESHEETS];
 	int size;
 } SpritesheetPool;
+
+// TODO:
+// Store `TextureID -> Texture2D`
+// Get rid of Spritesheet somehow?
+//
+// What we want: to render the player and coffee and donut
+// The coffee and donut are spinning
+// The spinning animation is done by changing what part of the spritesheet texture we render
+// Can't we just store a texture and a clip_rect as a component? "Texture2DComponent"?
+//
+// Goals:
+// - Don't have two cases, texture and spritesheet, for rendering. Just one case: texture
+// - Don't copy texture, 2 coffees should use the same 1 coffee texture
 
 // UFO 50 is 16:9 at 384x216 resolution
 #define RESOLUTION_WIDTH (int)768
@@ -47,39 +60,39 @@ typedef struct SpritesheetPool {
 // ComponentPool_add_texture(ComponentPool* components, EntityID id, Texture2D texture)
 
 void PositionPool_add_position(PositionPool* pool, EntityID id, Vector2 position) {
-	Pool_add_item(pool, id, position);
+	Pool_add_item(pool, id.value, position);
 }
 
 void PositionPool_get_position(PositionPool* pool, EntityID id, Vector2* position) {
-	Pool_get_item(pool, id, position);
+	Pool_get_item(pool, id.value, position);
 }
 
 void PositionPool_set_position(PositionPool* pool, EntityID id, Vector2 position) {
-	Pool_set_item(pool, id, position);
+	Pool_set_item(pool, id.value, position);
 }
 
 void TexturePool_add_texture(TexturePool* pool, EntityID id, Texture2D texture) {
-	Pool_add_item(pool, id, texture);
+	Pool_add_item(pool, id.value, texture);
 }
 
 void TexturePool_get_texture(TexturePool* pool, EntityID id, Texture2D* texture) {
-	Pool_get_item(pool, id, texture);
+	Pool_get_item(pool, id.value, texture);
 }
 
 void TexturePool_set_texture(TexturePool* pool, EntityID id, Texture2D texture) {
-	Pool_set_item(pool, id, texture);
+	Pool_set_item(pool, id.value, texture);
 }
 
 void SpritesheetPool_add_spritesheet(SpritesheetPool* pool, EntityID id, Spritesheet spritesheet) {
-	Pool_add_item(pool, id, spritesheet);
+	Pool_add_item(pool, id.value, spritesheet);
 }
 
 void SpritesheetPool_get_spritesheet(SpritesheetPool* pool, EntityID id, Spritesheet* spritesheet) {
-	Pool_get_item(pool, id, spritesheet);
+	Pool_get_item(pool, id.value, spritesheet);
 }
 
 void SpritesheetPool_set_spritesheet(SpritesheetPool* pool, EntityID id, Spritesheet spritesheet) {
-	Pool_set_item(pool, id, spritesheet);
+	Pool_set_item(pool, id.value, spritesheet);
 }
 
 Texture2D load_texture_from_file(const char* filename) {

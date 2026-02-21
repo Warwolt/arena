@@ -6,14 +6,14 @@
 
 #define MAX_TEST_ITEMS (int)128
 typedef struct TestPool {
-	EntityID keys[MAX_TEST_ITEMS];
+	int keys[MAX_TEST_ITEMS];
 	int values[MAX_TEST_ITEMS];
 	int size;
 } TestPool;
 
 TEST(PoolTests, EmptyPool_GetItem_DoesNothing) {
 	TestPool pool = { 0 };
-	EntityID id = { 1 };
+	int id = 1;
 
 	int item = -1;
 	Pool_get_item(&pool, id, &item);
@@ -23,7 +23,7 @@ TEST(PoolTests, EmptyPool_GetItem_DoesNothing) {
 
 TEST(PoolTests, AddItem_GetItem_ItemRetrieved) {
 	TestPool pool = { 0 };
-	EntityID id = { 1 };
+	int id = 1;
 	int item = 123;
 
 	Pool_add_item(&pool, id, item);
@@ -35,7 +35,7 @@ TEST(PoolTests, AddItem_GetItem_ItemRetrieved) {
 
 TEST(PoolTests, AddItem_RemoveItem_CannotGetItem) {
 	TestPool pool = { 0 };
-	EntityID id = { 1 };
+	int id = 1;
 
 	const int item = 123;
 	Pool_add_item(&pool, id, item);
@@ -50,7 +50,7 @@ TEST(PoolTests, AddItem_RemoveItem_CannotGetItem) {
 
 TEST(PoolTests, SetItem_GetItem_RetrievesUpdatedItem) {
 	TestPool pool = { 0 };
-	EntityID id = { 1 };
+	int id = 1;
 
 	Pool_add_item(&pool, id, 123);
 	Pool_set_item(&pool, id, 456);
