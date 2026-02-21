@@ -3,6 +3,7 @@
 
 #include "entity.h"
 #include "logging.h"
+#include "memory/pool.h"
 #include "win32.h"
 
 #include <math.h>
@@ -27,39 +28,16 @@ typedef struct PositionPool {
 #define RESOLUTION_WIDTH (int)768
 #define RESOLUTION_HEIGHT (int)432
 
-#define INDEX_NOT_FOUND (int)-1
-
-int find_entity_index(EntityID* ids, size_t len, EntityID id) {
-	for (size_t i = 0; i < len; i++) {
-		if (ids[i].value == id.value) {
-			return (int)i;
-		}
-	}
-	return -1;
-}
-
 void PositionPool_add_position(PositionPool* pool, EntityID id, Vector2 position) {
-	pool->keys[pool->size] = id;
-	pool->values[pool->size] = position;
-	pool->size++;
+	Pool_add_item(pool, id, position);
 }
 
-bool PositionPool_get_position(PositionPool* pool, EntityID id, Vector2* position) {
-	int index = find_entity_index(pool->keys, MAX_POSITIONS, id);
-	if (index != INDEX_NOT_FOUND) {
-		*position = pool->values[index];
-		return true;
-	}
-	return false;
+void PositionPool_get_position(PositionPool* pool, EntityID id, Vector2* position) {
+	Pool_get_item(pool, id, position);
 }
 
-bool PositionPool_set_position(PositionPool* pool, EntityID id, Vector2 position) {
-	int index = find_entity_index(pool->keys, MAX_POSITIONS, id);
-	if (index != INDEX_NOT_FOUND) {
-		pool->values[index] = position;
-		return true;
-	}
-	return false;
+void PositionPool_set_position(PositionPool* pool, EntityID id, Vector2 position) {
+	Pool_set_item(pool, id, position);
 }
 
 Texture2D load_texture_from_file(const char* filename) {
