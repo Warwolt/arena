@@ -239,6 +239,7 @@ int main(void) {
 
 	/* Shutdown */
 	LOG_INFO("Shutdown");
+	ResourceManager_unload_resources(&resources);
 	CloseWindow();
 	return 0;
 }

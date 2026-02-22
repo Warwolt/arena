@@ -18,7 +18,6 @@ endif()
 # Source
 add_library(source
     src/arena.c
-    src/component.c
     src/entity.c
     src/logging.c
     src/map.c
