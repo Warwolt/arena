@@ -84,16 +84,6 @@ void ComponentManager_set_sprite(ComponentManager* components, EntityID id, Spri
 	Map_set(&components->sprites, id.value, sprite);
 }
 
-void draw_sprite_centered(ResourceManager* resources, Sprite sprite, Vector2 position, Color tint) {
-	Vector2 centered_position = {
-		.x = position.x - sprite.clip_rect.width / 2,
-		.y = position.y - sprite.clip_rect.height / 2,
-	};
-	Texture texture;
-	ResourceManager_get_texture(resources, sprite.texture_id, &texture);
-	DrawTextureRec(texture, sprite.clip_rect, centered_position, tint);
-}
-
 int compare_position_ids_by_y_coordinate(void* ctx, const void* lhs, const void* rhs) {
 	ComponentManager* components = (ComponentManager*)ctx;
 	EntityID lhs_id = *(const EntityID*)lhs;
@@ -245,11 +235,15 @@ int main(void) {
 				EntityID id = y_sorted_entities[i];
 				Vector2 position = { 0 };
 				Sprite sprite = { 0 };
+				Texture texture = { 0 };
 				ComponentManager_get_position(&components, id, &position);
 				ComponentManager_get_sprite(&components, id, &sprite);
-
-				Vector2 centered_pos = Vector2Add(position, screen_middle);
-				draw_sprite_centered(&resources, sprite, centered_pos, WHITE);
+				ResourceManager_get_texture(&resources, sprite.texture_id, &texture);
+				Vector2 camera_space_top_left = (Vector2) {
+					.x = position.x + screen_middle.x - sprite.clip_rect.width / 2,
+					.y = position.y + screen_middle.y - sprite.clip_rect.height / 2,
+				};
+				DrawTextureRec(texture, sprite.clip_rect, camera_space_top_left, WHITE);
 			}
 
 			// Draw FPS
