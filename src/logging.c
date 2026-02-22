@@ -70,7 +70,7 @@ static char* filename_from_path(const char* path_str) {
 	return filename;
 }
 
-void initialize_logging() {
+void initialize_logging(void) {
 	// If we're debugging, we're using the Visual Studio debug output window
 	// instead of a terminal that uses stdout. Skip color init in that case.
 	if (IsDebuggerPresent()) {
