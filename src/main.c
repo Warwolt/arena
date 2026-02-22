@@ -19,13 +19,13 @@
 #define RESOLUTION_HEIGHT (int)432
 
 int compare_position_ids_by_y_coordinate(void* ctx, const void* lhs, const void* rhs) {
-	ComponentManager* components = (ComponentManager*)ctx;
+	EntityManager* entities = (EntityManager*)ctx;
 	EntityID lhs_id = *(const EntityID*)lhs;
 	EntityID rhs_id = *(const EntityID*)rhs;
 	Vector2 lhs_pos = { 0 };
 	Vector2 rhs_pos = { 0 };
-	ComponentManager_get_position(components, lhs_id, &lhs_pos);
-	ComponentManager_get_position(components, rhs_id, &rhs_pos);
+	EntityManager_get_position(entities, lhs_id, &lhs_pos);
+	EntityManager_get_position(entities, rhs_id, &rhs_pos);
 	if (lhs_pos.y < rhs_pos.y) {
 		return -1;
 	} else if (lhs_pos.y == rhs_pos.y) {
@@ -53,16 +53,16 @@ int main(void) {
 
 	/* State */
 	bool show_debug_overlay = false;
-	ComponentManager components = { 0 };
+	EntityManager entities = { 0 };
 	EntityID player_id = EntityID_new();
 	EntityID donut_id = EntityID_new();
 	EntityID donut_id2 = EntityID_new();
 	EntityID coffee_id = EntityID_new();
 
 	// add player
-	ComponentManager_add_position(&components, player_id, Vector2Zero());
-	ComponentManager_add_sprite(
-		&components,
+	EntityManager_add_position(&entities, player_id, Vector2Zero());
+	EntityManager_add_sprite(
+		&entities,
 		player_id,
 		(Sprite) {
 			.texture_id = player_texture_id,
@@ -71,9 +71,9 @@ int main(void) {
 	);
 
 	// add donut
-	ComponentManager_add_position(&components, donut_id, (Vector2) { -48, 0 });
-	ComponentManager_add_sprite(
-		&components,
+	EntityManager_add_position(&entities, donut_id, (Vector2) { -48, 0 });
+	EntityManager_add_sprite(
+		&entities,
 		donut_id,
 		(Sprite) {
 			.texture_id = donut_texture_id,
@@ -82,9 +82,9 @@ int main(void) {
 	);
 
 	// add donut 2
-	ComponentManager_add_position(&components, donut_id2, (Vector2) { -48 + -64, 0 });
-	ComponentManager_add_sprite(
-		&components,
+	EntityManager_add_position(&entities, donut_id2, (Vector2) { -48 + -64, 0 });
+	EntityManager_add_sprite(
+		&entities,
 		donut_id2,
 		(Sprite) {
 			.texture_id = donut_texture_id,
@@ -93,9 +93,9 @@ int main(void) {
 	);
 
 	// add coffee
-	ComponentManager_add_position(&components, coffee_id, (Vector2) { 48, 0 });
-	ComponentManager_add_sprite(
-		&components,
+	EntityManager_add_position(&entities, coffee_id, (Vector2) { 48, 0 });
+	EntityManager_add_sprite(
+		&entities,
 		coffee_id,
 		(Sprite) {
 			.texture_id = coffee_texture_id,
@@ -137,10 +137,10 @@ int main(void) {
 				Vector2 player_pos = Vector2Zero();
 				const float delta_time = GetFrameTime();
 				const float player_speed = 200; // px / second
-				ComponentManager_get_position(&components, player_id, &player_pos);
+				EntityManager_get_position(&entities, player_id, &player_pos);
 
 				const Vector2 moved_player_pos = Vector2Add(player_pos, Vector2Scale(input_vec, delta_time * player_speed));
-				ComponentManager_set_position(&components, player_id, moved_player_pos);
+				EntityManager_set_position(&entities, player_id, moved_player_pos);
 			}
 
 			/* Animate donut and coffee */
@@ -157,9 +157,9 @@ int main(void) {
 				for (size_t i = 0; i < sizeof(ids) / sizeof(*ids); i++) {
 					EntityID id = ids[i];
 					Sprite sprite = { 0 };
-					ComponentManager_get_sprite(&components, id, &sprite);
+					EntityManager_get_sprite(&entities, id, &sprite);
 					sprite.clip_rect.x = sprite_index * sprite.clip_rect.width;
-					ComponentManager_set_sprite(&components, id, sprite);
+					EntityManager_set_sprite(&entities, id, sprite);
 				}
 			}
 		}
@@ -178,18 +178,18 @@ int main(void) {
 			// sort entities based on position
 			EntityID y_sorted_entities[MAX_POSITION_COMPONENTS] = { 0 };
 			{
-				memcpy(y_sorted_entities, components.positions.keys, MAX_POSITION_COMPONENTS * sizeof(EntityID));
-				qsort_s(y_sorted_entities, components.positions.size, sizeof(EntityID), compare_position_ids_by_y_coordinate, &components);
+				memcpy(y_sorted_entities, entities.components.positions.keys, MAX_POSITION_COMPONENTS * sizeof(EntityID));
+				qsort_s(y_sorted_entities, entities.components.positions.size, sizeof(EntityID), compare_position_ids_by_y_coordinate, &entities);
 			}
 
 			// render entities
-			for (int i = 0; i < components.positions.size; i++) {
+			for (int i = 0; i < entities.components.positions.size; i++) {
 				EntityID id = y_sorted_entities[i];
 				Vector2 position = { 0 };
 				Sprite sprite = { 0 };
 				Texture texture = { 0 };
-				ComponentManager_get_position(&components, id, &position);
-				ComponentManager_get_sprite(&components, id, &sprite);
+				EntityManager_get_position(&entities, id, &position);
+				EntityManager_get_sprite(&entities, id, &sprite);
 				ResourceManager_get_texture(&resources, sprite.texture_id, &texture);
 				Vector2 camera_space_top_left = (Vector2) {
 					.x = position.x + screen_middle.x - sprite.clip_rect.width / 2,

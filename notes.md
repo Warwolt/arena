@@ -23,6 +23,7 @@ typedef struct Entity {
 #define MAX_NUM_ENTITES 128
 typedef struct EntityManager {
     Entity entities[MAX_NUM_ENTITES];
+    ComponentPool components;
 } EntityManager;
 
 EntityID EntityManager_add_entity(EntityManager* entities, void);
