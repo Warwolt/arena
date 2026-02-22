@@ -54,10 +54,10 @@ int main(void) {
 	/* State */
 	bool show_debug_overlay = false;
 	EntityManager entities = { 0 };
-	EntityID player_id = EntityID_new();
-	EntityID donut_id = EntityID_new();
-	EntityID donut_id2 = EntityID_new();
-	EntityID coffee_id = EntityID_new();
+	EntityID player_id = EntityManager_add_entity(&entities);
+	EntityID donut_id = EntityManager_add_entity(&entities);
+	EntityID donut_id2 = EntityManager_add_entity(&entities);
+	EntityID coffee_id = EntityManager_add_entity(&entities);
 
 	// add player
 	EntityManager_add_position(&entities, player_id, Vector2Zero());

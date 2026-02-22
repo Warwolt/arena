@@ -8,7 +8,7 @@
 //
 //  struct Map<T,N> {
 //  	size_t indices[N]; // key -> index
-//  	int keys[N]; // index -> key
+//  	size_t keys[N]; // index -> key
 //  	T values[N]; // index -> value
 //  	size_t size;
 //  };
@@ -26,7 +26,7 @@
 #define Map(Type, Capacity)       \
 	struct {                      \
 		size_t indices[Capacity]; \
-		int keys[Capacity];       \
+		size_t keys[Capacity];    \
 		Type values[Capacity];    \
 		size_t size;              \
 	}
@@ -50,8 +50,8 @@
 // Check if map contains key
 #define Map_contains(map, key) Map_contains_impl((map)->indices, (map)->keys, (key))
 
-bool Map_insert_impl(size_t elem_size, size_t* map_indices, int* map_keys, char* map_values, size_t* map_size, int key, char* value);
-bool Map_remove_impl(size_t elem_size, size_t* map_indices, int* map_keys, char* map_values, size_t* map_size, int key);
-bool Map_get_impl(size_t elem_size, size_t* map_indices, int* map_keys, char* map_values, int key, char* value_out);
-bool Map_set_impl(size_t elem_size, size_t* map_indices, int* map_keys, char* map_values, int key, char* value);
-bool Map_contains_impl(size_t* map_indices, int* map_keys, int key);
+bool Map_insert_impl(size_t elem_size, size_t* map_indices, size_t* map_keys, char* map_values, size_t* map_size, size_t key, char* value);
+bool Map_remove_impl(size_t elem_size, size_t* map_indices, size_t* map_keys, char* map_values, size_t* map_size, size_t key);
+bool Map_get_impl(size_t elem_size, size_t* map_indices, size_t* map_keys, char* map_values, size_t key, char* value_out);
+bool Map_set_impl(size_t elem_size, size_t* map_indices, size_t* map_keys, char* map_values, size_t key, char* value);
+bool Map_contains_impl(size_t* map_indices, size_t* map_keys, size_t key);

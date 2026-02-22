@@ -5,34 +5,34 @@
 #define MAX_TEST_ITEMS 64
 typedef struct TestMap {
 	size_t indices[MAX_TEST_ITEMS]; // key -> index
-	int keys[MAX_TEST_ITEMS]; // index -> key
+	size_t keys[MAX_TEST_ITEMS]; // index -> key
 	int values[MAX_TEST_ITEMS]; // index -> value
 	size_t size;
 } TestMap;
 
-bool TestMap_insert(TestMap* map, int key, int value) {
+bool TestMap_insert(TestMap* map, size_t key, int value) {
 	return Map_insert(map, key, value);
 }
 
-void TestMap_remove(TestMap* map, int key) {
+void TestMap_remove(TestMap* map, size_t key) {
 	Map_remove(map, key);
 }
 
-bool TestMap_get(TestMap* map, int key, int* value) {
+bool TestMap_get(TestMap* map, size_t key, int* value) {
 	return Map_get(map, key, value);
 }
 
-bool TestMap_set(TestMap* map, int key, int value) {
+bool TestMap_set(TestMap* map, size_t key, int value) {
 	return Map_set(map, key, value);
 }
 
-bool TestMap_contains(TestMap* map, int key) {
+bool TestMap_contains(TestMap* map, size_t key) {
 	return Map_contains(map, key);
 }
 
 TEST(MapTests, InsertElement_GetElement) {
 	TestMap map = { 0 };
-	int key = 11;
+	size_t key = 11;
 
 	bool did_insert = TestMap_insert(&map, key, 1234);
 	int value = 0;
@@ -48,9 +48,9 @@ TEST(MapTests, InsertElement_GetElement) {
 
 TEST(MapTests, InsertMultipleElements_GetThoseElements) {
 	TestMap map = { 0 };
-	int key1 = 1;
-	int key2 = 2;
-	int key3 = 3;
+	size_t key1 = 1;
+	size_t key2 = 2;
+	size_t key3 = 3;
 
 	TestMap_insert(&map, key1, 11);
 	TestMap_insert(&map, key2, 22);
@@ -96,7 +96,7 @@ TEST(MapTests, InsertElement_ZeroKey_DoesNothing) {
 
 TEST(MapTests, InsertElement_ExistingKey_DoesNothing) {
 	TestMap map = { 0 };
-	int key = 11;
+	size_t key = 11;
 
 	TestMap_insert(&map, key, 12);
 	bool did_insert = TestMap_insert(&map, key, 34);
@@ -111,7 +111,7 @@ TEST(MapTests, InsertElement_ExistingKey_DoesNothing) {
 
 TEST(MapTests, SetElement_MissingKey_DoesNotUpdate) {
 	TestMap map = { 0 };
-	int key = 1;
+	size_t key = 1;
 
 	bool did_set = TestMap_set(&map, key, 1234);
 	int value = 0;
@@ -124,7 +124,7 @@ TEST(MapTests, SetElement_MissingKey_DoesNotUpdate) {
 
 TEST(MapTests, SetElement_ExistingKey_UpdatesValue) {
 	TestMap map = { 0 };
-	int key = 1;
+	size_t key = 1;
 
 	TestMap_insert(&map, key, 1234);
 	bool did_set = TestMap_set(&map, key, 5678);
@@ -138,7 +138,7 @@ TEST(MapTests, SetElement_ExistingKey_UpdatesValue) {
 
 TEST(MapTests, InsertElements_RemoveElement) {
 	TestMap map = { 0 };
-	int key = 1;
+	size_t key = 1;
 
 	TestMap_insert(&map, key, 1001);
 	TestMap_remove(&map, key);
@@ -155,9 +155,9 @@ TEST(MapTests, InsertElements_RemoveElement) {
 
 TEST(MapTests, InsertMultipleElements_RemoveOneElement_GetRemaining) {
 	TestMap map = { 0 };
-	int key1 = 1;
-	int key2 = 2;
-	int key3 = 3;
+	size_t key1 = 1;
+	size_t key2 = 2;
+	size_t key3 = 3;
 
 	TestMap_insert(&map, key1, 10);
 	TestMap_insert(&map, key2, 20);

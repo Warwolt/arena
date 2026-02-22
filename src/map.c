@@ -2,7 +2,7 @@
 
 #include <string.h>
 
-bool Map_insert_impl(size_t elem_size, size_t* map_indices, int* map_keys, char* map_values, size_t* map_size, int key, char* value) {
+bool Map_insert_impl(size_t elem_size, size_t* map_indices, size_t* map_keys, char* map_values, size_t* map_size, size_t key, char* value) {
 	/* Skip the zero-key */
 	if (key == 0) {
 		return false;
@@ -24,7 +24,7 @@ bool Map_insert_impl(size_t elem_size, size_t* map_indices, int* map_keys, char*
 	return true;
 }
 
-bool Map_remove_impl(size_t elem_size, size_t* map_indices, int* map_keys, char* map_values, size_t* map_size, int key) {
+bool Map_remove_impl(size_t elem_size, size_t* map_indices, size_t* map_keys, char* map_values, size_t* map_size, size_t key) {
 	/* Skip the zero-key */
 	if (key == 0) {
 		return false;
@@ -39,7 +39,7 @@ bool Map_remove_impl(size_t elem_size, size_t* map_indices, int* map_keys, char*
 
 	/* Replace element to remove with last element */
 	const size_t last_index = *map_size - 1;
-	const int last_key = map_keys[last_index];
+	const size_t last_key = map_keys[last_index];
 	map_indices[key - 1] = 0;
 	map_indices[last_key - 1] = index;
 	map_keys[index] = map_keys[last_index];
@@ -52,7 +52,7 @@ bool Map_remove_impl(size_t elem_size, size_t* map_indices, int* map_keys, char*
 	return true;
 }
 
-bool Map_get_impl(size_t elem_size, size_t* map_indices, int* map_keys, char* map_values, int key, char* value_out) {
+bool Map_get_impl(size_t elem_size, size_t* map_indices, size_t* map_keys, char* map_values, size_t key, char* value_out) {
 	/* Skip the zero-key */
 	if (key == 0) {
 		return false;
@@ -70,7 +70,7 @@ bool Map_get_impl(size_t elem_size, size_t* map_indices, int* map_keys, char* ma
 	return true;
 }
 
-bool Map_set_impl(size_t elem_size, size_t* map_indices, int* map_keys, char* map_values, int key, char* value) {
+bool Map_set_impl(size_t elem_size, size_t* map_indices, size_t* map_keys, char* map_values, size_t key, char* value) {
 	/* Skip the zero-key */
 	if (key == 0) {
 		return false;
@@ -87,7 +87,7 @@ bool Map_set_impl(size_t elem_size, size_t* map_indices, int* map_keys, char* ma
 	return true;
 }
 
-bool Map_contains_impl(size_t* map_indices, int* map_keys, int key) {
+bool Map_contains_impl(size_t* map_indices, size_t* map_keys, size_t key) {
 	/* Never contains the zero-key */
 	if (key == 0) {
 		return false;

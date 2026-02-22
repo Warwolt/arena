@@ -7,31 +7,28 @@
 #include <raylib.h>
 #include <stddef.h>
 
+#define MAX_NUM_ENTITES 128
+#define MAX_POSITION_COMPONENTS 128
+#define MAX_SPRITE_COMPONENTS 128
+
 typedef struct EntityID {
-	int value;
+	size_t value;
 } EntityID;
 
 typedef struct Entity {
 	EntityID id;
 } Entity;
 
-#define MAX_POSITION_COMPONENTS 128
-#define MAX_SPRITE_COMPONENTS 128
-
 typedef struct ComponentStore {
 	Map(Vector2, MAX_POSITION_COMPONENTS) positions;
 	Map(Sprite, MAX_SPRITE_COMPONENTS) sprites;
 } ComponentStore;
 
-#define MAX_NUM_ENTITES 128
 typedef struct EntityManager {
 	Entity entities[MAX_NUM_ENTITES];
 	size_t num_entities;
 	ComponentStore components;
 } EntityManager;
-
-EntityID EntityID_new(void);
-size_t EntityID_count(void);
 
 EntityID EntityManager_add_entity(EntityManager* entities);
 bool EntityManager_remove_entity(EntityID id);
