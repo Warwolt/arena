@@ -28,9 +28,9 @@ typedef struct Spritesheet {
     }
 
 #define MAX_POSITION_COMPONENTS (int)128
-typedef struct ComponentStore {
+typedef struct ComponentManager {
     Dict(Vector2, MAX_POSITION_COMPONENTS) positions;
-} ComponentStore;
+} ComponentManager;
 
 #define MAX_TEXTURES (int)128
 typedef struct TexturePool {
@@ -63,15 +63,15 @@ typedef struct SpritesheetPool {
 #define RESOLUTION_WIDTH (int)768
 #define RESOLUTION_HEIGHT (int)432
 
-void ComponentStore_add_position(ComponentStore* components, EntityID id, Vector2 position) {
+void ComponentManager_add_position(ComponentManager* components, EntityID id, Vector2 position) {
     Dict_insert(&components->positions, id.value, position);
 }
 
-void ComponentStore_get_position(ComponentStore* components, EntityID id, Vector2* position) {
+void ComponentManager_get_position(ComponentManager* components, EntityID id, Vector2* position) {
     Dict_get(&components->positions, id.value, position);
 }
 
-void ComponentStore_set_position(ComponentStore* components, EntityID id, Vector2 position) {
+void ComponentManager_set_position(ComponentManager* components, EntityID id, Vector2 position) {
     Dict_set(&components->positions, id.value, position);
 }
 
@@ -134,13 +134,13 @@ void draw_texture_centered(Texture2D texture, Vector2 position, Color tint) {
 }
 
 int compare_position_ids_by_y_coordinate(void* ctx, const void* lhs, const void* rhs) {
-    ComponentStore* components = (ComponentStore*)ctx;
+    ComponentManager* components = (ComponentManager*)ctx;
     EntityID lhs_id = *(const EntityID*)lhs;
     EntityID rhs_id = *(const EntityID*)rhs;
     Vector2 lhs_pos = { 0 };
     Vector2 rhs_pos = { 0 };
-    ComponentStore_get_position(components, lhs_id, &lhs_pos);
-    ComponentStore_get_position(components, rhs_id, &rhs_pos);
+    ComponentManager_get_position(components, lhs_id, &lhs_pos);
+    ComponentManager_get_position(components, rhs_id, &rhs_pos);
     if (lhs_pos.y < rhs_pos.y) {
         return -1;
     } else if (lhs_pos.y == rhs_pos.y) {
@@ -174,7 +174,7 @@ int main(void) {
 
     /* State */
     bool show_debug_overlay = false;
-    ComponentStore components = { 0 };
+    ComponentManager components = { 0 };
     TexturePool textures = { 0 };
     SpritesheetPool spritesheets = { 0 };
     EntityID player_id = EntityID_new();
@@ -182,22 +182,22 @@ int main(void) {
     EntityID coffee_id = EntityID_new();
 
     // add player
-    ComponentStore_add_position(&components, player_id, Vector2Zero());
+    ComponentManager_add_position(&components, player_id, Vector2Zero());
     TexturePool_add_texture(&textures, player_id, load_texture_from_file("resource/image/pill.png"));
 
     // add donut
-    ComponentStore_add_position(&components, donut_id, (Vector2) { -48, 0 });
+    ComponentManager_add_position(&components, donut_id, (Vector2) { -48, 0 });
     SpritesheetPool_add_spritesheet(&spritesheets, donut_id, donut_spritesheet);
 
     // add coffee
-    ComponentStore_add_position(&components, coffee_id, (Vector2) { 48, 0 });
+    ComponentManager_add_position(&components, coffee_id, (Vector2) { 48, 0 });
     SpritesheetPool_add_spritesheet(&spritesheets, coffee_id, coffee_spritesheet);
 
     /* Run program */
     while (!WindowShouldClose()) {
         // retreive player position
         Vector2 player_pos = Vector2Zero();
-        ComponentStore_get_position(&components, player_id, &player_pos);
+        ComponentManager_get_position(&components, player_id, &player_pos);
 
         /* Update */
         {
@@ -227,7 +227,7 @@ int main(void) {
             const float delta_time = GetFrameTime();
             const float player_speed = 200; // px / second
             const Vector2 moved_player_pos = Vector2Add(player_pos, Vector2Scale(input_vec, delta_time * player_speed));
-            ComponentStore_set_position(&components, player_id, moved_player_pos);
+            ComponentManager_set_position(&components, player_id, moved_player_pos);
         }
 
         /* Render scene */
@@ -254,7 +254,7 @@ int main(void) {
             for (int i = 0; i < components.positions.size; i++) {
                 EntityID id = y_sorted_entities[i];
                 Vector2 position = { 0 };
-                ComponentStore_get_position(&components, id, &position);
+                ComponentManager_get_position(&components, id, &position);
                 Vector2 centered_pos = Vector2Add(position, screen_middle);
 
                 Texture2D texture = { 0 };
