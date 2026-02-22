@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #define MAX_NUM_ENTITES 128
+#define MAX_NUM_ENTIY_COMPONENTS 32
 #define MAX_POSITION_COMPONENTS 128
 #define MAX_SPRITE_COMPONENTS 128
 
@@ -17,6 +18,8 @@ typedef struct EntityID {
 
 typedef struct Entity {
 	EntityID id;
+	ComponentType components[MAX_NUM_ENTIY_COMPONENTS];
+	size_t num_components;
 } Entity;
 
 typedef struct ComponentStore {
@@ -25,8 +28,7 @@ typedef struct ComponentStore {
 } ComponentStore;
 
 typedef struct EntityManager {
-	Entity entities[MAX_NUM_ENTITES];
-	size_t num_entities;
+	Map(Entity, MAX_NUM_ENTITES) entities;
 	ComponentStore components;
 } EntityManager;
 

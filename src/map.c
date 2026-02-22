@@ -70,6 +70,24 @@ bool Map_get_impl(size_t elem_size, size_t* map_indices, size_t* map_keys, char*
 	return true;
 }
 
+bool Map_get_ptr_impl(size_t elem_size, size_t* map_indices, size_t* map_keys, char* map_values, size_t key, char** value_ptr_out) {
+	/* Skip the zero-key */
+	if (key == 0) {
+		return false;
+	}
+
+	/* Check if key exists */
+	const size_t index = map_indices[key - 1];
+	const bool key_exists = map_keys[index] == key;
+	if (!key_exists) {
+		return false;
+	}
+
+	/* Return value */
+	*value_ptr_out = map_values + index * elem_size;
+	return true;
+}
+
 bool Map_set_impl(size_t elem_size, size_t* map_indices, size_t* map_keys, char* map_values, size_t key, char* value) {
 	/* Skip the zero-key */
 	if (key == 0) {

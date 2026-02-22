@@ -43,6 +43,10 @@
 #define Map_get(map, key, value_out) \
 	Map_get_impl(sizeof((map)->values[0]), (map)->indices, (map)->keys, (char*)(map)->values, (key), (char*)(value_out))
 
+// Get a pointer to value if corresponding to key if it exists
+#define Map_get_ptr(map, key, value_ptr_out) \
+	Map_get_ptr_impl(sizeof((map)->values[0]), (map)->indices, (map)->keys, (char*)(map)->values, (key), (char**)(value_ptr_out))
+
 // Set the value corresponding to a key
 #define Map_set(map, key, value)                                                                                      \
 	Map_set_impl(sizeof((map)->values[0]), (map)->indices, (map)->keys, (char*)(map)->values, (key), (char*)&(value))
@@ -53,5 +57,6 @@
 bool Map_insert_impl(size_t elem_size, size_t* map_indices, size_t* map_keys, char* map_values, size_t* map_size, size_t key, char* value);
 bool Map_remove_impl(size_t elem_size, size_t* map_indices, size_t* map_keys, char* map_values, size_t* map_size, size_t key);
 bool Map_get_impl(size_t elem_size, size_t* map_indices, size_t* map_keys, char* map_values, size_t key, char* value_out);
+bool Map_get_ptr_impl(size_t elem_size, size_t* map_indices, size_t* map_keys, char* map_values, size_t key, char** value_ptr_out);
 bool Map_set_impl(size_t elem_size, size_t* map_indices, size_t* map_keys, char* map_values, size_t key, char* value);
 bool Map_contains_impl(size_t* map_indices, size_t* map_keys, size_t key);
