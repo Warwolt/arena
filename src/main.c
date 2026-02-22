@@ -1,10 +1,11 @@
-#include <raylib.h>
-#include <raymath.h>
-
 #include "entity.h"
 #include "logging.h"
 #include "memory/map.h"
+#include "resource_manager.h"
 #include "win32.h"
+
+#include <raylib.h>
+#include <raymath.h>
 
 #include <math.h>
 #include <stdint.h>
@@ -16,49 +17,18 @@
 #define RESOLUTION_WIDTH (int)768
 #define RESOLUTION_HEIGHT (int)432
 
-typedef struct TextureID {
-	int value;
-} TextureID;
-
 typedef struct Sprite {
 	TextureID texture_id;
 	Rectangle clip_rect;
 } Sprite;
 
-#define MAX_TEXTURE_RESOURCES (int)256
 #define MAX_POSITION_COMPONENTS (int)128
 #define MAX_SPRITE_COMPONENTS (int)128
-
-typedef struct ResourceManager {
-	Map(Texture2D, MAX_TEXTURE_RESOURCES) textures;
-	int next_id;
-} ResourceManager;
 
 typedef struct ComponentManager {
 	Map(Vector2, MAX_POSITION_COMPONENTS) positions;
 	Map(Sprite, MAX_SPRITE_COMPONENTS) sprites;
 } ComponentManager;
-
-TextureID ResourceManager_load_texture(ResourceManager* resources, const char* filename) {
-	/* Load image */
-	Image image = LoadImage(filename);
-	if (image.data == NULL) {
-		LOG_ERROR("Couldn't load texture \"%s\"\n", filename);
-		return (TextureID) { 0 };
-	}
-
-	/* Load and store texture */
-	TextureID id = { ++resources->next_id };
-	Texture2D texture = LoadTextureFromImage(image);
-	Map_insert(&resources->textures, id.value, texture);
-	UnloadImage(image);
-
-	return id;
-}
-
-bool ResourceManager_get_texture(ResourceManager* resources, TextureID id, Texture* texture) {
-	return Map_get(&resources->textures, id.value, texture);
-}
 
 void ComponentManager_add_position(ComponentManager* components, EntityID id, Vector2 position) {
 	Map_insert(&components->positions, id.value, position);

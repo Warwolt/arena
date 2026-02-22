@@ -19,6 +19,7 @@ endif()
 add_library(source
     src/memory/arena.c
     src/memory/map.c
+    src/resource_manager.c
     src/entity.c
     src/logging.c
     src/win32.c
