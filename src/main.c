@@ -117,6 +117,10 @@ int main(void) {
 				show_debug_overlay = !show_debug_overlay;
 			}
 
+			if (IsKeyPressed(KEY_ENTER)) {
+				EntityManager_remove_entity(&entities, donut_id2);
+			}
+
 			/* Move player */
 			{
 				Vector2 input_vec = Vector2Zero();
