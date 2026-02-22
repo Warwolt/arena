@@ -11,10 +11,16 @@ typedef struct TestDict {
 } TestDict;
 
 #define Dict_insert(dict, key, value) \
-	Dict_insert_impl(sizeof(dict->values[0]), dict->indices, dict->keys, (char*)dict->values, &dict->size, key, (char*)&value)
+	Dict_insert_impl(sizeof((dict)->values[0]), dict->indices, dict->keys, (char*)(dict)->values, &dict->size, (key), (char*)&(value))
 
-#define Dict_remove(dict, key)                                                                                  \
-	Dict_remove_impl(sizeof(dict->values[0]), dict->indices, dict->keys, (char*)dict->values, &dict->size, key)
+#define Dict_remove(dict, key) \
+	Dict_remove_impl(sizeof((dict)->values[0]), (dict)->indices, (dict)->keys, (char*)(dict)->values, &(dict)->size, (key))
+
+#define Dict_get(dict, key, value) \
+	Dict_get_impl(sizeof((dict)->values[0]), (dict)->indices, (dict)->keys, (char*)(dict)->values, (key), (char*)(value))
+
+#define Dict_set(dict, key, value)                                                                                     \
+	Dict_set_impl(sizeof((dict)->values[0]), dict->indices, dict->keys, (char*)(dict)->values, (key), (char*)&(value))
 
 bool Dict_insert_impl(size_t elem_size, size_t* dict_indices, int* dict_keys, char* dict_values, size_t* dict_size, int key, char* value) {
 	/* Skip the zero-key */
@@ -65,6 +71,41 @@ void Dict_remove_impl(size_t elem_size, size_t* dict_indices, int* dict_keys, ch
 	*dict_size -= 1;
 }
 
+bool Dict_get_impl(size_t elem_size, size_t* dict_indices, int* dict_keys, char* dict_values, int key, char* value) {
+	/* Skip the zero-key */
+	if (key == 0) {
+		return false;
+	}
+
+	/* Check if key exists */
+	const size_t index = dict_indices[key - 1];
+	const bool key_exists = dict_keys[index] == key;
+	if (!key_exists) {
+		return false;
+	}
+
+	/* Return value */
+	memcpy(value, dict_values + index * elem_size, elem_size); // *value = dict_values[index];
+	return true;
+}
+
+bool Dict_set_impl(size_t elem_size, size_t* dict_indices, int* dict_keys, char* dict_values, int key, char* value) {
+	/* Skip the zero-key */
+	if (key == 0) {
+		return false;
+	}
+
+	/* Update value if key exists */
+	const size_t index = dict_indices[key - 1];
+	const bool key_exists = dict_keys[index] == key;
+	if (!key_exists) {
+		return false;
+	}
+
+	memcpy(dict_values + index * elem_size, value, elem_size); // dict->values[index] = value;
+	return true;
+}
+
 bool TestDict_insert(TestDict* dict, int key, int value) {
 	return Dict_insert(dict, key, value);
 }
@@ -74,38 +115,11 @@ void TestDict_remove(TestDict* dict, int key) {
 }
 
 bool TestDict_get(TestDict* dict, int key, int* value) {
-	/* Skip the zero-key */
-	if (key == 0) {
-		return false;
-	}
-
-	/* Check if key exists */
-	const size_t index = dict->indices[key - 1];
-	const bool key_exists = dict->keys[index] == key;
-	if (!key_exists) {
-		return false;
-	}
-
-	/* Return value */
-	*value = dict->values[index];
-	return true;
+	return Dict_get(dict, key, value);
 }
 
 bool TestDict_set(TestDict* dict, int key, int value) {
-	/* Skip the zero-key */
-	if (key == 0) {
-		return false;
-	}
-
-	/* Update value if key exists */
-	const size_t index = dict->indices[key - 1];
-	const bool key_exists = dict->keys[index] == key;
-	if (!key_exists) {
-		return false;
-	}
-
-	dict->values[index] = value;
-	return true;
+	return Dict_set(dict, key, value);
 }
 
 TEST(DictTests, InsertElement_GetElement) {
