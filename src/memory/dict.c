@@ -1,5 +1,7 @@
 #include "memory/dict.h"
 
+#include <string.h>
+
 bool Dict_insert_impl(size_t elem_size, size_t* dict_indices, int* dict_keys, char* dict_values, size_t* dict_size, int key, char* value) {
     /* Skip the zero-key */
     if (key == 0) {
