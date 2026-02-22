@@ -5,7 +5,7 @@
 # Doing
 
 # Done
-- Implement integer keyed Dictionary
+- Implement integer keyed map data structure
 - Move pill player character around
 - Fix resolution rendering
 - Add format check in CI
