@@ -23,6 +23,8 @@ bool EntityManager_remove_entity(EntityManager* entities, EntityID id) {
 		/* Remove components */
 		for (size_t i = 0; i < entity->num_components; i++) {
 			switch (entity->components[i]) {
+				case ComponentType_None:
+					break;
 				case ComponentType_Position:
 					Map_remove(&entities->components.positions, id.value);
 					break;
