@@ -82,6 +82,7 @@ int main(void) {
 			.clip_rect = { 0, 0, 64, 64 },
 		}
 	);
+	EntityManager_add_collision_shape(&entities, donut_id, Shape_circle((Circle) { .radius = 8 }));
 
 	// add donut 2
 	EntityManager_add_position(&entities, donut_id2, (Vector2) { -48 + -64, 0 });
@@ -189,32 +190,39 @@ int main(void) {
 				qsort_s(y_sorted_entities, entities.components.positions.size, sizeof(EntityID), compare_position_ids_by_y_coordinate, &entities);
 			}
 
-			// render entities
+			/* Render sprites */
 			for (int i = 0; i < entities.components.positions.size; i++) {
 				EntityID id = y_sorted_entities[i];
 				Vector2 position = { 0 };
 				Sprite sprite = { 0 };
 				Texture texture = { 0 };
-				Shape collision_shape = { 0 };
 				EntityManager_get_position(&entities, id, &position);
 				EntityManager_get_sprite(&entities, id, &sprite);
-				bool has_collision_shape = EntityManager_get_collision_shape(&entities, id, &collision_shape);
 				ResourceManager_get_texture(&resources, sprite.texture_id, &texture);
 
-				Vector2 camera_space_center = (Vector2) {
-					.x = position.x + screen_middle.x,
-					.y = position.y + screen_middle.y,
-				};
 				Vector2 camera_space_top_left = (Vector2) {
-					.x = camera_space_center.x - sprite.clip_rect.width / 2,
-					.y = camera_space_center.y - sprite.clip_rect.height / 2,
+					.x = position.x + screen_middle.x - sprite.clip_rect.width / 2,
+					.y = position.y + screen_middle.y - sprite.clip_rect.height / 2,
 				};
 
 				/* Render sprite*/
 				DrawTextureRec(texture, sprite.clip_rect, camera_space_top_left, WHITE);
+			}
 
-				/* Render collision shape*/
-				if (has_collision_shape && show_collision_shapes) {
+			/* Render collision shapes */
+			if (show_collision_shapes) {
+				for (int i = 0; i < entities.components.collision_shapes.size; i++) {
+					EntityID id = entities.entities.values[i].id;
+					Vector2 position = { 0 };
+					Shape collision_shape = { 0 };
+					EntityManager_get_position(&entities, id, &position);
+					EntityManager_get_collision_shape(&entities, id, &collision_shape);
+
+					Vector2 camera_space_center = (Vector2) {
+						.x = position.x + screen_middle.x,
+						.y = position.y + screen_middle.y,
+					};
+
 					switch (collision_shape.type) {
 						case ShapeType_Circle:
 							DrawCircle(camera_space_center.x, camera_space_center.y, collision_shape.circle.radius, ColorAlpha(GREEN, 0.5f));
