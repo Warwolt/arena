@@ -105,9 +105,7 @@ int main(void) {
 
 	/* Run program */
 	while (!WindowShouldClose()) {
-		// retreive player position
-		Vector2 player_pos = Vector2Zero();
-		ComponentManager_get_position(&components, player_id, &player_pos);
+		const int time_now = GetTime() * 1000; // ms
 
 		/* Update */
 		{
@@ -119,40 +117,33 @@ int main(void) {
 				show_debug_overlay = !show_debug_overlay;
 			}
 
-			Vector2 input_vec = Vector2Zero();
-			if (IsKeyDown('A')) {
-				input_vec = Vector2Add(input_vec, (Vector2) { -1, 0 });
-			}
-			if (IsKeyDown('D')) {
-				input_vec = Vector2Add(input_vec, (Vector2) { 1, 0 });
-			}
-			if (IsKeyDown('W')) {
-				input_vec = Vector2Add(input_vec, (Vector2) { 0, -1 });
-			}
-			if (IsKeyDown('S')) {
-				input_vec = Vector2Add(input_vec, (Vector2) { 0, 1 });
-			}
-			input_vec = Vector2Normalize(input_vec);
+			/* Move player */
+			{
+				Vector2 input_vec = Vector2Zero();
+				if (IsKeyDown('A')) {
+					input_vec = Vector2Add(input_vec, (Vector2) { -1, 0 });
+				}
+				if (IsKeyDown('D')) {
+					input_vec = Vector2Add(input_vec, (Vector2) { 1, 0 });
+				}
+				if (IsKeyDown('W')) {
+					input_vec = Vector2Add(input_vec, (Vector2) { 0, -1 });
+				}
+				if (IsKeyDown('S')) {
+					input_vec = Vector2Add(input_vec, (Vector2) { 0, 1 });
+				}
+				input_vec = Vector2Normalize(input_vec);
 
-			const float delta_time = GetFrameTime();
-			const float player_speed = 200; // px / second
-			const Vector2 moved_player_pos = Vector2Add(player_pos, Vector2Scale(input_vec, delta_time * player_speed));
-			ComponentManager_set_position(&components, player_id, moved_player_pos);
-		}
+				Vector2 player_pos = Vector2Zero();
+				const float delta_time = GetFrameTime();
+				const float player_speed = 200; // px / second
+				ComponentManager_get_position(&components, player_id, &player_pos);
 
-		/* Render scene */
-		BeginTextureMode(screen_texture);
-		{
-			const int time_now = GetTime() * 1000; // ms
-			const Vector2 screen_middle = {
-				.x = RESOLUTION_WIDTH / 2,
-				.y = RESOLUTION_HEIGHT / 2,
-			};
+				const Vector2 moved_player_pos = Vector2Add(player_pos, Vector2Scale(input_vec, delta_time * player_speed));
+				ComponentManager_set_position(&components, player_id, moved_player_pos);
+			}
 
-			// Draw background
-			ClearBackground(LIME);
-
-			// animate donut and coffee
+			/* Animate donut and coffee */
 			{
 				const int frame_time = 70; // ms
 				const int num_frames = 12;
@@ -171,6 +162,18 @@ int main(void) {
 					ComponentManager_set_sprite(&components, id, sprite);
 				}
 			}
+		}
+
+		/* Render scene */
+		BeginTextureMode(screen_texture);
+		{
+			const Vector2 screen_middle = {
+				.x = RESOLUTION_WIDTH / 2,
+				.y = RESOLUTION_HEIGHT / 2,
+			};
+
+			// Draw background
+			ClearBackground(LIME);
 
 			// sort entities based on position
 			EntityID y_sorted_entities[MAX_POSITION_COMPONENTS] = { 0 };
