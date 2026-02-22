@@ -1,55 +1,39 @@
+#include "component.h"
+#include "entity.h"
+#include "logging.h"
+#include "map.h"
+#include "resource.h"
+#include "win32.h"
+
 #include <raylib.h>
 #include <raymath.h>
-
-#include "logging.h"
-#include "win32.h"
 
 #include <math.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-typedef struct Spritesheet {
-	Texture2D texture;
-	int sprite_width;
-	int sprite_height;
-} Spritesheet;
-
-Texture2D load_texture_from_file(const char* filename) {
-	Image image = LoadImage(filename);
-	if (image.data == NULL) {
-		return (Texture2D) { 0 };
-	}
-	Texture2D texture = LoadTextureFromImage(image);
-	UnloadImage(image);
-	return texture;
-}
-
-void draw_sprite_centered(Spritesheet spritesheet, int sprite_index, Vector2 position, Color tint) {
-	Rectangle rect = {
-		.x = spritesheet.sprite_width * sprite_index,
-		.y = spritesheet.sprite_height * sprite_index,
-		.width = spritesheet.sprite_width,
-		.height = spritesheet.sprite_height,
-	};
-	Vector2 centered_position = {
-		.x = position.x - rect.width / 2,
-		.y = position.y - rect.height / 2,
-	};
-	DrawTextureRec(spritesheet.texture, rect, centered_position, tint);
-}
-
-void draw_texture_centered(Texture2D texture, Vector2 position, Color tint) {
-	Vector2 centered_position = {
-		.x = position.x - texture.width / 2,
-		.y = position.y - texture.height / 2,
-	};
-	DrawTexture(texture, centered_position.x, centered_position.y, tint);
-}
+#include <string.h>
 
 // UFO 50 is 16:9 at 384x216 resolution
 #define RESOLUTION_WIDTH (int)768
 #define RESOLUTION_HEIGHT (int)432
+
+int compare_position_ids_by_y_coordinate(void* ctx, const void* lhs, const void* rhs) {
+	ComponentManager* components = (ComponentManager*)ctx;
+	EntityID lhs_id = *(const EntityID*)lhs;
+	EntityID rhs_id = *(const EntityID*)rhs;
+	Vector2 lhs_pos = { 0 };
+	Vector2 rhs_pos = { 0 };
+	ComponentManager_get_position(components, lhs_id, &lhs_pos);
+	ComponentManager_get_position(components, rhs_id, &rhs_pos);
+	if (lhs_pos.y < rhs_pos.y) {
+		return -1;
+	} else if (lhs_pos.y == rhs_pos.y) {
+		return 0;
+	} else {
+		return 1;
+	}
+}
 
 int main(void) {
 	/* Init */
@@ -62,24 +46,67 @@ int main(void) {
 	RenderTexture2D screen_texture = LoadRenderTexture(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
 
 	/* Load resources */
-	Spritesheet donut_spritesheet = {
-		.texture = load_texture_from_file("resource/image/spinning_donut.png"),
-		.sprite_width = 64,
-		.sprite_height = 64,
-	};
-	Spritesheet coffee_spritesheet = {
-		.texture = load_texture_from_file("resource/image/spinning_coffee.png"),
-		.sprite_width = 64,
-		.sprite_height = 64,
-	};
-	Texture2D pill_texture = load_texture_from_file("resource/image/pill.png");
+	ResourceManager resources = { 0 };
+	TextureID player_texture_id = ResourceManager_load_texture(&resources, "resource/image/pill.png");
+	TextureID donut_texture_id = ResourceManager_load_texture(&resources, "resource/image/spinning_donut.png");
+	TextureID coffee_texture_id = ResourceManager_load_texture(&resources, "resource/image/spinning_coffee.png");
 
 	/* State */
 	bool show_debug_overlay = false;
-	Vector2 player_position = { 0, 0 };
+	ComponentManager components = { 0 };
+	EntityID player_id = EntityID_new();
+	EntityID donut_id = EntityID_new();
+	EntityID donut_id2 = EntityID_new();
+	EntityID coffee_id = EntityID_new();
+
+	// add player
+	ComponentManager_add_position(&components, player_id, Vector2Zero());
+	ComponentManager_add_sprite(
+		&components,
+		player_id,
+		(Sprite) {
+			.texture_id = player_texture_id,
+			.clip_rect = { 0, 0, 64, 64 },
+		}
+	);
+
+	// add donut
+	ComponentManager_add_position(&components, donut_id, (Vector2) { -48, 0 });
+	ComponentManager_add_sprite(
+		&components,
+		donut_id,
+		(Sprite) {
+			.texture_id = donut_texture_id,
+			.clip_rect = { 0, 0, 64, 64 },
+		}
+	);
+
+	// add donut 2
+	ComponentManager_add_position(&components, donut_id2, (Vector2) { -48 + -64, 0 });
+	ComponentManager_add_sprite(
+		&components,
+		donut_id2,
+		(Sprite) {
+			.texture_id = donut_texture_id,
+			.clip_rect = { 0, 0, 64, 64 },
+		}
+	);
+
+	// add coffee
+	ComponentManager_add_position(&components, coffee_id, (Vector2) { 48, 0 });
+	ComponentManager_add_sprite(
+		&components,
+		coffee_id,
+		(Sprite) {
+			.texture_id = coffee_texture_id,
+			.clip_rect = { 0, 0, 64, 64 },
+		}
+	);
 
 	/* Run program */
 	while (!WindowShouldClose()) {
+		const int time_now = GetTime() * 1000; // ms
+
 		/* Update */
 		{
 			if (IsKeyPressed(KEY_F11)) {
@@ -90,57 +117,85 @@ int main(void) {
 				show_debug_overlay = !show_debug_overlay;
 			}
 
-			Vector2 input_vector = Vector2Zero();
-			if (IsKeyDown('A')) {
-				input_vector = Vector2Add(input_vector, (Vector2) { -1, 0 });
-			}
-			if (IsKeyDown('D')) {
-				input_vector = Vector2Add(input_vector, (Vector2) { 1, 0 });
-			}
-			if (IsKeyDown('W')) {
-				input_vector = Vector2Add(input_vector, (Vector2) { 0, -1 });
-			}
-			if (IsKeyDown('S')) {
-				input_vector = Vector2Add(input_vector, (Vector2) { 0, 1 });
-			}
-			input_vector = Vector2Normalize(input_vector);
+			/* Move player */
+			{
+				Vector2 input_vec = Vector2Zero();
+				if (IsKeyDown('A')) {
+					input_vec = Vector2Add(input_vec, (Vector2) { -1, 0 });
+				}
+				if (IsKeyDown('D')) {
+					input_vec = Vector2Add(input_vec, (Vector2) { 1, 0 });
+				}
+				if (IsKeyDown('W')) {
+					input_vec = Vector2Add(input_vec, (Vector2) { 0, -1 });
+				}
+				if (IsKeyDown('S')) {
+					input_vec = Vector2Add(input_vec, (Vector2) { 0, 1 });
+				}
+				input_vec = Vector2Normalize(input_vec);
 
-			const float delta_time = GetFrameTime();
-			const float player_speed = 200; // px / second
-			player_position = Vector2Add(player_position, Vector2Scale(input_vector, delta_time * player_speed));
+				Vector2 player_pos = Vector2Zero();
+				const float delta_time = GetFrameTime();
+				const float player_speed = 200; // px / second
+				ComponentManager_get_position(&components, player_id, &player_pos);
+
+				const Vector2 moved_player_pos = Vector2Add(player_pos, Vector2Scale(input_vec, delta_time * player_speed));
+				ComponentManager_set_position(&components, player_id, moved_player_pos);
+			}
+
+			/* Animate donut and coffee */
+			{
+				const int frame_time = 70; // ms
+				const int num_frames = 12;
+				const int sprite_index = (time_now % (num_frames * frame_time)) / frame_time;
+
+				EntityID ids[3] = {
+					donut_id,
+					donut_id2,
+					coffee_id,
+				};
+				for (size_t i = 0; i < sizeof(ids) / sizeof(*ids); i++) {
+					EntityID id = ids[i];
+					Sprite sprite = { 0 };
+					ComponentManager_get_sprite(&components, id, &sprite);
+					sprite.clip_rect.x = sprite_index * sprite.clip_rect.width;
+					ComponentManager_set_sprite(&components, id, sprite);
+				}
+			}
 		}
 
 		/* Render scene */
 		BeginTextureMode(screen_texture);
 		{
-			// Draw background
-			ClearBackground(LIME);
-
-			const int time_now = GetTime() * 1000; // ms
-			const int frame_time = 70; // ms
-			const int num_frames = 12;
-			const int index = (time_now % (num_frames * frame_time)) / frame_time;
 			const Vector2 screen_middle = {
 				.x = RESOLUTION_WIDTH / 2,
 				.y = RESOLUTION_HEIGHT / 2,
 			};
 
-			// Draw donut
-			if (0) {
-				Vector2 position = { screen_middle.x - 48, screen_middle.y };
-				draw_sprite_centered(donut_spritesheet, index, position, WHITE);
-			}
+			// Draw background
+			ClearBackground(LIME);
 
-			// Draw coffee
-			if (1) {
-				Vector2 position = { screen_middle.x + 48, screen_middle.y };
-				draw_sprite_centered(coffee_spritesheet, index, position, WHITE);
-			}
-
-			// Draw player pill
+			// sort entities based on position
+			EntityID y_sorted_entities[MAX_POSITION_COMPONENTS] = { 0 };
 			{
-				Vector2 position = Vector2Add(player_position, screen_middle);
-				draw_texture_centered(pill_texture, position, WHITE);
+				memcpy(y_sorted_entities, components.positions.keys, MAX_POSITION_COMPONENTS * sizeof(EntityID));
+				qsort_s(y_sorted_entities, components.positions.size, sizeof(EntityID), compare_position_ids_by_y_coordinate, &components);
+			}
+
+			// render entities
+			for (int i = 0; i < components.positions.size; i++) {
+				EntityID id = y_sorted_entities[i];
+				Vector2 position = { 0 };
+				Sprite sprite = { 0 };
+				Texture texture = { 0 };
+				ComponentManager_get_position(&components, id, &position);
+				ComponentManager_get_sprite(&components, id, &sprite);
+				ResourceManager_get_texture(&resources, sprite.texture_id, &texture);
+				Vector2 camera_space_top_left = (Vector2) {
+					.x = position.x + screen_middle.x - sprite.clip_rect.width / 2,
+					.y = position.y + screen_middle.y - sprite.clip_rect.height / 2,
+				};
+				DrawTextureRec(texture, sprite.clip_rect, camera_space_top_left, WHITE);
 			}
 
 			// Draw FPS
@@ -183,6 +238,7 @@ int main(void) {
 	}
 
 	/* Shutdown */
+	LOG_INFO("Shutdown");
 	CloseWindow();
 	return 0;
 }

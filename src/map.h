@@ -22,6 +22,15 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+// Map struct
+#define Map(Type, Capacity)       \
+	struct {                      \
+		size_t indices[Capacity]; \
+		int keys[Capacity];       \
+		Type values[Capacity];    \
+		size_t size;              \
+	}
+
 // Insert a new element into the map
 #define Map_insert(map, key, value) \
 	Map_insert_impl(sizeof((map)->values[0]), (map)->indices, (map)->keys, (char*)(map)->values, &(map)->size, (key), (char*)&(value))
