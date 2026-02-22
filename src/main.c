@@ -162,21 +162,34 @@ int main(void) {
     // add player
     ComponentManager_add_position(&components, player_id, Vector2Zero());
     ComponentManager_add_sprite(
-        &components, player_id,
+        &components,
+        player_id,
         (Sprite) {
             .texture_id = player_texture_id,
             .clip_rect = { 0, 0, 64, 64 },
         }
     );
-    // TexturePool_add_texture(&textures, player_id, load_texture_from_file("resource/image/pill.png"));
 
-    // add donut
-    // ComponentManager_add_position(&components, donut_id, (Vector2) { -48, 0 });
-    // SpritesheetPool_add_spritesheet(&spritesheets, donut_id, donut_spritesheet);
+    ComponentManager_add_position(&components, donut_id, (Vector2) { -48, 0 });
+    ComponentManager_add_sprite(
+        &components,
+        donut_id,
+        (Sprite) {
+            .texture_id = donut_texture_id,
+            .clip_rect = { 0, 0, 64, 64 },
+        }
+    );
 
     // // add coffee
-    // ComponentManager_add_position(&components, coffee_id, (Vector2) { 48, 0 });
-    // SpritesheetPool_add_spritesheet(&spritesheets, coffee_id, coffee_spritesheet);
+    ComponentManager_add_position(&components, coffee_id, (Vector2) { 48, 0 });
+    ComponentManager_add_sprite(
+        &components,
+        coffee_id,
+        (Sprite) {
+            .texture_id = coffee_texture_id,
+            .clip_rect = { 0, 0, 64, 64 },
+        }
+    );
 
     /* Run program */
     while (!WindowShouldClose()) {
@@ -224,16 +237,32 @@ int main(void) {
             const int time_now = GetTime() * 1000; // ms
             const int frame_time = 70; // ms
             const int num_frames = 12;
-            const int sprite_index = (time_now % (num_frames * frame_time)) / frame_time;
             const Vector2 screen_middle = {
                 .x = RESOLUTION_WIDTH / 2,
                 .y = RESOLUTION_HEIGHT / 2,
             };
 
+            // animate donut and coffee
+            {
+                const int sprite_index = (time_now % (num_frames * frame_time)) / frame_time;
+
+                Sprite donut_sprite = { 0 };
+                ComponentManager_get_sprite(&components, donut_id, &donut_sprite);
+                donut_sprite.clip_rect.x = sprite_index * donut_sprite.clip_rect.width;
+                ComponentManager_set_sprite(&components, donut_id, donut_sprite);
+
+                Sprite coffee_sprite = { 0 };
+                ComponentManager_get_sprite(&components, coffee_id, &coffee_sprite);
+                coffee_sprite.clip_rect.x = sprite_index * coffee_sprite.clip_rect.width;
+                ComponentManager_set_sprite(&components, coffee_id, coffee_sprite);
+            }
+
             // sort entities based on position
             EntityID y_sorted_entities[MAX_POSITION_COMPONENTS] = { 0 };
-            memcpy(y_sorted_entities, components.positions.keys, MAX_POSITION_COMPONENTS * sizeof(EntityID));
-            qsort_s(y_sorted_entities, components.positions.size, sizeof(EntityID), compare_position_ids_by_y_coordinate, &components);
+            {
+                memcpy(y_sorted_entities, components.positions.keys, MAX_POSITION_COMPONENTS * sizeof(EntityID));
+                qsort_s(y_sorted_entities, components.positions.size, sizeof(EntityID), compare_position_ids_by_y_coordinate, &components);
+            }
 
             // render entities
             for (int i = 0; i < components.positions.size; i++) {
@@ -275,7 +304,12 @@ int main(void) {
                 .height = scaled_height,
             };
             DrawTexturePro(
-                screen_texture.texture, (Rectangle) { 0, 0, screen_texture.texture.width, -screen_texture.texture.height }, scaled_screen_rect, Vector2Zero(), 0, WHITE
+                screen_texture.texture,
+                (Rectangle) { 0, 0, screen_texture.texture.width, -screen_texture.texture.height },
+                scaled_screen_rect,
+                Vector2Zero(),
+                0,
+                WHITE
             );
         }
         EndDrawing();
