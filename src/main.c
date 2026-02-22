@@ -48,10 +48,6 @@ typedef struct ComponentManager {
     Dict(Sprite, MAX_SPRITE_COMPONENTS) sprites;
 } ComponentManager;
 
-//
-
-//
-
 TextureID ResourceManager_load_texture(ResourceManager* resources, const char* filename) {
     /* Load image */
     Image image = LoadImage(filename);
@@ -72,8 +68,6 @@ TextureID ResourceManager_load_texture(ResourceManager* resources, const char* f
 bool ResourceManager_get_texture(ResourceManager* resources, TextureID id, Texture* texture) {
     return Dict_get(&resources->textures, id.value, texture);
 }
-
-//
 
 void ComponentManager_add_position(ComponentManager* components, EntityID id, Vector2 position) {
     Dict_insert(&components->positions, id.value, position);
@@ -99,8 +93,6 @@ void ComponentManager_set_sprite(ComponentManager* components, EntityID id, Spri
     Dict_set(&components->sprites, id.value, sprite);
 }
 
-//
-
 void draw_sprite_centered(ResourceManager* resources, Sprite sprite, Vector2 position, Color tint) {
     Vector2 centered_position = {
         .x = position.x - sprite.clip_rect.width / 2,
@@ -109,14 +101,6 @@ void draw_sprite_centered(ResourceManager* resources, Sprite sprite, Vector2 pos
     Texture texture;
     ResourceManager_get_texture(resources, sprite.texture_id, &texture);
     DrawTextureRec(texture, sprite.clip_rect, centered_position, tint);
-}
-
-void draw_texture_centered(Texture2D texture, Vector2 position, Color tint) {
-    Vector2 centered_position = {
-        .x = position.x - texture.width / 2,
-        .y = position.y - texture.height / 2,
-    };
-    DrawTexture(texture, centered_position.x, centered_position.y, tint);
 }
 
 int compare_position_ids_by_y_coordinate(void* ctx, const void* lhs, const void* rhs) {
@@ -170,6 +154,7 @@ int main(void) {
         }
     );
 
+    // add donut
     ComponentManager_add_position(&components, donut_id, (Vector2) { -48, 0 });
     ComponentManager_add_sprite(
         &components,
@@ -180,7 +165,7 @@ int main(void) {
         }
     );
 
-    // // add coffee
+    // add coffee
     ComponentManager_add_position(&components, coffee_id, (Vector2) { 48, 0 });
     ComponentManager_add_sprite(
         &components,
@@ -231,19 +216,19 @@ int main(void) {
         /* Render scene */
         BeginTextureMode(screen_texture);
         {
-            // Draw background
-            ClearBackground(LIME);
-
             const int time_now = GetTime() * 1000; // ms
-            const int frame_time = 70; // ms
-            const int num_frames = 12;
             const Vector2 screen_middle = {
                 .x = RESOLUTION_WIDTH / 2,
                 .y = RESOLUTION_HEIGHT / 2,
             };
 
+            // Draw background
+            ClearBackground(LIME);
+
             // animate donut and coffee
             {
+                const int frame_time = 70; // ms
+                const int num_frames = 12;
                 const int sprite_index = (time_now % (num_frames * frame_time)) / frame_time;
 
                 Sprite donut_sprite = { 0 };
