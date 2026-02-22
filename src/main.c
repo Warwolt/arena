@@ -1,6 +1,6 @@
 #include "entity.h"
 #include "logging.h"
-#include "memory/map.h"
+#include "map.h"
 #include "resource_manager.h"
 #include "win32.h"
 

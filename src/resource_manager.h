@@ -1,6 +1,6 @@
 #pragma once
 
-#include "memory/map.h"
+#include "map.h"
 
 #include <raylib.h>
 
@@ -8,7 +8,7 @@
 
 typedef struct ResourceManager {
 	Map(Texture2D, MAX_TEXTURE_RESOURCES) textures;
-	int next_id;
+	int next_texture_id;
 } ResourceManager;
 
 typedef struct TextureID {
