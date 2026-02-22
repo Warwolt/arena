@@ -26,6 +26,17 @@ TEST(EntityTests, AddEntity_AddComponent_AttachesComponentToEntity) {
 	EXPECT_EQ((int)entities.entities.values[0].num_components, 2);
 	EXPECT_EQ(entities.entities.values[0].components[0], ComponentType_Position);
 	EXPECT_EQ(entities.entities.values[0].components[1], ComponentType_Sprite);
+	EXPECT_EQ((int)entities.components.positions.size, 1);
+	EXPECT_EQ((int)entities.components.sprites.size, 1);
 }
 
-// add entity, add component, remove entity, component removed
+TEST(EntityTests, AddEntity_RemoveEntity_ComponentsAlsoRemoved) {
+	EntityManager entities = { 0 };
+
+	EntityID id = EntityManager_add_entity(&entities);
+	EntityManager_add_position(&entities, id, (Vector2) { 1, 2 });
+	EntityManager_remove_entity(&entities, id);
+
+	EXPECT_EQ((int)entities.entities.size, 0);
+	EXPECT_EQ((int)entities.components.positions.size, 0);
+}

@@ -33,7 +33,7 @@ typedef struct EntityManager {
 } EntityManager;
 
 EntityID EntityManager_add_entity(EntityManager* entities);
-bool EntityManager_remove_entity(EntityID id);
+bool EntityManager_remove_entity(EntityManager* entities, EntityID id);
 
 void EntityManager_add_position(EntityManager* entities, EntityID id, Vector2 position);
 void EntityManager_get_position(EntityManager* entities, EntityID id, Vector2* position);
