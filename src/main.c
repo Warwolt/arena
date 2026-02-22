@@ -3,7 +3,7 @@
 
 #include "entity.h"
 #include "logging.h"
-#include "memory/dict.h"
+#include "memory/map.h"
 #include "win32.h"
 
 #include <math.h>
@@ -25,26 +25,18 @@ typedef struct Sprite {
 	Rectangle clip_rect;
 } Sprite;
 
-#define Dict(Type, Capacity)      \
-	struct {                      \
-		size_t indices[Capacity]; \
-		int keys[Capacity];       \
-		Type values[Capacity];    \
-		size_t size;              \
-	}
-
 #define MAX_TEXTURE_RESOURCES (int)256
 #define MAX_POSITION_COMPONENTS (int)128
 #define MAX_SPRITE_COMPONENTS (int)128
 
 typedef struct ResourceManager {
-	Dict(Texture2D, MAX_TEXTURE_RESOURCES) textures;
+	Map(Texture2D, MAX_TEXTURE_RESOURCES) textures;
 	int next_id;
 } ResourceManager;
 
 typedef struct ComponentManager {
-	Dict(Vector2, MAX_POSITION_COMPONENTS) positions;
-	Dict(Sprite, MAX_SPRITE_COMPONENTS) sprites;
+	Map(Vector2, MAX_POSITION_COMPONENTS) positions;
+	Map(Sprite, MAX_SPRITE_COMPONENTS) sprites;
 } ComponentManager;
 
 TextureID ResourceManager_load_texture(ResourceManager* resources, const char* filename) {
@@ -58,38 +50,38 @@ TextureID ResourceManager_load_texture(ResourceManager* resources, const char* f
 	/* Load and store texture */
 	TextureID id = { ++resources->next_id };
 	Texture2D texture = LoadTextureFromImage(image);
-	Dict_insert(&resources->textures, id.value, texture);
+	Map_insert(&resources->textures, id.value, texture);
 	UnloadImage(image);
 
 	return id;
 }
 
 bool ResourceManager_get_texture(ResourceManager* resources, TextureID id, Texture* texture) {
-	return Dict_get(&resources->textures, id.value, texture);
+	return Map_get(&resources->textures, id.value, texture);
 }
 
 void ComponentManager_add_position(ComponentManager* components, EntityID id, Vector2 position) {
-	Dict_insert(&components->positions, id.value, position);
+	Map_insert(&components->positions, id.value, position);
 }
 
 void ComponentManager_get_position(ComponentManager* components, EntityID id, Vector2* position) {
-	Dict_get(&components->positions, id.value, position);
+	Map_get(&components->positions, id.value, position);
 }
 
 void ComponentManager_set_position(ComponentManager* components, EntityID id, Vector2 position) {
-	Dict_set(&components->positions, id.value, position);
+	Map_set(&components->positions, id.value, position);
 }
 
 void ComponentManager_add_sprite(ComponentManager* components, EntityID id, Sprite sprite) {
-	Dict_insert(&components->sprites, id.value, sprite);
+	Map_insert(&components->sprites, id.value, sprite);
 }
 
 void ComponentManager_get_sprite(ComponentManager* components, EntityID id, Sprite* sprite) {
-	Dict_get(&components->sprites, id.value, sprite);
+	Map_get(&components->sprites, id.value, sprite);
 }
 
 void ComponentManager_set_sprite(ComponentManager* components, EntityID id, Sprite sprite) {
-	Dict_set(&components->sprites, id.value, sprite);
+	Map_set(&components->sprites, id.value, sprite);
 }
 
 void draw_sprite_centered(ResourceManager* resources, Sprite sprite, Vector2 position, Color tint) {
