@@ -3,15 +3,16 @@ project(arena)
 enable_language(C)
 include(CheckCCompilerFlag)
 
+option(WARNINGS_AS_ERRORS "Compile with warnings as errors" ON)
+
 # Add Raylib
 set(CMAKE_C_STANDARD 23)
 add_subdirectory(lib/raylib)
 
 # Set warnings
-if(MSVC)
-    add_compile_options(/W4 /WX /wd4244)
-else()
-    add_compile_options(-Wall -Wextra -Wpedantic -Werror)
+add_compile_options(/W4 /wd4244)
+if (WARNINGS_AS_ERRORS)
+    add_compile_options(/WX)
 endif()
 
 # Source
