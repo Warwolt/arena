@@ -17,18 +17,12 @@
 #define RESOLUTION_WIDTH (int)768
 #define RESOLUTION_HEIGHT (int)432
 
-typedef struct Spritesheet {
-    Texture2D texture;
-    int sprite_width;
-    int sprite_height;
-} Spritesheet;
-
 typedef struct TextureID {
     int value;
 } TextureID;
 
 typedef struct Sprite {
-    TextureID texture;
+    TextureID texture_id;
     Rectangle clip_rect;
 } Sprite;
 
@@ -41,51 +35,28 @@ typedef struct Sprite {
     }
 
 #define MAX_TEXTURE_RESOURCES (int)256
+#define MAX_POSITION_COMPONENTS (int)128
+#define MAX_SPRITE_COMPONENTS (int)128
+
 typedef struct ResourceManager {
     Dict(Texture2D, MAX_TEXTURE_RESOURCES) textures;
     int next_id;
 } ResourceManager;
 
-#define MAX_POSITION_COMPONENTS (int)128
 typedef struct ComponentManager {
     Dict(Vector2, MAX_POSITION_COMPONENTS) positions;
+    Dict(Sprite, MAX_SPRITE_COMPONENTS) sprites;
 } ComponentManager;
 
 //
 
-#define MAX_TEXTURES (int)128
-typedef struct TexturePool {
-    int keys[MAX_TEXTURES];
-    Texture2D values[MAX_TEXTURES];
-    int size;
-} TexturePool;
-
-#define MAX_SPRITESHEETS (int)128
-typedef struct SpritesheetPool {
-    int keys[MAX_SPRITESHEETS];
-    Spritesheet values[MAX_SPRITESHEETS];
-    int size;
-} SpritesheetPool;
-
-// TODO:
-// Store `TextureID -> Texture2D`
-// Get rid of Spritesheet somehow?
 //
-// What we want: to render the player and coffee and donut
-// The coffee and donut are spinning
-// The spinning animation is done by changing what part of the spritesheet texture we render
-// Can't we just store a texture and a clip_rect as a component? "Texture2DComponent"?
-//
-// Goals:
-// - Don't have two cases, texture and spritesheet, for rendering. Just one case: texture
-// - Don't copy texture, 2 coffees should use the same 1 coffee texture
-//
-// SpriteComponent
 
 TextureID ResourceManager_load_texture(ResourceManager* resources, const char* filename) {
     /* Load image */
     Image image = LoadImage(filename);
     if (image.data == NULL) {
+        LOG_ERROR("Couldn't load texture \"%s\"\n", filename);
         return (TextureID) { 0 };
     }
 
@@ -96,6 +67,10 @@ TextureID ResourceManager_load_texture(ResourceManager* resources, const char* f
     UnloadImage(image);
 
     return id;
+}
+
+bool ResourceManager_get_texture(ResourceManager* resources, TextureID id, Texture* texture) {
+    return Dict_get(&resources->textures, id.value, texture);
 }
 
 //
@@ -112,54 +87,28 @@ void ComponentManager_set_position(ComponentManager* components, EntityID id, Ve
     Dict_set(&components->positions, id.value, position);
 }
 
+void ComponentManager_add_sprite(ComponentManager* components, EntityID id, Sprite sprite) {
+    Dict_insert(&components->sprites, id.value, sprite);
+}
+
+void ComponentManager_get_sprite(ComponentManager* components, EntityID id, Sprite* sprite) {
+    Dict_get(&components->sprites, id.value, sprite);
+}
+
+void ComponentManager_set_sprite(ComponentManager* components, EntityID id, Sprite sprite) {
+    Dict_set(&components->sprites, id.value, sprite);
+}
+
 //
 
-void TexturePool_add_texture(TexturePool* pool, EntityID id, Texture2D texture) {
-    Pool_add_item(pool, id.value, texture);
-}
-
-void TexturePool_get_texture(TexturePool* pool, EntityID id, Texture2D* texture) {
-    Pool_get_item(pool, id.value, texture);
-}
-
-void TexturePool_set_texture(TexturePool* pool, EntityID id, Texture2D texture) {
-    Pool_set_item(pool, id.value, texture);
-}
-
-void SpritesheetPool_add_spritesheet(SpritesheetPool* pool, EntityID id, Spritesheet spritesheet) {
-    Pool_add_item(pool, id.value, spritesheet);
-}
-
-void SpritesheetPool_get_spritesheet(SpritesheetPool* pool, EntityID id, Spritesheet* spritesheet) {
-    Pool_get_item(pool, id.value, spritesheet);
-}
-
-void SpritesheetPool_set_spritesheet(SpritesheetPool* pool, EntityID id, Spritesheet spritesheet) {
-    Pool_set_item(pool, id.value, spritesheet);
-}
-
-Texture2D load_texture_from_file(const char* filename) {
-    Image image = LoadImage(filename);
-    if (image.data == NULL) {
-        return (Texture2D) { 0 };
-    }
-    Texture2D texture = LoadTextureFromImage(image);
-    UnloadImage(image);
-    return texture;
-}
-
-void draw_sprite_centered(Spritesheet spritesheet, int sprite_index, Vector2 position, Color tint) {
-    Rectangle rect = {
-        .x = spritesheet.sprite_width * sprite_index,
-        .y = spritesheet.sprite_height * sprite_index,
-        .width = spritesheet.sprite_width,
-        .height = spritesheet.sprite_height,
-    };
+void draw_sprite_centered(ResourceManager* resources, Sprite sprite, Vector2 position, Color tint) {
     Vector2 centered_position = {
-        .x = position.x - rect.width / 2,
-        .y = position.y - rect.height / 2,
+        .x = position.x - sprite.clip_rect.width / 2,
+        .y = position.y - sprite.clip_rect.height / 2,
     };
-    DrawTextureRec(spritesheet.texture, rect, centered_position, tint);
+    Texture texture;
+    ResourceManager_get_texture(resources, sprite.texture_id, &texture);
+    DrawTextureRec(texture, sprite.clip_rect, centered_position, tint);
 }
 
 void draw_texture_centered(Texture2D texture, Vector2 position, Color tint) {
@@ -198,37 +147,36 @@ int main(void) {
     RenderTexture2D screen_texture = LoadRenderTexture(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
 
     /* Load resources */
-    Spritesheet donut_spritesheet = {
-        .texture = load_texture_from_file("resource/image/spinning_donut.png"),
-        .sprite_width = 64,
-        .sprite_height = 64,
-    };
-    Spritesheet coffee_spritesheet = {
-        .texture = load_texture_from_file("resource/image/spinning_coffee.png"),
-        .sprite_width = 64,
-        .sprite_height = 64,
-    };
+    ResourceManager resources = { 0 };
+    TextureID player_texture_id = ResourceManager_load_texture(&resources, "resource/image/pill.png");
+    TextureID donut_texture_id = ResourceManager_load_texture(&resources, "resource/image/spinning_donut.png");
+    TextureID coffee_texture_id = ResourceManager_load_texture(&resources, "resource/image/spinning_coffee.png");
 
     /* State */
     bool show_debug_overlay = false;
     ComponentManager components = { 0 };
-    TexturePool textures = { 0 };
-    SpritesheetPool spritesheets = { 0 };
     EntityID player_id = EntityID_new();
     EntityID donut_id = EntityID_new();
     EntityID coffee_id = EntityID_new();
 
     // add player
     ComponentManager_add_position(&components, player_id, Vector2Zero());
-    TexturePool_add_texture(&textures, player_id, load_texture_from_file("resource/image/pill.png"));
+    ComponentManager_add_sprite(
+        &components, player_id,
+        (Sprite) {
+            .texture_id = player_texture_id,
+            .clip_rect = { 0, 0, 64, 64 },
+        }
+    );
+    // TexturePool_add_texture(&textures, player_id, load_texture_from_file("resource/image/pill.png"));
 
     // add donut
-    ComponentManager_add_position(&components, donut_id, (Vector2) { -48, 0 });
-    SpritesheetPool_add_spritesheet(&spritesheets, donut_id, donut_spritesheet);
+    // ComponentManager_add_position(&components, donut_id, (Vector2) { -48, 0 });
+    // SpritesheetPool_add_spritesheet(&spritesheets, donut_id, donut_spritesheet);
 
-    // add coffee
-    ComponentManager_add_position(&components, coffee_id, (Vector2) { 48, 0 });
-    SpritesheetPool_add_spritesheet(&spritesheets, coffee_id, coffee_spritesheet);
+    // // add coffee
+    // ComponentManager_add_position(&components, coffee_id, (Vector2) { 48, 0 });
+    // SpritesheetPool_add_spritesheet(&spritesheets, coffee_id, coffee_spritesheet);
 
     /* Run program */
     while (!WindowShouldClose()) {
@@ -291,21 +239,12 @@ int main(void) {
             for (int i = 0; i < components.positions.size; i++) {
                 EntityID id = y_sorted_entities[i];
                 Vector2 position = { 0 };
+                Sprite sprite = { 0 };
                 ComponentManager_get_position(&components, id, &position);
+                ComponentManager_get_sprite(&components, id, &sprite);
+
                 Vector2 centered_pos = Vector2Add(position, screen_middle);
-
-                Texture2D texture = { 0 };
-                TexturePool_get_texture(&textures, id, &texture);
-                if (texture.id != 0) {
-                    draw_texture_centered(texture, centered_pos, WHITE);
-                    continue;
-                }
-
-                Spritesheet spritesheet = { 0 };
-                SpritesheetPool_get_spritesheet(&spritesheets, id, &spritesheet);
-                if (spritesheet.texture.id != 0) {
-                    draw_sprite_centered(spritesheet, sprite_index, centered_pos, WHITE);
-                }
+                draw_sprite_centered(&resources, sprite, centered_pos, WHITE);
             }
 
             // Draw FPS
