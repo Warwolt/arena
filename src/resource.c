@@ -1,4 +1,4 @@
-#include "resource_manager.h"
+#include "resource.h"
 
 #include "logging.h"
 

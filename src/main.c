@@ -1,7 +1,8 @@
+#include "component.h"
 #include "entity.h"
 #include "logging.h"
 #include "map.h"
-#include "resource_manager.h"
+#include "resource.h"
 #include "win32.h"
 
 #include <raylib.h>
@@ -16,43 +17,6 @@
 // UFO 50 is 16:9 at 384x216 resolution
 #define RESOLUTION_WIDTH (int)768
 #define RESOLUTION_HEIGHT (int)432
-
-typedef struct Sprite {
-	TextureID texture_id;
-	Rectangle clip_rect;
-} Sprite;
-
-#define MAX_POSITION_COMPONENTS (int)128
-#define MAX_SPRITE_COMPONENTS (int)128
-
-typedef struct ComponentManager {
-	Map(Vector2, MAX_POSITION_COMPONENTS) positions;
-	Map(Sprite, MAX_SPRITE_COMPONENTS) sprites;
-} ComponentManager;
-
-void ComponentManager_add_position(ComponentManager* components, EntityID id, Vector2 position) {
-	Map_insert(&components->positions, id.value, position);
-}
-
-void ComponentManager_get_position(ComponentManager* components, EntityID id, Vector2* position) {
-	Map_get(&components->positions, id.value, position);
-}
-
-void ComponentManager_set_position(ComponentManager* components, EntityID id, Vector2 position) {
-	Map_set(&components->positions, id.value, position);
-}
-
-void ComponentManager_add_sprite(ComponentManager* components, EntityID id, Sprite sprite) {
-	Map_insert(&components->sprites, id.value, sprite);
-}
-
-void ComponentManager_get_sprite(ComponentManager* components, EntityID id, Sprite* sprite) {
-	Map_get(&components->sprites, id.value, sprite);
-}
-
-void ComponentManager_set_sprite(ComponentManager* components, EntityID id, Sprite sprite) {
-	Map_set(&components->sprites, id.value, sprite);
-}
 
 int compare_position_ids_by_y_coordinate(void* ctx, const void* lhs, const void* rhs) {
 	ComponentManager* components = (ComponentManager*)ctx;

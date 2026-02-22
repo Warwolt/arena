@@ -18,11 +18,11 @@ endif()
 # Source
 add_library(source
     src/arena.c
+    src/component.c
     src/entity.c
     src/logging.c
     src/map.c
-    src/map.c
-    src/resource_manager.c
+    src/resource.c
     src/win32.c
 )
 target_include_directories(source PUBLIC src lib)
