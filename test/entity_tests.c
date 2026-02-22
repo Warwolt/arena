@@ -40,3 +40,16 @@ TEST(EntityTests, AddEntity_RemoveEntity_ComponentsAlsoRemoved) {
 	EXPECT_EQ((int)entities.entities.size, 0);
 	EXPECT_EQ((int)entities.components.positions.size, 0);
 }
+
+TEST(EntityTests, AddEntity_RemoveEntity_AddEntity_ReusesID) {
+	EntityManager entities = { 0 };
+
+	EntityID id1 = EntityManager_add_entity(&entities);
+	EntityID id2 = EntityManager_add_entity(&entities);
+	EntityManager_remove_entity(&entities, id1);
+	EntityID id3 = EntityManager_add_entity(&entities);
+
+	EXPECT_EQ((int)id1.value, 1);
+	EXPECT_EQ((int)id2.value, 2);
+	EXPECT_EQ((int)id3.value, 1);
+}

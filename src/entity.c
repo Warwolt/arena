@@ -1,7 +1,16 @@
 #include "entity.h"
 
 EntityID EntityManager_add_entity(EntityManager* entities) {
-	EntityID id = { entities->entities.size + 1 };
+	EntityID id = { 0 };
+
+	/* Either re-use discarded ID or add a new one */
+	if (entities->num_discarded_ids > 0) {
+		id = entities->discarded_ids[entities->num_discarded_ids - 1];
+		entities->num_discarded_ids--;
+	} else {
+		id = (EntityID) { entities->entities.size + 1 };
+	}
+
 	Entity entity = { .id = id };
 	Map_insert(&entities->entities, id.value, entity);
 	return id;
@@ -25,6 +34,7 @@ bool EntityManager_remove_entity(EntityManager* entities, EntityID id) {
 
 		/* Remove entity */
 		Map_remove(&entities->entities, id.value);
+		entities->discarded_ids[entities->num_discarded_ids++] = id;
 	}
 	return entity != NULL;
 }

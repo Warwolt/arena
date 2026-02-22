@@ -30,6 +30,8 @@ typedef struct ComponentStore {
 typedef struct EntityManager {
 	Map(Entity, MAX_NUM_ENTITES) entities;
 	ComponentStore components;
+	EntityID discarded_ids[MAX_NUM_ENTITES];
+	size_t num_discarded_ids;
 } EntityManager;
 
 EntityID EntityManager_add_entity(EntityManager* entities);
