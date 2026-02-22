@@ -5,13 +5,12 @@
 //
 // Interface:
 //
-//  #define MAX_ELEMENTS <some number>
-//  typedef struct Dict<T> {
-//  	size_t indices[MAX_ELEMENTS]; // key -> index
-//  	int keys[MAX_ELEMENTS]; // index -> key
-//  	T values[MAX_ELEMENTS]; // index -> value
+//  struct Dict<T,N> {
+//  	size_t indices[N]; // key -> index
+//  	int keys[N]; // index -> key
+//  	T values[N]; // index -> value
 //  	size_t size;
-//  } Dict;
+//  };
 
 #pragma once
 
