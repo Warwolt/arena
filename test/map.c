@@ -1,6 +1,6 @@
 #include <rktest/rktest.h>
 
-#include "memory/map.h"
+#include "map.h"
 
 #define MAX_TEST_ITEMS 64
 typedef struct TestMap {
