@@ -56,6 +56,7 @@ int main(void) {
 	ComponentManager components = { 0 };
 	EntityID player_id = EntityID_new();
 	EntityID donut_id = EntityID_new();
+	EntityID donut_id2 = EntityID_new();
 	EntityID coffee_id = EntityID_new();
 
 	// add player
@@ -74,6 +75,17 @@ int main(void) {
 	ComponentManager_add_sprite(
 		&components,
 		donut_id,
+		(Sprite) {
+			.texture_id = donut_texture_id,
+			.clip_rect = { 0, 0, 64, 64 },
+		}
+	);
+
+	// add donut 2
+	ComponentManager_add_position(&components, donut_id2, (Vector2) { -48 + -64, 0 });
+	ComponentManager_add_sprite(
+		&components,
+		donut_id2,
 		(Sprite) {
 			.texture_id = donut_texture_id,
 			.clip_rect = { 0, 0, 64, 64 },
@@ -146,15 +158,18 @@ int main(void) {
 				const int num_frames = 12;
 				const int sprite_index = (time_now % (num_frames * frame_time)) / frame_time;
 
-				Sprite donut_sprite = { 0 };
-				ComponentManager_get_sprite(&components, donut_id, &donut_sprite);
-				donut_sprite.clip_rect.x = sprite_index * donut_sprite.clip_rect.width;
-				ComponentManager_set_sprite(&components, donut_id, donut_sprite);
-
-				Sprite coffee_sprite = { 0 };
-				ComponentManager_get_sprite(&components, coffee_id, &coffee_sprite);
-				coffee_sprite.clip_rect.x = sprite_index * coffee_sprite.clip_rect.width;
-				ComponentManager_set_sprite(&components, coffee_id, coffee_sprite);
+				EntityID ids[3] = {
+					donut_id,
+					donut_id2,
+					coffee_id,
+				};
+				for (size_t i = 0; i < sizeof(ids) / sizeof(*ids); i++) {
+					EntityID id = ids[i];
+					Sprite sprite = { 0 };
+					ComponentManager_get_sprite(&components, id, &sprite);
+					sprite.clip_rect.x = sprite_index * sprite.clip_rect.width;
+					ComponentManager_set_sprite(&components, id, sprite);
+				}
 			}
 
 			// sort entities based on position
