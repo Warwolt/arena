@@ -1,11 +1,13 @@
 #include "entity.h"
 
-static int g_num_entities;
+static size_t g_num_entities;
 
 EntityID EntityID_new(void) {
-	return (EntityID) { ++g_num_entities };
+	g_num_entities++;
+	int id = (int)g_num_entities;
+	return (EntityID) { id };
 }
 
-int EntityID_count(void) {
+size_t EntityID_count(void) {
 	return g_num_entities;
 }
