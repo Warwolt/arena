@@ -4,7 +4,7 @@ AlignConsecutiveAssignments: false
 AlignConsecutiveBitFields: false
 AlignConsecutiveDeclarations: false
 AlignConsecutiveMacros: false
-AlignEscapedNewlines: LeftWithLastLine
+AlignEscapedNewlines: DontAlign
 AlignOperands: false
 AlignTrailingComments: false
 AllowAllArgumentsOnNextLine: false
@@ -109,4 +109,3 @@ SpacesInParentheses: false
 SpacesInSquareBrackets: false
 Standard: Latest
 TabWidth: 4
-UseTab: ForContinuationAndIndentation
