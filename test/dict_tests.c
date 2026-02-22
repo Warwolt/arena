@@ -10,6 +10,12 @@ typedef struct TestDict {
 	size_t size;
 } TestDict;
 
+#define Dict_insert(dict, key, value) \
+	Dict_insert_impl(sizeof(dict->values[0]), dict->indices, dict->keys, (char*)dict->values, &dict->size, key, (char*)&value)
+
+#define Dict_remove(dict, key)                                                                                  \
+	Dict_remove_impl(sizeof(dict->values[0]), dict->indices, dict->keys, (char*)dict->values, &dict->size, key)
+
 bool Dict_insert_impl(size_t elem_size, size_t* dict_indices, int* dict_keys, char* dict_values, size_t* dict_size, int key, char* value) {
 	/* Skip the zero-key */
 	if (key == 0) {
@@ -27,40 +33,44 @@ bool Dict_insert_impl(size_t elem_size, size_t* dict_indices, int* dict_keys, ch
 	const size_t index = *dict_size;
 	dict_indices[key - 1] = index;
 	dict_keys[index] = key;
-	memcpy(dict_values + index * elem_size, value, elem_size);
+	memcpy(dict_values + index * elem_size, value, elem_size); // dict->values[index] = value;
 	*dict_size += 1;
 	return true;
 }
 
-bool TestDict_insert(TestDict* dict, int key, int value) {
-	return Dict_insert_impl(sizeof(dict->values[0]), dict->indices, dict->keys, (char*)dict->values, &dict->size, key, (char*)&value);
-}
-
-void TestDict_remove(TestDict* dict, int key) {
+void Dict_remove_impl(size_t elem_size, size_t* dict_indices, int* dict_keys, char* dict_values, size_t* dict_size, int key) {
 	/* Skip the zero-key */
 	if (key == 0) {
 		return;
 	}
 
 	/* Check if key exists */
-	const size_t index = dict->indices[key - 1];
-	const bool key_exists = dict->keys[index] == key;
+	const size_t index = dict_indices[key - 1];
+	const bool key_exists = dict_keys[index] == key;
 	if (!key_exists) {
 		return;
 	}
 
 	/* Replace element to remove with last element */
-	const size_t last_index = dict->size - 1;
-	const int last_key = dict->keys[last_index];
-	dict->indices[key - 1] = 0;
-	dict->indices[last_key - 1] = index;
-	dict->keys[index] = dict->keys[last_index];
-	dict->values[index] = dict->values[last_index];
+	const size_t last_index = *dict_size - 1;
+	const int last_key = dict_keys[last_index];
+	dict_indices[key - 1] = 0;
+	dict_indices[last_key - 1] = index;
+	dict_keys[index] = dict_keys[last_index];
+	memcpy(dict_values + index * elem_size, dict_values + last_index * elem_size, elem_size); // dict->values[index] = dict_values[last_index];
 
 	/* Remove last element */
-	dict->keys[last_index] = 0;
-	dict->values[last_index] = 0;
-	dict->size -= 1;
+	dict_keys[last_index] = 0;
+	memset(dict_values + last_index * elem_size, 0, elem_size); // dict->values[last_index] = 0;
+	*dict_size -= 1;
+}
+
+bool TestDict_insert(TestDict* dict, int key, int value) {
+	return Dict_insert(dict, key, value);
+}
+
+void TestDict_remove(TestDict* dict, int key) {
+	Dict_remove(dict, key);
 }
 
 bool TestDict_get(TestDict* dict, int key, int* value) {
