@@ -2,6 +2,7 @@
 //
 // Positive number valued keys (zero is not a key).
 // Zero is reserved as a "null" value.
+// Supports keys in range 1-N.
 //
 // Interface:
 //
@@ -11,6 +12,12 @@
 //  	T values[N]; // index -> value
 //  	size_t size;
 //  };
+//
+// Implemented as a sparse array.
+//
+// `indices` sparse array maps a key to a dense-array-index.
+// `keys` dense array maps dense-array-index back into a key.
+// `value` dense array contains values.
 
 #pragma once
 
