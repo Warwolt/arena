@@ -13,11 +13,24 @@
 #include <stdlib.h>
 #include <string.h>
 
+// UFO 50 is 16:9 at 384x216 resolution
+#define RESOLUTION_WIDTH (int)768
+#define RESOLUTION_HEIGHT (int)432
+
 typedef struct Spritesheet {
     Texture2D texture;
     int sprite_width;
     int sprite_height;
 } Spritesheet;
+
+typedef struct TextureID {
+    int value;
+} TextureID;
+
+typedef struct Sprite {
+    TextureID texture;
+    Rectangle clip_rect;
+} Sprite;
 
 #define Dict(Type, Capacity)      \
     struct {                      \
@@ -27,10 +40,18 @@ typedef struct Spritesheet {
         size_t size;              \
     }
 
+#define MAX_TEXTURE_RESOURCES (int)256
+typedef struct ResourceManager {
+    Dict(Texture2D, MAX_TEXTURE_RESOURCES) textures;
+    int next_id;
+} ResourceManager;
+
 #define MAX_POSITION_COMPONENTS (int)128
 typedef struct ComponentManager {
     Dict(Vector2, MAX_POSITION_COMPONENTS) positions;
 } ComponentManager;
+
+//
 
 #define MAX_TEXTURES (int)128
 typedef struct TexturePool {
@@ -58,10 +79,26 @@ typedef struct SpritesheetPool {
 // Goals:
 // - Don't have two cases, texture and spritesheet, for rendering. Just one case: texture
 // - Don't copy texture, 2 coffees should use the same 1 coffee texture
+//
+// SpriteComponent
 
-// UFO 50 is 16:9 at 384x216 resolution
-#define RESOLUTION_WIDTH (int)768
-#define RESOLUTION_HEIGHT (int)432
+TextureID ResourceManager_load_texture(ResourceManager* resources, const char* filename) {
+    /* Load image */
+    Image image = LoadImage(filename);
+    if (image.data == NULL) {
+        return (TextureID) { 0 };
+    }
+
+    /* Load and store texture */
+    TextureID id = { ++resources->next_id };
+    Texture2D texture = LoadTextureFromImage(image);
+    Dict_insert(&resources->textures, id.value, texture);
+    UnloadImage(image);
+
+    return id;
+}
+
+//
 
 void ComponentManager_add_position(ComponentManager* components, EntityID id, Vector2 position) {
     Dict_insert(&components->positions, id.value, position);
