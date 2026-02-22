@@ -43,7 +43,7 @@
 #define Map_get(map, key, value_out) \
 	Map_get_impl(sizeof((map)->values[0]), (map)->indices, (map)->keys, (char*)(map)->values, (key), (char*)(value_out))
 
-// Get a pointer to value if corresponding to key if it exists
+// Get a pointer to value corresponding to key if it exists
 #define Map_get_ptr(map, key, value_ptr_out) \
 	Map_get_ptr_impl(sizeof((map)->values[0]), (map)->indices, (map)->keys, (char*)(map)->values, (key), (char**)(value_ptr_out))
 

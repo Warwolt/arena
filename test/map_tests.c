@@ -22,6 +22,10 @@ bool TestMap_get(TestMap* map, size_t key, int* value) {
 	return Map_get(map, key, value);
 }
 
+bool TestMap_get_ptr(TestMap* map, size_t key, int** value) {
+	return Map_get_ptr(map, key, value);
+}
+
 bool TestMap_set(TestMap* map, size_t key, int value) {
 	return Map_set(map, key, value);
 }
@@ -184,4 +188,18 @@ TEST(MapTests, InsertMultipleElements_RemoveOneElement_GetRemaining) {
 	EXPECT_EQ(value2, 0);
 	EXPECT_EQ(value3, 30);
 	EXPECT_EQ((int)map.size, 2);
+}
+
+TEST(MapTests, InsertElement_GetElementPointer) {
+	TestMap map = { 0 };
+	size_t key = 11;
+
+	TestMap_insert(&map, key, 1234);
+	int* value_ptr = 0;
+	TestMap_get_ptr(&map, key, &value_ptr);
+	*value_ptr = 4567;
+	int value = 0;
+	TestMap_get(&map, key, &value);
+
+	EXPECT_EQ(value, 4567);
 }
