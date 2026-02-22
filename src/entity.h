@@ -1,10 +1,46 @@
 #pragma once
 
+#include "component.h"
+#include "map.h"
+#include "resource.h"
+
+#include <raylib.h>
 #include <stddef.h>
 
+#define MAX_NUM_ENTITES 128
+#define MAX_NUM_ENTIY_COMPONENTS 32
+#define MAX_POSITION_COMPONENTS 128
+#define MAX_SPRITE_COMPONENTS 128
+
 typedef struct EntityID {
-	int value;
+	size_t value;
 } EntityID;
 
-EntityID EntityID_new(void);
-size_t EntityID_count(void);
+typedef struct Entity {
+	EntityID id;
+	ComponentType components[MAX_NUM_ENTIY_COMPONENTS];
+	size_t num_components;
+} Entity;
+
+typedef struct ComponentStore {
+	Map(Vector2, MAX_POSITION_COMPONENTS) positions;
+	Map(Sprite, MAX_SPRITE_COMPONENTS) sprites;
+} ComponentStore;
+
+typedef struct EntityManager {
+	Map(Entity, MAX_NUM_ENTITES) entities;
+	ComponentStore components;
+	EntityID discarded_ids[MAX_NUM_ENTITES];
+	size_t num_discarded_ids;
+} EntityManager;
+
+EntityID EntityManager_add_entity(EntityManager* entities);
+bool EntityManager_remove_entity(EntityManager* entities, EntityID id);
+
+void EntityManager_add_position(EntityManager* entities, EntityID id, Vector2 position);
+void EntityManager_get_position(EntityManager* entities, EntityID id, Vector2* position);
+void EntityManager_set_position(EntityManager* entities, EntityID id, Vector2 position);
+
+void EntityManager_add_sprite(EntityManager* entities, EntityID id, Sprite sprite);
+void EntityManager_get_sprite(EntityManager* entities, EntityID id, Sprite* sprite);
+void EntityManager_set_sprite(EntityManager* entities, EntityID id, Sprite sprite);

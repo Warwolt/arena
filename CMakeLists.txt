@@ -18,7 +18,6 @@ endif()
 # Source
 add_library(source
     src/arena.c
-    src/component.c
     src/entity.c
     src/logging.c
     src/map.c
@@ -41,6 +40,7 @@ set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT m
 add_executable(tests
     test/main.c
     test/arena_tests.c
+    test/entity_tests.c
     test/map_tests.c
 )
 target_include_directories(tests PUBLIC src lib)

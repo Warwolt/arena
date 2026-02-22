@@ -27,3 +27,10 @@ TextureID ResourceManager_load_texture(ResourceManager* resources, const char* f
 bool ResourceManager_get_texture(ResourceManager* resources, TextureID id, Texture* texture) {
 	return Map_get(&resources->textures, id.value, texture);
 }
+
+void ResourceManager_unload_resources(ResourceManager* resources) {
+	for (size_t i = 0; i < resources->textures.size; i++) {
+		UnloadTexture(resources->textures.values[i]);
+		Map_remove(&resources->textures, resources->textures.keys[i]);
+	}
+}
