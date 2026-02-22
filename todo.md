@@ -1,10 +1,11 @@
 # TODO
 - Add camera and zelda dungeon background image to walk around on
-
-# Doing
 - Y-Sort entites, player can walk behind coffee
 
+# Doing
+
 # Done
+- Implement integer keyed Dictionary
 - Move pill player character around
 - Fix resolution rendering
 - Add format check in CI
