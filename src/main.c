@@ -19,12 +19,12 @@
 #define RESOLUTION_WIDTH (int)768
 #define RESOLUTION_HEIGHT (int)432
 
-void DrawTextureRecSheared(Texture2D texture, Rectangle source, Vector2 position, float angle, Color tint) {
+void DrawTextureRecSheared(Texture2D texture, Rectangle source, Rectangle dest, float angle, Color tint) {
 	if (texture.id <= 0) {
 		return;
 	}
 
-	Rectangle dest = { position.x, position.y, source.width, source.height };
+	Vector2 position = (Vector2) { dest.x, dest.y };
 	float width = (float)texture.width;
 	float height = (float)texture.height;
 
@@ -359,11 +359,18 @@ int main(void) {
 					EntityManager_get_sprite(&entities, id, &sprite);
 					ResourceManager_get_texture(&resources, sprite.texture_id, &texture);
 
+					float scale = 0.5f;
 					Vector2 top_left = (Vector2) {
-						.x = position.x - sprite.clip_rect.width - 2,
+						.x = position.x - sprite.clip_rect.width - 10,
 						.y = position.y - sprite.clip_rect.height / 2 - 2,
 					};
-					DrawTextureRecSheared(texture, sprite.clip_rect, top_left, 30.0f, ColorAlpha(BLACK, 0.17f));
+					Rectangle shadow_rect = {
+						.x = top_left.x + 10,
+						.y = top_left.y + sprite.clip_rect.height * (1.0f - scale),
+						.width = sprite.clip_rect.width,
+						.height = sprite.clip_rect.height * scale,
+					};
+					DrawTextureRecSheared(texture, sprite.clip_rect, shadow_rect, 45.0f, ColorAlpha(BLACK, 0.17f));
 				}
 
 				/* Render sprites */
