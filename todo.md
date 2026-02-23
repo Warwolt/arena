@@ -1,8 +1,8 @@
 # TODO
 - Integrate ImGui so we can visualize system states
-- Add camera and zelda dungeon background image to walk around on
 
 # Doing
+- Add camera and zelda dungeon background image to walk around on
 
 # Done
 - Store position as part of Entity struct
