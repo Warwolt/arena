@@ -21,6 +21,7 @@ add_library(source
     src/entity.c
     src/logging.c
     src/map.c
+    src/raylib_extra.c
     src/resource.c
     src/win32.c
 )
