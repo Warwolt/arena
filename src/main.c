@@ -60,8 +60,8 @@ int main(void) {
 	TextureID coffee_texture_id = ResourceManager_load_texture(&resources, "resource/image/spinning_coffee.png");
 
 	/* State */
-	bool show_debug_overlay = true;
-	bool show_collision_shapes = true;
+	bool show_debug_overlay = false;
+	bool show_collision_shapes = false;
 	EntityManager entities = { 0 };
 
 	EntityID player_id = add_physical_object(
