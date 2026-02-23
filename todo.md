@@ -2,9 +2,9 @@
 - Integrate ImGui so we can visualize system states
 
 # Doing
-- Add camera following player and checker board background
 
 # Done
+- Add background image and camera following player
 - Store position as part of Entity struct
 - Add and remove entities and all their components
 - Y-Sort entites, player can walk behind coffee
