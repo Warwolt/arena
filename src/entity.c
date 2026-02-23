@@ -1,6 +1,6 @@
 #include "entity.h"
 
-EntityID EntityManager_add_entity(EntityManager* entities) {
+EntityID EntityManager_add_entity(EntityManager* entities, Vector2 position) {
 	EntityID id = { 0 };
 
 	/* Either re-use discarded ID or add a new one */
@@ -11,7 +11,10 @@ EntityID EntityManager_add_entity(EntityManager* entities) {
 		id = (EntityID) { entities->entities.size + 1 };
 	}
 
-	Entity entity = { .id = id };
+	Entity entity = {
+		.id = id,
+		.position = position,
+	};
 	Map_insert(&entities->entities, id.value, entity);
 	return id;
 }

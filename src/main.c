@@ -36,7 +36,7 @@ int compare_position_ids_by_y_coordinate(void* ctx, const void* lhs, const void*
 }
 
 EntityID add_physical_object(EntityManager* entities, Vector2 position, Sprite sprite, Shape collision_shape) {
-	EntityID id = EntityManager_add_entity(entities);
+	EntityID id = EntityManager_add_entity(entities, position);
 	EntityManager_add_position(entities, id, position);
 	EntityManager_add_sprite(entities, id, sprite);
 	EntityManager_add_collision_shape(entities, id, collision_shape);

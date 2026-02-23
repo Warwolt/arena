@@ -18,6 +18,7 @@ typedef struct EntityID {
 
 typedef struct Entity {
 	EntityID id;
+	Vector2 position;
 	ComponentType components[MAX_NUM_ENTIY_COMPONENTS];
 	size_t num_components;
 } Entity;
@@ -35,7 +36,7 @@ typedef struct EntityManager {
 	size_t num_discarded_ids;
 } EntityManager;
 
-EntityID EntityManager_add_entity(EntityManager* entities);
+EntityID EntityManager_add_entity(EntityManager* entities, Vector2 position);
 bool EntityManager_remove_entity(EntityManager* entities, EntityID id);
 
 void EntityManager_add_position(EntityManager* entities, EntityID id, Vector2 position);

@@ -2,12 +2,14 @@
 
 #include "entity.h"
 
+#include <raymath.h>
+
 TEST(EntityTests, AddEntity_ReturnsID) {
 	EntityManager entities = { 0 };
 
-	EntityID id1 = EntityManager_add_entity(&entities);
-	EntityID id2 = EntityManager_add_entity(&entities);
-	EntityID id3 = EntityManager_add_entity(&entities);
+	EntityID id1 = EntityManager_add_entity(&entities, Vector2Zero());
+	EntityID id2 = EntityManager_add_entity(&entities, Vector2Zero());
+	EntityID id3 = EntityManager_add_entity(&entities, Vector2Zero());
 
 	EXPECT_EQ((int)id1.value, 1);
 	EXPECT_EQ((int)id2.value, 2);
@@ -18,7 +20,7 @@ TEST(EntityTests, AddEntity_ReturnsID) {
 TEST(EntityTests, AddEntity_AddComponent_AttachesComponentToEntity) {
 	EntityManager entities = { 0 };
 
-	EntityID id = EntityManager_add_entity(&entities);
+	EntityID id = EntityManager_add_entity(&entities, Vector2Zero());
 	EntityManager_add_position(&entities, id, (Vector2) { 1, 2 });
 	EntityManager_add_sprite(&entities, id, (Sprite) { (TextureID) { 1 }, (Rectangle) { 0 } });
 
@@ -33,7 +35,7 @@ TEST(EntityTests, AddEntity_AddComponent_AttachesComponentToEntity) {
 TEST(EntityTests, AddEntity_RemoveEntity_ComponentsAlsoRemoved) {
 	EntityManager entities = { 0 };
 
-	EntityID id = EntityManager_add_entity(&entities);
+	EntityID id = EntityManager_add_entity(&entities, Vector2Zero());
 	EntityManager_add_position(&entities, id, (Vector2) { 1, 2 });
 	EntityManager_remove_entity(&entities, id);
 
@@ -44,10 +46,10 @@ TEST(EntityTests, AddEntity_RemoveEntity_ComponentsAlsoRemoved) {
 TEST(EntityTests, AddEntity_RemoveEntity_AddEntity_ReusesID) {
 	EntityManager entities = { 0 };
 
-	EntityID id1 = EntityManager_add_entity(&entities);
-	EntityID id2 = EntityManager_add_entity(&entities);
+	EntityID id1 = EntityManager_add_entity(&entities, Vector2Zero());
+	EntityID id2 = EntityManager_add_entity(&entities, Vector2Zero());
 	EntityManager_remove_entity(&entities, id1);
-	EntityID id3 = EntityManager_add_entity(&entities);
+	EntityID id3 = EntityManager_add_entity(&entities, Vector2Zero());
 
 	EXPECT_EQ((int)id1.value, 1);
 	EXPECT_EQ((int)id2.value, 2);
