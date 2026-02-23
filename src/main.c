@@ -35,6 +35,14 @@ int compare_position_ids_by_y_coordinate(void* ctx, const void* lhs, const void*
 	}
 }
 
+EntityID add_physical_object(EntityManager* entities, Vector2 position, Sprite sprite, Shape collision_shape) {
+	EntityID id = EntityManager_add_entity(entities);
+	EntityManager_add_position(entities, id, position);
+	EntityManager_add_sprite(entities, id, sprite);
+	EntityManager_add_collision_shape(entities, id, collision_shape);
+	return id;
+}
+
 int main(void) {
 	/* Init */
 	initialize_logging();
@@ -55,22 +63,18 @@ int main(void) {
 	bool show_debug_overlay = true;
 	bool show_collision_shapes = true;
 	EntityManager entities = { 0 };
-	EntityID player_id = EntityManager_add_entity(&entities);
 	EntityID donut_id = EntityManager_add_entity(&entities);
 	EntityID donut_id2 = EntityManager_add_entity(&entities);
 	EntityID coffee_id = EntityManager_add_entity(&entities);
-
-	// add player
-	EntityManager_add_position(&entities, player_id, Vector2Zero());
-	EntityManager_add_sprite(
+	EntityID player_id = add_physical_object(
 		&entities,
-		player_id,
+		Vector2Zero(),
 		(Sprite) {
 			.texture_id = player_texture_id,
 			.clip_rect = { 0, 0, 64, 64 },
-		}
+		},
+		Shape_circle((Circle) { .radius = 16 })
 	);
-	EntityManager_add_collision_shape(&entities, player_id, Shape_circle((Circle) { .radius = 16 }));
 
 	// add donut
 	EntityManager_add_position(&entities, donut_id, (Vector2) { -48, 0 });
