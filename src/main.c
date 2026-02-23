@@ -5,6 +5,7 @@
 #include "resource.h"
 #include "win32.h"
 
+#include "raylib_extra.h"
 #include <raylib.h>
 #include <raymath.h>
 
@@ -250,12 +251,14 @@ int main(void) {
 				ResourceManager_get_texture(&resources, room_texture_id, &room_texture);
 				DrawTextureRec(room_texture, (Rectangle) { .width = room_width, .height = room_height }, room_top_left, WHITE);
 
-				/* Render sprites */
+				/* Compute y-sorted entity list */
 				EntityID y_sorted_entities[MAX_NUM_ENTITES] = { 0 };
 				{
 					memcpy(y_sorted_entities, entities.entities.keys, MAX_NUM_ENTITES * sizeof(EntityID));
 					qsort_s(y_sorted_entities, entities.entities.size, sizeof(EntityID), compare_position_ids_by_y_coordinate, &entities);
 				}
+
+				/* Render shadows */
 				for (int i = 0; i < entities.entities.size; i++) {
 					EntityID id = y_sorted_entities[i];
 					Vector2 position = { 0 };
@@ -265,13 +268,37 @@ int main(void) {
 					EntityManager_get_sprite(&entities, id, &sprite);
 					ResourceManager_get_texture(&resources, sprite.texture_id, &texture);
 
-					Vector2 camera_space_top_left = (Vector2) {
+					float scale = 0.5f;
+					Vector2 top_left = (Vector2) {
+						.x = position.x - sprite.clip_rect.width - 10,
+						.y = position.y - sprite.clip_rect.height / 2 - 2,
+					};
+					Rectangle shadow_rect = {
+						.x = top_left.x + 10,
+						.y = top_left.y + sprite.clip_rect.height * (1.0f - scale),
+						.width = sprite.clip_rect.width,
+						.height = sprite.clip_rect.height * scale,
+					};
+					DrawTextureRecSheared(texture, sprite.clip_rect, shadow_rect, 45.0f, ColorAlpha(BLACK, 0.17f));
+				}
+
+				/* Render sprites */
+				for (int i = 0; i < entities.entities.size; i++) {
+					EntityID id = y_sorted_entities[i];
+					Vector2 position = { 0 };
+					Sprite sprite = { 0 };
+					Texture texture = { 0 };
+					EntityManager_get_position(&entities, id, &position);
+					EntityManager_get_sprite(&entities, id, &sprite);
+					ResourceManager_get_texture(&resources, sprite.texture_id, &texture);
+
+					Vector2 top_left = (Vector2) {
 						.x = position.x - sprite.clip_rect.width / 2,
 						.y = position.y - sprite.clip_rect.height / 2,
 					};
 
 					/* Render sprite*/
-					DrawTextureRec(texture, sprite.clip_rect, camera_space_top_left, WHITE);
+					DrawTextureRec(texture, sprite.clip_rect, top_left, WHITE);
 				}
 
 				/* Render collision shapes */
