@@ -6,7 +6,6 @@
 
 typedef enum ComponentType {
 	ComponentType_None,
-	ComponentType_Position,
 	ComponentType_Sprite,
 	ComponentType_CollisionShape,
 } ComponentType;

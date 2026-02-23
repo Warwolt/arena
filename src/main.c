@@ -36,8 +36,7 @@ int compare_position_ids_by_y_coordinate(void* ctx, const void* lhs, const void*
 }
 
 EntityID add_physical_object(EntityManager* entities, Vector2 position, Sprite sprite, Shape collision_shape) {
-	EntityID id = EntityManager_add_entity(entities);
-	EntityManager_add_position(entities, id, position);
+	EntityID id = EntityManager_add_entity(entities, position);
 	EntityManager_add_sprite(entities, id, sprite);
 	EntityManager_add_collision_shape(entities, id, collision_shape);
 	return id;
@@ -219,12 +218,12 @@ int main(void) {
 			ClearBackground(LIME);
 
 			/* Render sprites */
-			EntityID y_sorted_entities[MAX_POSITION_COMPONENTS] = { 0 };
+			EntityID y_sorted_entities[MAX_NUM_ENTITES] = { 0 };
 			{
-				memcpy(y_sorted_entities, entities.components.positions.keys, MAX_POSITION_COMPONENTS * sizeof(EntityID));
-				qsort_s(y_sorted_entities, entities.components.positions.size, sizeof(EntityID), compare_position_ids_by_y_coordinate, &entities);
+				memcpy(y_sorted_entities, entities.entities.keys, MAX_NUM_ENTITES * sizeof(EntityID));
+				qsort_s(y_sorted_entities, entities.entities.size, sizeof(EntityID), compare_position_ids_by_y_coordinate, &entities);
 			}
-			for (int i = 0; i < entities.components.positions.size; i++) {
+			for (int i = 0; i < entities.entities.size; i++) {
 				EntityID id = y_sorted_entities[i];
 				Vector2 position = { 0 };
 				Sprite sprite = { 0 };

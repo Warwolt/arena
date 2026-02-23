@@ -1,6 +1,6 @@
 #include "entity.h"
 
-EntityID EntityManager_add_entity(EntityManager* entities) {
+EntityID EntityManager_add_entity(EntityManager* entities, Vector2 position) {
 	EntityID id = { 0 };
 
 	/* Either re-use discarded ID or add a new one */
@@ -11,7 +11,10 @@ EntityID EntityManager_add_entity(EntityManager* entities) {
 		id = (EntityID) { entities->entities.size + 1 };
 	}
 
-	Entity entity = { .id = id };
+	Entity entity = {
+		.id = id,
+		.position = position,
+	};
 	Map_insert(&entities->entities, id.value, entity);
 	return id;
 }
@@ -24,9 +27,6 @@ bool EntityManager_remove_entity(EntityManager* entities, EntityID id) {
 		for (size_t i = 0; i < entity->num_components; i++) {
 			switch (entity->components[i]) {
 				case ComponentType_None:
-					break;
-				case ComponentType_Position:
-					Map_remove(&entities->components.positions, id.value);
 					break;
 				case ComponentType_Sprite:
 					Map_remove(&entities->components.sprites, id.value);
@@ -44,20 +44,21 @@ bool EntityManager_remove_entity(EntityManager* entities, EntityID id) {
 	return entity != NULL;
 }
 
-void EntityManager_add_position(EntityManager* entities, EntityID id, Vector2 position) {
-	if (Map_insert(&entities->components.positions, id.value, position)) {
-		Entity* entity = NULL;
-		Map_get_ptr(&entities->entities, id.value, &entity);
-		entity->components[entity->num_components++] = ComponentType_Position;
-	}
-}
-
 bool EntityManager_get_position(EntityManager* entities, EntityID id, Vector2* position) {
-	return Map_get(&entities->components.positions, id.value, position);
+	Entity* entity = NULL;
+	Map_get_ptr(&entities->entities, id.value, &entity);
+	if (entity) {
+		*position = entity->position;
+	}
+	return entity != NULL;
 }
 
 void EntityManager_set_position(EntityManager* entities, EntityID id, Vector2 position) {
-	Map_set(&entities->components.positions, id.value, position);
+	Entity* entity = NULL;
+	Map_get_ptr(&entities->entities, id.value, &entity);
+	if (entity) {
+		entity->position = position;
+	}
 }
 
 void EntityManager_add_sprite(EntityManager* entities, EntityID id, Sprite sprite) {
