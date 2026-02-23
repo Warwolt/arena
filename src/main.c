@@ -90,6 +90,10 @@ int main(void) {
 		Shape_circle((Circle) { .radius = 16 })
 	);
 
+	// EntityID donut_id = { 0 };
+	// EntityID donut_id2 = { 0 };
+	// EntityID coffee_id = { 0 };
+
 	EntityID donut_id = add_physical_object(
 		&entities,
 		(Vector2) { -48, 0 },
@@ -250,12 +254,14 @@ int main(void) {
 				ResourceManager_get_texture(&resources, room_texture_id, &room_texture);
 				DrawTextureRec(room_texture, (Rectangle) { .width = room_width, .height = room_height }, room_top_left, WHITE);
 
-				/* Render sprites */
+				/* Compute y-sorted entity list */
 				EntityID y_sorted_entities[MAX_NUM_ENTITES] = { 0 };
 				{
 					memcpy(y_sorted_entities, entities.entities.keys, MAX_NUM_ENTITES * sizeof(EntityID));
 					qsort_s(y_sorted_entities, entities.entities.size, sizeof(EntityID), compare_position_ids_by_y_coordinate, &entities);
 				}
+
+				/* Render shadows */
 				for (int i = 0; i < entities.entities.size; i++) {
 					EntityID id = y_sorted_entities[i];
 					Vector2 position = { 0 };
@@ -265,13 +271,42 @@ int main(void) {
 					EntityManager_get_sprite(&entities, id, &sprite);
 					ResourceManager_get_texture(&resources, sprite.texture_id, &texture);
 
-					Vector2 camera_space_top_left = (Vector2) {
+					/* Render shadow */
+					// FIXME: only way to get this to look nice is to do a shear / skew
+					//
+					// Raylib doesn't provide a function for this, but we can do it ourselves
+					// by calling the underlying rl-functions.
+					//
+					// This would let use implement a "DrawTextureSheared" function
+					// https://en.wikipedia.org/wiki/Shear_mapping
+					const Rectangle shadow_rect = {
+						position.x + -5,
+						position.y + sprite.clip_rect.height * 0.2 - 5,
+						sprite.clip_rect.width,
+						sprite.clip_rect.height * 0.8,
+					};
+					const float rotation = -30;
+					const Vector2 origin = (Vector2) { sprite.clip_rect.width / 2, sprite.clip_rect.height / 2 };
+					DrawTexturePro(texture, sprite.clip_rect, shadow_rect, origin, rotation, ColorAlpha(BLACK, 0.17f)); // shadow
+				}
+
+				/* Render sprites */
+				for (int i = 0; i < entities.entities.size; i++) {
+					EntityID id = y_sorted_entities[i];
+					Vector2 position = { 0 };
+					Sprite sprite = { 0 };
+					Texture texture = { 0 };
+					EntityManager_get_position(&entities, id, &position);
+					EntityManager_get_sprite(&entities, id, &sprite);
+					ResourceManager_get_texture(&resources, sprite.texture_id, &texture);
+
+					Vector2 top_left = (Vector2) {
 						.x = position.x - sprite.clip_rect.width / 2,
 						.y = position.y - sprite.clip_rect.height / 2,
 					};
 
 					/* Render sprite*/
-					DrawTextureRec(texture, sprite.clip_rect, camera_space_top_left, WHITE);
+					DrawTextureRec(texture, sprite.clip_rect, top_left, WHITE); // sprite
 				}
 
 				/* Render collision shapes */
