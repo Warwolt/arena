@@ -70,6 +70,12 @@ int main(void) {
 		.x = room_width / 2,
 		.y = room_height / 2,
 	};
+	Camera2D camera = {
+		.target = Vector2Zero(),
+		.offset = { RESOLUTION_WIDTH / 2, RESOLUTION_HEIGHT / 2 },
+		.rotation = 0.0f,
+		.zoom = 1.0f,
+	};
 	bool show_debug_overlay = false;
 	bool show_collision_shapes = false;
 	EntityManager entities = { 0 };
@@ -120,16 +126,15 @@ int main(void) {
 
 		/* Update */
 		{
-			if (IsKeyPressed(KEY_F11)) {
-				toggle_fullscreen();
-			}
+			/* Function keys */
+			{
+				if (IsKeyPressed(KEY_F11)) {
+					toggle_fullscreen();
+				}
 
-			if (IsKeyPressed(KEY_F3)) {
-				show_debug_overlay = !show_debug_overlay;
-			}
-
-			if (IsKeyPressed(KEY_ENTER)) {
-				EntityManager_remove_entity(&entities, donut_id2);
+				if (IsKeyPressed(KEY_F3)) {
+					show_debug_overlay = !show_debug_overlay;
+				}
 			}
 
 			/* Move player */
@@ -215,28 +220,25 @@ int main(void) {
 					}
 				}
 			}
+
+			/* Move camera */
+			{
+				Vector2 player_position = { 0 };
+				EntityManager_get_position(&entities, player_id, &player_position);
+				const Vector2 camera_top_left_bound = {
+					.x = room_top_left.x + RESOLUTION_WIDTH / 2,
+					.y = room_top_left.y + RESOLUTION_HEIGHT / 2,
+				};
+				const Vector2 camera_bottom_right_bound = {
+					.x = room_bottom_right.x - RESOLUTION_WIDTH / 2,
+					.y = room_bottom_right.y - RESOLUTION_HEIGHT / 2,
+
+				};
+				camera.target = Vector2Clamp(player_position, camera_top_left_bound, camera_bottom_right_bound);
+			}
 		}
 
 		/* Render scene */
-		// FIXME: we should move the camera during "update" not during render
-		Vector2 player_position = { 0 };
-		EntityManager_get_position(&entities, player_id, &player_position);
-		const Vector2 camera_top_left_bound = {
-			.x = room_top_left.x + RESOLUTION_WIDTH / 2,
-			.y = room_top_left.y + RESOLUTION_HEIGHT / 2,
-		};
-		const Vector2 camera_bottom_right_bound = {
-			.x = room_bottom_right.x - RESOLUTION_WIDTH / 2,
-			.y = room_bottom_right.y - RESOLUTION_HEIGHT / 2,
-
-		};
-		const Vector2 camera_target = Vector2Clamp(player_position, camera_top_left_bound, camera_bottom_right_bound);
-		const Camera2D camera = {
-			.target = camera_target,
-			.offset = { RESOLUTION_WIDTH / 2, RESOLUTION_HEIGHT / 2 },
-			.rotation = 0.0f,
-			.zoom = 1.0f,
-		};
 		BeginTextureMode(screen_texture);
 		{
 			/* Render in camera */
@@ -306,6 +308,8 @@ int main(void) {
 					snprintf(text, sizeof(text), "Entities: %zu", entities.entities.size);
 					DrawText(text, 1, row++ * font_size, font_size, WHITE);
 
+					Vector2 player_position = { 0 };
+					EntityManager_get_position(&entities, player_id, &player_position);
 					snprintf(text, sizeof(text), "Position: %2.f %2.f", player_position.x, player_position.y);
 					DrawText(text, 1, row++ * font_size, font_size, WHITE);
 				}
