@@ -7,6 +7,7 @@
 
 #include <raylib.h>
 #include <raymath.h>
+#include <rlgl.h>
 
 #include <math.h>
 #include <stdint.h>
@@ -17,6 +18,93 @@
 // UFO 50 is 16:9 at 384x216 resolution
 #define RESOLUTION_WIDTH (int)768
 #define RESOLUTION_HEIGHT (int)432
+
+void DrawTextureRecSheared(Texture2D texture, Rectangle source, Vector2 position, float angle, Color tint) {
+	if (texture.id <= 0) {
+		return;
+	}
+
+	Rectangle dest = { position.x, position.y, source.width, source.height };
+	float width = (float)texture.width;
+	float height = (float)texture.height;
+
+	bool flipX = false;
+
+	if (source.width < 0) {
+		flipX = true;
+		source.width *= -1;
+	}
+	if (source.height < 0)
+		source.y -= source.height;
+
+	if (dest.width < 0)
+		dest.width *= -1;
+	if (dest.height < 0)
+		dest.height *= -1;
+
+	float tanAngle = tanf(DEG2RAD * angle);
+
+	// coordinates relative to top left of quad
+	Vector2 localTopLeft = { 0.0f, 0.0f };
+	Vector2 localTopRight = { dest.width, 0.0f };
+	Vector2 localBottomLeft = { 0.0f, dest.height };
+	Vector2 localBottomRight = { dest.width, dest.height };
+
+	// world space coordinates of sheared quad
+	Vector2 shearedTopLeft = {
+		position.x + localTopLeft.x + tanAngle * localTopLeft.y,
+		position.y + localTopLeft.y,
+	};
+	Vector2 shearedTopRight = {
+		position.x + localTopRight.x + tanAngle * localTopRight.y,
+		position.y + localTopRight.y,
+	};
+	Vector2 shearedBottomLeft = {
+		position.x + localBottomLeft.x + tanAngle * localBottomLeft.y,
+		position.y + localBottomLeft.y,
+	};
+	Vector2 shearedBottomRight = {
+		position.x + localBottomRight.x + tanAngle * localBottomRight.y,
+		position.y + localBottomRight.y,
+	};
+
+	rlSetTexture(texture.id);
+	rlBegin(RL_QUADS);
+
+	rlColor4ub(tint.r, tint.g, tint.b, tint.a);
+	rlNormal3f(0.0f, 0.0f, 1.0f); // Normal vector pointing towards viewer
+
+	// Top-left corner for texture and quad
+	if (flipX)
+		rlTexCoord2f((source.x + source.width) / width, source.y / height);
+	else
+		rlTexCoord2f(source.x / width, source.y / height);
+	rlVertex2f(shearedTopLeft.x, shearedTopLeft.y);
+
+	// Bottom-left corner for texture and quad
+	if (flipX)
+		rlTexCoord2f((source.x + source.width) / width, (source.y + source.height) / height);
+	else
+		rlTexCoord2f(source.x / width, (source.y + source.height) / height);
+	rlVertex2f(shearedBottomLeft.x, shearedBottomLeft.y);
+
+	// Bottom-right corner for texture and quad
+	if (flipX)
+		rlTexCoord2f(source.x / width, (source.y + source.height) / height);
+	else
+		rlTexCoord2f((source.x + source.width) / width, (source.y + source.height) / height);
+	rlVertex2f(shearedBottomRight.x, shearedBottomRight.y);
+
+	// Top-right corner for texture and quad
+	if (flipX)
+		rlTexCoord2f(source.x / width, source.y / height);
+	else
+		rlTexCoord2f((source.x + source.width) / width, source.y / height);
+	rlVertex2f(shearedTopRight.x, shearedTopRight.y);
+
+	rlEnd();
+	rlSetTexture(0);
+}
 
 int compare_position_ids_by_y_coordinate(void* ctx, const void* lhs, const void* rhs) {
 	EntityManager* entities = (EntityManager*)ctx;
@@ -271,23 +359,11 @@ int main(void) {
 					EntityManager_get_sprite(&entities, id, &sprite);
 					ResourceManager_get_texture(&resources, sprite.texture_id, &texture);
 
-					/* Render shadow */
-					// FIXME: only way to get this to look nice is to do a shear / skew
-					//
-					// Raylib doesn't provide a function for this, but we can do it ourselves
-					// by calling the underlying rl-functions.
-					//
-					// This would let use implement a "DrawTextureSheared" function
-					// https://en.wikipedia.org/wiki/Shear_mapping
-					const Rectangle shadow_rect = {
-						position.x + -5,
-						position.y + sprite.clip_rect.height * 0.2 - 5,
-						sprite.clip_rect.width,
-						sprite.clip_rect.height * 0.8,
+					Vector2 top_left = (Vector2) {
+						.x = position.x - sprite.clip_rect.width - 2,
+						.y = position.y - sprite.clip_rect.height / 2 - 2,
 					};
-					const float rotation = -30;
-					const Vector2 origin = (Vector2) { sprite.clip_rect.width / 2, sprite.clip_rect.height / 2 };
-					DrawTexturePro(texture, sprite.clip_rect, shadow_rect, origin, rotation, ColorAlpha(BLACK, 0.17f)); // shadow
+					DrawTextureRecSheared(texture, sprite.clip_rect, top_left, 30.0f, ColorAlpha(BLACK, 0.17f));
 				}
 
 				/* Render sprites */
