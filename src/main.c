@@ -57,6 +57,7 @@ int main(void) {
 	TextureID player_texture_id = ResourceManager_load_texture(&resources, "resource/image/pill.png");
 	TextureID donut_texture_id = ResourceManager_load_texture(&resources, "resource/image/spinning_donut.png");
 	TextureID coffee_texture_id = ResourceManager_load_texture(&resources, "resource/image/spinning_coffee.png");
+	TextureID grass_tile_texture_id = ResourceManager_load_texture(&resources, "resource/image/grass_tile.png");
 
 	/* State */
 	bool show_debug_overlay = false;
@@ -115,7 +116,6 @@ int main(void) {
 
 			if (IsKeyPressed(KEY_F3)) {
 				show_debug_overlay = !show_debug_overlay;
-				show_collision_shapes = !show_collision_shapes;
 			}
 
 			if (IsKeyPressed(KEY_ENTER)) {
@@ -215,7 +215,10 @@ int main(void) {
 			};
 
 			// Draw background
-			ClearBackground(LIME);
+			ClearBackground(BLACK);
+			Texture2D grass_tile_texture = { 0 };
+			ResourceManager_get_texture(&resources, grass_tile_texture_id, &grass_tile_texture);
+			DrawTextureRec(grass_tile_texture, (Rectangle) { 0, 0, 2 * RESOLUTION_WIDTH, 2 * RESOLUTION_HEIGHT }, (Vector2) { 0, 0 }, WHITE);
 
 			/* Render sprites */
 			EntityID y_sorted_entities[MAX_NUM_ENTITES] = { 0 };
@@ -266,9 +269,13 @@ int main(void) {
 
 			// Draw FPS
 			if (show_debug_overlay) {
+				int font_size = 24;
 				char text[128] = { 0 };
-				snprintf(text, 128, "FPS: %d", GetFPS());
-				DrawText(text, 0, 0, 16, WHITE);
+				snprintf(text, sizeof(text), "FPS: %d", GetFPS());
+				DrawText(text, 0, 0, font_size, WHITE);
+
+				snprintf(text, sizeof(text), "Entities: %zu", entities.entities.size);
+				DrawText(text, 0, font_size, font_size, WHITE);
 			}
 		}
 		EndTextureMode();

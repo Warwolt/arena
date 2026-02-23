@@ -2,7 +2,7 @@
 - Integrate ImGui so we can visualize system states
 
 # Doing
-- Add camera and zelda dungeon background image to walk around on
+- Add camera following player and checker board background
 
 # Done
 - Store position as part of Entity struct
