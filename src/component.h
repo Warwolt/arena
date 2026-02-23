@@ -21,6 +21,7 @@ typedef enum ShapeType {
 } ShapeType;
 
 typedef struct Circle {
+	Vector2 center;
 	float radius;
 } Circle;
 

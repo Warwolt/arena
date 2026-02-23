@@ -170,6 +170,43 @@ int main(void) {
 					EntityManager_set_sprite(&entities, id, sprite);
 				}
 			}
+
+			/* Check if player is colliding with other entities */
+			{
+				Vector2 player_position = { 0 };
+				Shape player_collision_shape = { 0 };
+				EntityManager_get_position(&entities, player_id, &player_position);
+				EntityManager_get_collision_shape(&entities, player_id, &player_collision_shape);
+				for (size_t i = 0; i < entities.components.collision_shapes.size; i++) {
+					EntityID id = { entities.components.collision_shapes.keys[i] };
+					if (id.value == player_id.value) {
+						continue;
+					}
+					Vector2 other_position = { 0 };
+					Shape other_collision_shape = { 0 };
+					EntityManager_get_position(&entities, id, &other_position);
+					EntityManager_get_collision_shape(&entities, id, &other_collision_shape);
+					if (player_collision_shape.type == ShapeType_Circle && other_collision_shape.type == ShapeType_Circle) {
+						Circle player_circle = {
+							.center = Vector2Add(player_collision_shape.circle.center, player_position),
+							.radius = player_collision_shape.circle.radius,
+						};
+						Circle other_circle = {
+							.center = Vector2Add(other_collision_shape.circle.center, other_position),
+							.radius = other_collision_shape.circle.radius,
+						};
+						const bool is_colliding = CheckCollisionCircles(
+							player_circle.center,
+							player_circle.radius,
+							other_circle.center,
+							other_circle.radius
+						);
+						if (is_colliding) {
+							EntityManager_remove_entity(&entities, id);
+						}
+					}
+				}
+			}
 		}
 
 		/* Render scene */
@@ -183,14 +220,12 @@ int main(void) {
 			// Draw background
 			ClearBackground(LIME);
 
-			// sort entities based on position
+			/* Render sprites */
 			EntityID y_sorted_entities[MAX_POSITION_COMPONENTS] = { 0 };
 			{
 				memcpy(y_sorted_entities, entities.components.positions.keys, MAX_POSITION_COMPONENTS * sizeof(EntityID));
 				qsort_s(y_sorted_entities, entities.components.positions.size, sizeof(EntityID), compare_position_ids_by_y_coordinate, &entities);
 			}
-
-			/* Render sprites */
 			for (int i = 0; i < entities.components.positions.size; i++) {
 				EntityID id = y_sorted_entities[i];
 				Vector2 position = { 0 };
