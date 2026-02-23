@@ -66,6 +66,10 @@ int main(void) {
 		.x = -room_width / 2,
 		.y = -room_height / 2,
 	};
+	const Vector2 room_bottom_right = (Vector2) {
+		.x = room_width / 2,
+		.y = room_height / 2,
+	};
 	bool show_debug_overlay = false;
 	bool show_collision_shapes = false;
 	EntityManager entities = { 0 };
@@ -150,11 +154,8 @@ int main(void) {
 				const float player_speed = 300; // px / second
 				EntityManager_get_position(&entities, player_id, &player_pos);
 
-				const Vector2 position_delta = Vector2Scale(input_vec, delta_time * player_speed);
-				const Vector2 moved_player_pos = {
-					.x = max(player_pos.x + position_delta.x, room_top_left.x),
-					.y = max(player_pos.y + position_delta.y, room_top_left.y),
-				};
+				const Vector2 delta = Vector2Scale(input_vec, delta_time * player_speed);
+				const Vector2 moved_player_pos = Vector2Clamp(Vector2Add(player_pos, delta), room_top_left, room_bottom_right);
 				EntityManager_set_position(&entities, player_id, moved_player_pos);
 			}
 
