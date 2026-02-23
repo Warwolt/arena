@@ -91,10 +91,6 @@ int main(void) {
 		Shape_circle((Circle) { .radius = 16 })
 	);
 
-	// EntityID donut_id = { 0 };
-	// EntityID donut_id2 = { 0 };
-	// EntityID coffee_id = { 0 };
-
 	EntityID donut_id = add_physical_object(
 		&entities,
 		(Vector2) { -48, 0 },
