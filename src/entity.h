@@ -9,7 +9,6 @@
 
 #define MAX_NUM_ENTITES 128
 #define MAX_NUM_ENTIY_COMPONENTS 32
-#define MAX_POSITION_COMPONENTS 128
 #define MAX_SPRITE_COMPONENTS 128
 #define MAX_COLLISION_SHAPE_COMPONENTS 128
 
@@ -25,7 +24,6 @@ typedef struct Entity {
 } Entity;
 
 typedef struct ComponentStore {
-	Map(Vector2, MAX_POSITION_COMPONENTS) positions;
 	Map(Sprite, MAX_SPRITE_COMPONENTS) sprites;
 	Map(Shape, MAX_SPRITE_COMPONENTS) collision_shapes;
 } ComponentStore;
@@ -40,7 +38,6 @@ typedef struct EntityManager {
 EntityID EntityManager_add_entity(EntityManager* entities, Vector2 position);
 bool EntityManager_remove_entity(EntityManager* entities, EntityID id);
 
-void EntityManager_add_position(EntityManager* entities, EntityID id, Vector2 position);
 bool EntityManager_get_position(EntityManager* entities, EntityID id, Vector2* position);
 void EntityManager_set_position(EntityManager* entities, EntityID id, Vector2 position);
 

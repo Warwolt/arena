@@ -28,9 +28,6 @@ bool EntityManager_remove_entity(EntityManager* entities, EntityID id) {
 			switch (entity->components[i]) {
 				case ComponentType_None:
 					break;
-				case ComponentType_Position:
-					Map_remove(&entities->components.positions, id.value);
-					break;
 				case ComponentType_Sprite:
 					Map_remove(&entities->components.sprites, id.value);
 					break;
@@ -47,20 +44,21 @@ bool EntityManager_remove_entity(EntityManager* entities, EntityID id) {
 	return entity != NULL;
 }
 
-void EntityManager_add_position(EntityManager* entities, EntityID id, Vector2 position) {
-	if (Map_insert(&entities->components.positions, id.value, position)) {
-		Entity* entity = NULL;
-		Map_get_ptr(&entities->entities, id.value, &entity);
-		entity->components[entity->num_components++] = ComponentType_Position;
-	}
-}
-
 bool EntityManager_get_position(EntityManager* entities, EntityID id, Vector2* position) {
-	return Map_get(&entities->components.positions, id.value, position);
+	Entity* entity = NULL;
+	Map_get_ptr(&entities->entities, id.value, &entity);
+	if (entity) {
+		*position = entity->position;
+	}
+	return entity != NULL;
 }
 
 void EntityManager_set_position(EntityManager* entities, EntityID id, Vector2 position) {
-	Map_set(&entities->components.positions, id.value, position);
+	Entity* entity = NULL;
+	Map_get_ptr(&entities->entities, id.value, &entity);
+	if (entity) {
+		entity->position = position;
+	}
 }
 
 void EntityManager_add_sprite(EntityManager* entities, EntityID id, Sprite sprite) {
