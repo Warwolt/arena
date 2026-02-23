@@ -70,7 +70,7 @@ int main(void) {
 			.clip_rect = { 0, 0, 64, 64 },
 		}
 	);
-	EntityManager_add_collision_shape(&entities, player_id, Shape_circle((Circle) { .radius = 24 }));
+	EntityManager_add_collision_shape(&entities, player_id, Shape_circle((Circle) { .radius = 16 }));
 
 	// add donut
 	EntityManager_add_position(&entities, donut_id, (Vector2) { -48, 0 });
@@ -94,6 +94,7 @@ int main(void) {
 			.clip_rect = { 0, 0, 64, 64 },
 		}
 	);
+	EntityManager_add_collision_shape(&entities, donut_id2, Shape_circle((Circle) { .radius = 8 }));
 
 	// add coffee
 	EntityManager_add_position(&entities, coffee_id, (Vector2) { 48, 0 });
@@ -105,6 +106,7 @@ int main(void) {
 			.clip_rect = { 0, 0, 64, 64 },
 		}
 	);
+	EntityManager_add_collision_shape(&entities, coffee_id, Shape_circle((Circle) { .radius = 8 }));
 
 	/* Run program */
 	while (!WindowShouldClose()) {
