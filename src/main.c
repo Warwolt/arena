@@ -298,7 +298,7 @@ int main(void) {
 					};
 
 					/* Render sprite*/
-					DrawTextureRec(texture, sprite.clip_rect, top_left, WHITE); // sprite
+					DrawTextureRec(texture, sprite.clip_rect, top_left, WHITE);
 				}
 
 				/* Render collision shapes */
