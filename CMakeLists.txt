@@ -10,7 +10,7 @@ set(CMAKE_C_STANDARD 23)
 add_subdirectory(lib/raylib)
 
 # Set warnings
-add_compile_options(/W4 /wd4244)
+add_compile_options(/W4 /wd4244 /w44062)
 if (WARNINGS_AS_ERRORS)
     add_compile_options(/WX)
 endif()

@@ -23,11 +23,16 @@ bool EntityManager_remove_entity(EntityManager* entities, EntityID id) {
 		/* Remove components */
 		for (size_t i = 0; i < entity->num_components; i++) {
 			switch (entity->components[i]) {
+				case ComponentType_None:
+					break;
 				case ComponentType_Position:
 					Map_remove(&entities->components.positions, id.value);
 					break;
 				case ComponentType_Sprite:
 					Map_remove(&entities->components.sprites, id.value);
+					break;
+				case ComponentType_CollisionShape:
+					Map_remove(&entities->components.collision_shapes, id.value);
 					break;
 			}
 		}
@@ -47,8 +52,8 @@ void EntityManager_add_position(EntityManager* entities, EntityID id, Vector2 po
 	}
 }
 
-void EntityManager_get_position(EntityManager* entities, EntityID id, Vector2* position) {
-	Map_get(&entities->components.positions, id.value, position);
+bool EntityManager_get_position(EntityManager* entities, EntityID id, Vector2* position) {
+	return Map_get(&entities->components.positions, id.value, position);
 }
 
 void EntityManager_set_position(EntityManager* entities, EntityID id, Vector2 position) {
@@ -63,10 +68,26 @@ void EntityManager_add_sprite(EntityManager* entities, EntityID id, Sprite sprit
 	}
 }
 
-void EntityManager_get_sprite(EntityManager* entities, EntityID id, Sprite* sprite) {
-	Map_get(&entities->components.sprites, id.value, sprite);
+bool EntityManager_get_sprite(EntityManager* entities, EntityID id, Sprite* sprite) {
+	return Map_get(&entities->components.sprites, id.value, sprite);
 }
 
 void EntityManager_set_sprite(EntityManager* entities, EntityID id, Sprite sprite) {
 	Map_set(&entities->components.sprites, id.value, sprite);
+}
+
+void EntityManager_add_collision_shape(EntityManager* entities, EntityID id, Shape shape) {
+	if (Map_insert(&entities->components.collision_shapes, id.value, shape)) {
+		Entity* entity = NULL;
+		Map_get_ptr(&entities->entities, id.value, &entity);
+		entity->components[entity->num_components++] = ComponentType_CollisionShape;
+	}
+}
+
+bool EntityManager_get_collision_shape(EntityManager* entities, EntityID id, Shape* shape) {
+	return Map_get(&entities->components.collision_shapes, id.value, shape);
+}
+
+void EntityManager_set_collision_shape(EntityManager* entities, EntityID id, Shape shape) {
+	Map_set(&entities->components.collision_shapes, id.value, shape);
 }

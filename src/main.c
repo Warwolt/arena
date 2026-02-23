@@ -35,6 +35,14 @@ int compare_position_ids_by_y_coordinate(void* ctx, const void* lhs, const void*
 	}
 }
 
+EntityID add_physical_object(EntityManager* entities, Vector2 position, Sprite sprite, Shape collision_shape) {
+	EntityID id = EntityManager_add_entity(entities);
+	EntityManager_add_position(entities, id, position);
+	EntityManager_add_sprite(entities, id, sprite);
+	EntityManager_add_collision_shape(entities, id, collision_shape);
+	return id;
+}
+
 int main(void) {
 	/* Init */
 	initialize_logging();
@@ -53,54 +61,47 @@ int main(void) {
 
 	/* State */
 	bool show_debug_overlay = false;
+	bool show_collision_shapes = false;
 	EntityManager entities = { 0 };
-	EntityID player_id = EntityManager_add_entity(&entities);
-	EntityID donut_id = EntityManager_add_entity(&entities);
-	EntityID donut_id2 = EntityManager_add_entity(&entities);
-	EntityID coffee_id = EntityManager_add_entity(&entities);
 
-	// add player
-	EntityManager_add_position(&entities, player_id, Vector2Zero());
-	EntityManager_add_sprite(
+	EntityID player_id = add_physical_object(
 		&entities,
-		player_id,
+		Vector2Zero(),
 		(Sprite) {
 			.texture_id = player_texture_id,
 			.clip_rect = { 0, 0, 64, 64 },
-		}
+		},
+		Shape_circle((Circle) { .radius = 16 })
 	);
 
-	// add donut
-	EntityManager_add_position(&entities, donut_id, (Vector2) { -48, 0 });
-	EntityManager_add_sprite(
+	EntityID donut_id = add_physical_object(
 		&entities,
-		donut_id,
+		(Vector2) { -48, 0 },
 		(Sprite) {
 			.texture_id = donut_texture_id,
 			.clip_rect = { 0, 0, 64, 64 },
-		}
+		},
+		Shape_circle((Circle) { .radius = 8 })
 	);
 
-	// add donut 2
-	EntityManager_add_position(&entities, donut_id2, (Vector2) { -48 + -64, 0 });
-	EntityManager_add_sprite(
+	EntityID donut_id2 = add_physical_object(
 		&entities,
-		donut_id2,
+		(Vector2) { -112, 0 },
 		(Sprite) {
 			.texture_id = donut_texture_id,
 			.clip_rect = { 0, 0, 64, 64 },
-		}
+		},
+		Shape_circle((Circle) { .radius = 8 })
 	);
 
-	// add coffee
-	EntityManager_add_position(&entities, coffee_id, (Vector2) { 48, 0 });
-	EntityManager_add_sprite(
+	EntityID coffee_id = add_physical_object(
 		&entities,
-		coffee_id,
+		(Vector2) { 48, 0 },
 		(Sprite) {
 			.texture_id = coffee_texture_id,
 			.clip_rect = { 0, 0, 64, 64 },
-		}
+		},
+		Shape_circle((Circle) { .radius = 8 })
 	);
 
 	/* Run program */
@@ -115,6 +116,7 @@ int main(void) {
 
 			if (IsKeyPressed(KEY_F3)) {
 				show_debug_overlay = !show_debug_overlay;
+				show_collision_shapes = !show_collision_shapes;
 			}
 
 			if (IsKeyPressed(KEY_ENTER)) {
@@ -166,6 +168,43 @@ int main(void) {
 					EntityManager_set_sprite(&entities, id, sprite);
 				}
 			}
+
+			/* Check if player is colliding with other entities */
+			{
+				Vector2 player_position = { 0 };
+				Shape player_collision_shape = { 0 };
+				EntityManager_get_position(&entities, player_id, &player_position);
+				EntityManager_get_collision_shape(&entities, player_id, &player_collision_shape);
+				for (size_t i = 0; i < entities.components.collision_shapes.size; i++) {
+					EntityID id = { entities.components.collision_shapes.keys[i] };
+					if (id.value == player_id.value) {
+						continue;
+					}
+					Vector2 other_position = { 0 };
+					Shape other_collision_shape = { 0 };
+					EntityManager_get_position(&entities, id, &other_position);
+					EntityManager_get_collision_shape(&entities, id, &other_collision_shape);
+					if (player_collision_shape.type == ShapeType_Circle && other_collision_shape.type == ShapeType_Circle) {
+						Circle player_circle = {
+							.center = Vector2Add(player_collision_shape.circle.center, player_position),
+							.radius = player_collision_shape.circle.radius,
+						};
+						Circle other_circle = {
+							.center = Vector2Add(other_collision_shape.circle.center, other_position),
+							.radius = other_collision_shape.circle.radius,
+						};
+						const bool is_colliding = CheckCollisionCircles(
+							player_circle.center,
+							player_circle.radius,
+							other_circle.center,
+							other_circle.radius
+						);
+						if (is_colliding) {
+							EntityManager_remove_entity(&entities, id);
+						}
+					}
+				}
+			}
 		}
 
 		/* Render scene */
@@ -179,14 +218,12 @@ int main(void) {
 			// Draw background
 			ClearBackground(LIME);
 
-			// sort entities based on position
+			/* Render sprites */
 			EntityID y_sorted_entities[MAX_POSITION_COMPONENTS] = { 0 };
 			{
 				memcpy(y_sorted_entities, entities.components.positions.keys, MAX_POSITION_COMPONENTS * sizeof(EntityID));
 				qsort_s(y_sorted_entities, entities.components.positions.size, sizeof(EntityID), compare_position_ids_by_y_coordinate, &entities);
 			}
-
-			// render entities
 			for (int i = 0; i < entities.components.positions.size; i++) {
 				EntityID id = y_sorted_entities[i];
 				Vector2 position = { 0 };
@@ -195,11 +232,37 @@ int main(void) {
 				EntityManager_get_position(&entities, id, &position);
 				EntityManager_get_sprite(&entities, id, &sprite);
 				ResourceManager_get_texture(&resources, sprite.texture_id, &texture);
+
 				Vector2 camera_space_top_left = (Vector2) {
 					.x = position.x + screen_middle.x - sprite.clip_rect.width / 2,
 					.y = position.y + screen_middle.y - sprite.clip_rect.height / 2,
 				};
+
+				/* Render sprite*/
 				DrawTextureRec(texture, sprite.clip_rect, camera_space_top_left, WHITE);
+			}
+
+			/* Render collision shapes */
+			if (show_collision_shapes) {
+				for (int i = 0; i < entities.components.collision_shapes.size; i++) {
+					EntityID id = entities.entities.values[i].id;
+					Vector2 position = { 0 };
+					Shape collision_shape = { 0 };
+					EntityManager_get_position(&entities, id, &position);
+					EntityManager_get_collision_shape(&entities, id, &collision_shape);
+
+					Vector2 camera_space_center = (Vector2) {
+						.x = position.x + screen_middle.x,
+						.y = position.y + screen_middle.y,
+					};
+
+					switch (collision_shape.type) {
+						case ShapeType_Circle:
+							DrawCircle(camera_space_center.x, camera_space_center.y, collision_shape.circle.radius, ColorAlpha(GREEN, 0.5f));
+							DrawCircleLines(camera_space_center.x, camera_space_center.y, collision_shape.circle.radius, GREEN);
+							break;
+					}
+				}
 			}
 
 			// Draw FPS
