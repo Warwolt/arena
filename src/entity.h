@@ -11,6 +11,7 @@
 #define MAX_NUM_ENTIY_COMPONENTS 32
 #define MAX_POSITION_COMPONENTS 128
 #define MAX_SPRITE_COMPONENTS 128
+#define MAX_COLLISION_SHAPE_COMPONENTS 128
 
 typedef struct EntityID {
 	size_t value;
