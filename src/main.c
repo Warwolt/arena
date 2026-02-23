@@ -147,7 +147,7 @@ int main(void) {
 
 				Vector2 player_pos = Vector2Zero();
 				const float delta_time = GetFrameTime();
-				const float player_speed = 200; // px / second
+				const float player_speed = 300; // px / second
 				EntityManager_get_position(&entities, player_id, &player_pos);
 
 				const Vector2 moved_player_pos = Vector2Add(player_pos, Vector2Scale(input_vec, delta_time * player_speed));
@@ -216,8 +216,24 @@ int main(void) {
 		// FIXME: we should move the camera during "update" not during render
 		Vector2 player_position = { 0 };
 		EntityManager_get_position(&entities, player_id, &player_position);
+
+		// How do we clamp the camera position?
+		// We should not move the camera outside the bounds of the room
+		// The player is just a point
+		// The camera is a full rectangle
+		// The width and height of the camera view is the resolution width and height
+		//
+		// We should clamp the camera target to the room bounds
+		const Vector2 camera_top_left_bound = {
+			.x = room_top_left.x + RESOLUTION_WIDTH / 2,
+			.y = room_top_left.y + RESOLUTION_HEIGHT / 2,
+		};
+		const Vector2 camera_target = {
+			.x = max(camera_top_left_bound.x, player_position.x),
+			.y = max(camera_top_left_bound.y, player_position.y),
+		};
 		const Camera2D camera = {
-			.target = player_position,
+			.target = camera_target,
 			.offset = { RESOLUTION_WIDTH / 2, RESOLUTION_HEIGHT / 2 },
 			.rotation = 0.0f,
 			.zoom = 1.0f,
