@@ -57,9 +57,15 @@ int main(void) {
 	TextureID player_texture_id = ResourceManager_load_texture(&resources, "resource/image/pill.png");
 	TextureID donut_texture_id = ResourceManager_load_texture(&resources, "resource/image/spinning_donut.png");
 	TextureID coffee_texture_id = ResourceManager_load_texture(&resources, "resource/image/spinning_coffee.png");
-	TextureID grass_tile_texture_id = ResourceManager_load_texture(&resources, "resource/image/grass_tile.png");
+	TextureID room_texture_id = ResourceManager_load_texture(&resources, "resource/image/grass_tile.png");
 
 	/* State */
+	const int room_width = RESOLUTION_WIDTH * 2;
+	const int room_height = RESOLUTION_HEIGHT * 2;
+	const Vector2 room_top_left = (Vector2) {
+		.x = -room_width / 2,
+		.y = -room_height / 2,
+	};
 	bool show_debug_overlay = false;
 	bool show_collision_shapes = false;
 	EntityManager entities = { 0 };
@@ -217,81 +223,79 @@ int main(void) {
 			.zoom = 1.0f,
 		};
 		BeginTextureMode(screen_texture);
-		BeginMode2D(camera);
 		{
-			// Draw background
-			ClearBackground(BLACK);
-			Texture2D grass_tile_texture = { 0 };
-			ResourceManager_get_texture(&resources, grass_tile_texture_id, &grass_tile_texture);
-			DrawTextureRec(
-				grass_tile_texture,
-				(Rectangle) {
-					0,
-					0,
-					2 * RESOLUTION_WIDTH,
-					2 * RESOLUTION_HEIGHT,
-				},
-				(Vector2) {
-					-RESOLUTION_WIDTH,
-					-RESOLUTION_HEIGHT,
-				},
-				WHITE
-			);
-
-			/* Render sprites */
-			EntityID y_sorted_entities[MAX_NUM_ENTITES] = { 0 };
+			/* Render in camera */
+			BeginMode2D(camera);
 			{
-				memcpy(y_sorted_entities, entities.entities.keys, MAX_NUM_ENTITES * sizeof(EntityID));
-				qsort_s(y_sorted_entities, entities.entities.size, sizeof(EntityID), compare_position_ids_by_y_coordinate, &entities);
-			}
-			for (int i = 0; i < entities.entities.size; i++) {
-				EntityID id = y_sorted_entities[i];
-				Vector2 position = { 0 };
-				Sprite sprite = { 0 };
-				Texture texture = { 0 };
-				EntityManager_get_position(&entities, id, &position);
-				EntityManager_get_sprite(&entities, id, &sprite);
-				ResourceManager_get_texture(&resources, sprite.texture_id, &texture);
+				// Draw background
+				ClearBackground(BLACK);
+				Texture2D room_texture = { 0 };
+				ResourceManager_get_texture(&resources, room_texture_id, &room_texture);
+				DrawTextureRec(room_texture, (Rectangle) { .width = room_width, .height = room_height }, room_top_left, WHITE);
 
-				Vector2 camera_space_top_left = (Vector2) {
-					.x = position.x - sprite.clip_rect.width / 2,
-					.y = position.y - sprite.clip_rect.height / 2,
-				};
-
-				/* Render sprite*/
-				DrawTextureRec(texture, sprite.clip_rect, camera_space_top_left, WHITE);
-			}
-
-			/* Render collision shapes */
-			if (show_collision_shapes) {
-				for (int i = 0; i < entities.components.collision_shapes.size; i++) {
-					EntityID id = entities.entities.values[i].id;
+				/* Render sprites */
+				EntityID y_sorted_entities[MAX_NUM_ENTITES] = { 0 };
+				{
+					memcpy(y_sorted_entities, entities.entities.keys, MAX_NUM_ENTITES * sizeof(EntityID));
+					qsort_s(y_sorted_entities, entities.entities.size, sizeof(EntityID), compare_position_ids_by_y_coordinate, &entities);
+				}
+				for (int i = 0; i < entities.entities.size; i++) {
+					EntityID id = y_sorted_entities[i];
 					Vector2 position = { 0 };
-					Shape collision_shape = { 0 };
+					Sprite sprite = { 0 };
+					Texture texture = { 0 };
 					EntityManager_get_position(&entities, id, &position);
-					EntityManager_get_collision_shape(&entities, id, &collision_shape);
+					EntityManager_get_sprite(&entities, id, &sprite);
+					ResourceManager_get_texture(&resources, sprite.texture_id, &texture);
 
-					switch (collision_shape.type) {
-						case ShapeType_Circle:
-							DrawCircle(position.x, position.y, collision_shape.circle.radius, ColorAlpha(GREEN, 0.5f));
-							DrawCircleLines(position.x, position.y, collision_shape.circle.radius, GREEN);
-							break;
+					Vector2 camera_space_top_left = (Vector2) {
+						.x = position.x - sprite.clip_rect.width / 2,
+						.y = position.y - sprite.clip_rect.height / 2,
+					};
+
+					/* Render sprite*/
+					DrawTextureRec(texture, sprite.clip_rect, camera_space_top_left, WHITE);
+				}
+
+				/* Render collision shapes */
+				if (show_collision_shapes) {
+					for (int i = 0; i < entities.components.collision_shapes.size; i++) {
+						EntityID id = entities.entities.values[i].id;
+						Vector2 position = { 0 };
+						Shape collision_shape = { 0 };
+						EntityManager_get_position(&entities, id, &position);
+						EntityManager_get_collision_shape(&entities, id, &collision_shape);
+
+						switch (collision_shape.type) {
+							case ShapeType_Circle:
+								DrawCircle(position.x, position.y, collision_shape.circle.radius, ColorAlpha(GREEN, 0.5f));
+								DrawCircleLines(position.x, position.y, collision_shape.circle.radius, GREEN);
+								break;
+						}
 					}
 				}
 			}
+			EndMode2D();
 
-			// Draw FPS
-			if (show_debug_overlay) {
-				int font_size = 24;
-				char text[128] = { 0 };
-				snprintf(text, sizeof(text), "FPS: %d", GetFPS());
-				DrawText(text, 0, 0, font_size, WHITE);
+			/* Rendder HUD */
+			{
+				// Draw FPS
+				if (show_debug_overlay) {
+					int font_size = 24;
+					int row = 0;
+					char text[128] = { 0 };
 
-				snprintf(text, sizeof(text), "Entities: %zu", entities.entities.size);
-				DrawText(text, 0, font_size, font_size, WHITE);
+					snprintf(text, sizeof(text), "FPS: %d", GetFPS());
+					DrawText(text, 1, row++ * font_size, font_size, WHITE);
+
+					snprintf(text, sizeof(text), "Entities: %zu", entities.entities.size);
+					DrawText(text, 1, row++ * font_size, font_size, WHITE);
+
+					snprintf(text, sizeof(text), "Position: %2.f %2.f", player_position.x, player_position.y);
+					DrawText(text, 1, row++ * font_size, font_size, WHITE);
+				}
 			}
 		}
-		EndMode2D();
 		EndTextureMode();
 
 		/* Render window */
