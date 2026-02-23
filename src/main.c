@@ -207,18 +207,36 @@ int main(void) {
 		}
 
 		/* Render scene */
+		// FIXME: we should move the camera during "update" not during render
+		Vector2 player_position = { 0 };
+		EntityManager_get_position(&entities, player_id, &player_position);
+		const Camera2D camera = {
+			.target = player_position,
+			.offset = { RESOLUTION_WIDTH / 2, RESOLUTION_HEIGHT / 2 },
+			.rotation = 0.0f,
+			.zoom = 1.0f,
+		};
 		BeginTextureMode(screen_texture);
+		BeginMode2D(camera);
 		{
-			const Vector2 screen_middle = {
-				.x = RESOLUTION_WIDTH / 2,
-				.y = RESOLUTION_HEIGHT / 2,
-			};
-
 			// Draw background
 			ClearBackground(BLACK);
 			Texture2D grass_tile_texture = { 0 };
 			ResourceManager_get_texture(&resources, grass_tile_texture_id, &grass_tile_texture);
-			DrawTextureRec(grass_tile_texture, (Rectangle) { 0, 0, 2 * RESOLUTION_WIDTH, 2 * RESOLUTION_HEIGHT }, (Vector2) { 0, 0 }, WHITE);
+			DrawTextureRec(
+				grass_tile_texture,
+				(Rectangle) {
+					0,
+					0,
+					2 * RESOLUTION_WIDTH,
+					2 * RESOLUTION_HEIGHT,
+				},
+				(Vector2) {
+					-RESOLUTION_WIDTH,
+					-RESOLUTION_HEIGHT,
+				},
+				WHITE
+			);
 
 			/* Render sprites */
 			EntityID y_sorted_entities[MAX_NUM_ENTITES] = { 0 };
@@ -236,8 +254,8 @@ int main(void) {
 				ResourceManager_get_texture(&resources, sprite.texture_id, &texture);
 
 				Vector2 camera_space_top_left = (Vector2) {
-					.x = position.x + screen_middle.x - sprite.clip_rect.width / 2,
-					.y = position.y + screen_middle.y - sprite.clip_rect.height / 2,
+					.x = position.x - sprite.clip_rect.width / 2,
+					.y = position.y - sprite.clip_rect.height / 2,
 				};
 
 				/* Render sprite*/
@@ -253,15 +271,10 @@ int main(void) {
 					EntityManager_get_position(&entities, id, &position);
 					EntityManager_get_collision_shape(&entities, id, &collision_shape);
 
-					Vector2 camera_space_center = (Vector2) {
-						.x = position.x + screen_middle.x,
-						.y = position.y + screen_middle.y,
-					};
-
 					switch (collision_shape.type) {
 						case ShapeType_Circle:
-							DrawCircle(camera_space_center.x, camera_space_center.y, collision_shape.circle.radius, ColorAlpha(GREEN, 0.5f));
-							DrawCircleLines(camera_space_center.x, camera_space_center.y, collision_shape.circle.radius, GREEN);
+							DrawCircle(position.x, position.y, collision_shape.circle.radius, ColorAlpha(GREEN, 0.5f));
+							DrawCircleLines(position.x, position.y, collision_shape.circle.radius, GREEN);
 							break;
 					}
 				}
@@ -278,6 +291,7 @@ int main(void) {
 				DrawText(text, 0, font_size, font_size, WHITE);
 			}
 		}
+		EndMode2D();
 		EndTextureMode();
 
 		/* Render window */
