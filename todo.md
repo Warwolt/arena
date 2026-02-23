@@ -4,6 +4,7 @@
 # Doing
 
 # Done
+- Render drop shadows
 - Add background image and camera following player
 - Store position as part of Entity struct
 - Add and remove entities and all their components
