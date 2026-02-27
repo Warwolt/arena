@@ -24,6 +24,38 @@ typedef enum SceneID {
 	SceneID_Gameplay,
 } SceneID;
 
+typedef struct GameState {
+	SceneID scene_id;
+} GameState;
+
+void MainMenu_update(GameState* game) {
+	if (IsKeyPressed(KEY_ENTER)) {
+		game->scene_id = SceneID_Gameplay;
+	}
+}
+
+void MainMenu_render(const GameState* game) {
+	ClearBackground(PURPLE);
+	const int font_size = 64;
+	const char* text = "Main Menu";
+	int text_width = MeasureText(text, font_size);
+	DrawText(text, (RESOLUTION_WIDTH - text_width) / 2, (RESOLUTION_HEIGHT - font_size) / 2, font_size, WHITE);
+}
+
+void Gameplay_update(GameState* game) {
+	if (IsKeyPressed(KEY_ENTER)) {
+		game->scene_id = SceneID_MainMenu;
+	}
+}
+
+void Gameplay_render(const GameState* game) {
+	ClearBackground(GREEN);
+	const int font_size = 64;
+	const char* text = "Gameplay";
+	int text_width = MeasureText(text, font_size);
+	DrawText(text, (RESOLUTION_WIDTH - text_width) / 2, (RESOLUTION_HEIGHT - font_size) / 2, font_size, WHITE);
+}
+
 int main(void) {
 	/* Init */
 	initialize_logging();
@@ -38,26 +70,23 @@ int main(void) {
 	ResourceManager resources = { 0 };
 
 	/* State */
-	SceneID scene_id = SceneID_MainMenu;
+	GameState game = { .scene_id = SceneID_MainMenu };
 
 	/* Run program */
 	while (!WindowShouldClose()) {
+		if (IsKeyPressed(KEY_F11)) {
+			toggle_fullscreen();
+		}
+
 		/* Update */
-		const char* scene_text = "";
 		{
-			switch (scene_id) {
+			switch (game.scene_id) {
 				case SceneID_MainMenu:
-					scene_text = "Main Menu";
-					if (IsKeyPressed(KEY_ENTER)) {
-						scene_id = SceneID_Gameplay;
-					}
+					MainMenu_update(&game);
 					break;
 
 				case SceneID_Gameplay:
-					scene_text = "Gameplay";
-					if (IsKeyPressed(KEY_ENTER)) {
-						scene_id = SceneID_MainMenu;
-					}
+					Gameplay_update(&game);
 					break;
 			}
 		}
@@ -65,11 +94,15 @@ int main(void) {
 		/* Render scene */
 		BeginTextureMode(screen_texture);
 		{
-			ClearBackground(PURPLE);
-			const int font_size = 64;
-			// const char* text = "Scene One";
-			int text_width = MeasureText(scene_text, font_size);
-			DrawText(scene_text, (RESOLUTION_WIDTH - text_width) / 2, (RESOLUTION_HEIGHT - font_size) / 2, font_size, WHITE);
+			switch (game.scene_id) {
+				case SceneID_MainMenu:
+					MainMenu_render(&game);
+					break;
+
+				case SceneID_Gameplay:
+					Gameplay_render(&game);
+					break;
+			}
 		}
 		EndTextureMode();
 
