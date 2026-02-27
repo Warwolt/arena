@@ -19,29 +19,10 @@
 #define RESOLUTION_WIDTH (int)768
 #define RESOLUTION_HEIGHT (int)432
 
-int compare_position_ids_by_y_coordinate(void* ctx, const void* lhs, const void* rhs) {
-	EntityManager* entities = (EntityManager*)ctx;
-	EntityID lhs_id = *(const EntityID*)lhs;
-	EntityID rhs_id = *(const EntityID*)rhs;
-	Vector2 lhs_pos = { 0 };
-	Vector2 rhs_pos = { 0 };
-	EntityManager_get_position(entities, lhs_id, &lhs_pos);
-	EntityManager_get_position(entities, rhs_id, &rhs_pos);
-	if (lhs_pos.y < rhs_pos.y) {
-		return -1;
-	} else if (lhs_pos.y == rhs_pos.y) {
-		return 0;
-	} else {
-		return 1;
-	}
-}
-
-EntityID add_physical_object(EntityManager* entities, Vector2 position, Sprite sprite, Shape collision_shape) {
-	EntityID id = EntityManager_add_entity(entities, position);
-	EntityManager_add_sprite(entities, id, sprite);
-	EntityManager_add_collision_shape(entities, id, collision_shape);
-	return id;
-}
+typedef enum SceneID {
+	SceneID_MainMenu,
+	SceneID_Gameplay,
+} SceneID;
 
 int main(void) {
 	/* Init */
@@ -57,11 +38,28 @@ int main(void) {
 	ResourceManager resources = { 0 };
 
 	/* State */
+	SceneID scene_id = SceneID_MainMenu;
 
 	/* Run program */
 	while (!WindowShouldClose()) {
 		/* Update */
+		const char* scene_text = "";
 		{
+			switch (scene_id) {
+				case SceneID_MainMenu:
+					scene_text = "Main Menu";
+					if (IsKeyPressed(KEY_ENTER)) {
+						scene_id = SceneID_Gameplay;
+					}
+					break;
+
+				case SceneID_Gameplay:
+					scene_text = "Gameplay";
+					if (IsKeyPressed(KEY_ENTER)) {
+						scene_id = SceneID_MainMenu;
+					}
+					break;
+			}
 		}
 
 		/* Render scene */
@@ -69,9 +67,9 @@ int main(void) {
 		{
 			ClearBackground(PURPLE);
 			const int font_size = 64;
-			const char* text = "Scene One";
-			int text_width = MeasureText(text, font_size);
-			DrawText(text, (RESOLUTION_WIDTH - text_width) / 2, (RESOLUTION_HEIGHT - font_size) / 2, font_size, WHITE);
+			// const char* text = "Scene One";
+			int text_width = MeasureText(scene_text, font_size);
+			DrawText(scene_text, (RESOLUTION_WIDTH - text_width) / 2, (RESOLUTION_HEIGHT - font_size) / 2, font_size, WHITE);
 		}
 		EndTextureMode();
 
