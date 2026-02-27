@@ -26,11 +26,15 @@ typedef enum SceneID {
 
 typedef struct GameState {
 	SceneID scene_id;
+	bool should_quit;
 } GameState;
 
 void MainMenu_update(GameState* game) {
 	if (IsKeyPressed(KEY_ENTER)) {
 		game->scene_id = SceneID_Gameplay;
+	}
+	if (IsKeyPressed(KEY_ESCAPE)) {
+		game->should_quit = true;
 	}
 }
 
@@ -43,7 +47,7 @@ void MainMenu_render(const GameState* game) {
 }
 
 void Gameplay_update(GameState* game) {
-	if (IsKeyPressed(KEY_ENTER)) {
+	if (IsKeyPressed(KEY_ESCAPE)) {
 		game->scene_id = SceneID_MainMenu;
 	}
 }
@@ -61,6 +65,7 @@ int main(void) {
 	initialize_logging();
 	SetTraceLogLevel(LOG_WARNING);
 	InitWindow(RESOLUTION_WIDTH, RESOLUTION_HEIGHT, "Program");
+	SetExitKey(KEY_NULL);
 	LOG_INFO("Created window");
 
 	// Render texture
@@ -73,10 +78,12 @@ int main(void) {
 	GameState game = { .scene_id = SceneID_MainMenu };
 
 	/* Run program */
-	while (!WindowShouldClose()) {
+	while (!game.should_quit) {
 		if (IsKeyPressed(KEY_F11)) {
 			toggle_fullscreen();
 		}
+
+		game.should_quit = WindowShouldClose();
 
 		/* Update */
 		{
