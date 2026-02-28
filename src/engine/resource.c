@@ -2,7 +2,7 @@
 
 #include "platform/logging.h"
 
-#define DEBUG_RESOURCE_MANAGER true
+#define DEBUG_RESOURCE_MANAGER false
 
 TextureID ResourceManager_load_texture(ResourceManager* resources, const char* filename) {
 	if (resources->textures.size == MAX_TEXTURE_RESOURCES) {

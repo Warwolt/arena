@@ -8,12 +8,13 @@
 #include <stdlib.h>
 
 void Game_initialize(Game* game, int screen_width, int screen_height) {
+	const SceneID start_scene = SceneID_MainMenu;
 	*game = (Game) {
 		.should_quit = false,
 		.resources = { 0 },
 		.screen = LoadRenderTexture(screen_width, screen_height),
 	};
-	Game_switch_scene(game, SceneID_MainMenu);
+	Game_switch_scene(game, start_scene);
 }
 
 void Game_update(Game* game) {

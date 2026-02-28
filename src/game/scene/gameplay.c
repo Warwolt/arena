@@ -135,6 +135,9 @@ void Gameplay_render(const Game* game) {
 				.y = position.y - sprite.clip_rect.height / 2,
 			};
 
+			/* Draw shadow */
+			DrawEllipseV(Vector2Add(position, (Vector2) { 0, 20 }), 18, 12, ColorAlpha(BLACK, 0.17f));
+
 			/* Draw current sprite */
 			DrawTextureRec(texture, sprite.clip_rect, sprite_top_left, WHITE);
 		}
