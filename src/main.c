@@ -17,22 +17,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-// low resolution 16:9
-#define RESOLUTION_WIDTH (int)768
-#define RESOLUTION_HEIGHT (int)432
-
 int main(void) {
-	/* Init */
-	initialize_logging();
-	SetTraceLogLevel(LOG_WARNING);
-	InitWindow(RESOLUTION_WIDTH, RESOLUTION_HEIGHT, "Program");
-	SetExitKey(KEY_NULL);
-	SetTargetFPS(120);
-	LOG_INFO("Created window");
-
 	/* State */
 	Game game = { 0 };
-	Game_initialize(&game, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
+	Game_initialize(&game);
 
 	/* Run program */
 	while (!game.should_quit) {
@@ -41,8 +29,6 @@ int main(void) {
 	}
 
 	/* Shutdown */
-	LOG_INFO("Shutdown");
-	ResourceManager_unload_resources(&game.resources);
-	CloseWindow();
+	Game_shutdown(&game);
 	return 0;
 }

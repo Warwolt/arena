@@ -17,7 +17,8 @@ typedef struct Game {
 	Scene scene;
 } Game;
 
-void Game_initialize(Game* game, int screen_width, int screen_height);
+void Game_initialize(Game* game);
+void Game_shutdown(Game* game);
 void Game_update(Game* game);
 void Game_render(const Game* game);
 
