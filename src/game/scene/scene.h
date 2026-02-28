@@ -24,6 +24,3 @@ typedef struct Scene {
 		Gameplay gameplay;
 	};
 } Scene;
-
-void Gameplay_update(Game* game);
-void Gameplay_render(const Game* game);

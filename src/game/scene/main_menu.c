@@ -1,5 +1,10 @@
 #include "game/scene/main_menu.h"
 
+#include "game/game.h"
+
+#include <raylib.h>
+#include <raymath.h>
+
 void MainMenu_update(Game* game) {
 	if (IsKeyPressed(KEY_ENTER)) {
 		Game_switch_scene(game, SceneID_Gameplay);

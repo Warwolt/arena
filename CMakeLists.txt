@@ -28,7 +28,7 @@ add_library(source
     src/engine/entity.c
     src/engine/resource.c
     src/game/scene/main_menu.c
-    src/game/scene/scene.c
+    src/game/scene/gameplay.c
     src/platform/logging.c
     src/platform/window.c
     src/raylib_extra.c
