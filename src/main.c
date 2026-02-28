@@ -2,9 +2,8 @@
 #include "core/sparse_array.h"
 #include "entity.h"
 #include "logging.h"
+#include "platform/window.h"
 #include "resource.h"
-#include "win32.h"
-
 
 #include "raylib_extra.h"
 #include <raylib.h>
@@ -131,7 +130,7 @@ int main(void) {
 			/* Function keys */
 			{
 				if (IsKeyPressed(KEY_F11)) {
-					toggle_fullscreen();
+					Window_toggle_fullscreen();
 				}
 
 				if (IsKeyPressed(KEY_F3)) {

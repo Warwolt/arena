@@ -1,4 +1,4 @@
-#include "win32.h"
+#include "platform/window.h"
 
 #include <windows.h>
 
@@ -7,7 +7,7 @@ void* GetWindowHandle(void);
 
 // Based on Raymond Chen's "How do I switch a window between normal and fullscreen?"
 // https://devblogs.microsoft.com/oldnewthing/20100412-00/?p=14353
-void toggle_fullscreen() {
+void Window_toggle_fullscreen() {
 	static WINDOWPLACEMENT m_placement;
 	HWND handle = GetWindowHandle();
 
