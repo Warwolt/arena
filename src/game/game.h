@@ -17,10 +17,7 @@ typedef struct Game {
 void Game_update(Game* game);
 void Game_render(const Game* game);
 
-inline void Game_quit(Game* game) {
-	game->should_quit = true;
-}
+void Game_quit(Game* game);
+void Game_switch_scene(Game* game, SceneID id);
 
-inline void Game_switch_scene(Game* game, SceneID id) {
-	game->scene = (Scene) { .id = id };
-}
+Rectangle Game_screen_rect(const Game* game);
