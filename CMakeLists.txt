@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.16.0)
 project(arena)
 enable_language(C)
-include(CheckCCompilerFlag)
 
 # Add Raylib
 set(BUILD_SHARED_LIBS ON)
@@ -10,8 +9,8 @@ add_subdirectory(lib/raylib)
 # Set warnings
 add_compile_options(
     /std:clatest # use C23
-    /W4
-    /WX
+    /W4     # warning level 4
+    /WX     # warnings as errors
     /wd4244 # allow implicit conversion int and float
     /wd4100 # allow function parameters to be declared but not used
     /wd4101 # allow unreferenced local variable
