@@ -321,7 +321,7 @@ int main(void) {
 			}
 			EndMode2D();
 
-			/* Rendder HUD */
+			/* Render HUD */
 			{
 				// Draw FPS
 				if (show_debug_overlay) {

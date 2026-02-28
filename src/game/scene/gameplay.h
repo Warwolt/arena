@@ -11,6 +11,8 @@ typedef struct Gameplay {
 	Camera2D camera;
 	TextureID bg_texture_id;
 	EntityID player_id;
+	EntityID donut_id;
+	EntityID donut2_id;
 } Gameplay;
 
 void Gameplay_initialize(Game* game);

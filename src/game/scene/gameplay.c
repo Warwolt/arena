@@ -17,8 +17,14 @@ void Gameplay_initialize(Game* game) {
 	const int screen_width = game->screen.texture.width;
 	const int screen_height = game->screen.texture.height;
 
-	const TextureID player_texture_id = ResourceManager_load_texture(&game->resources, "resource/image/pill.png");
-	const Rectangle player_sprite_rect = (Rectangle) { 0, 0, 64, 64 };
+	const Sprite player_sprite = {
+		.texture_id = ResourceManager_load_texture(&game->resources, "resource/image/pill.png"),
+		.clip_rect = (Rectangle) { 0, 0, 64, 64 },
+	};
+	const Sprite donut_sprite = {
+		.texture_id = ResourceManager_load_texture(&game->resources, "resource/image/spinning_donut.png"),
+		.clip_rect = (Rectangle) { 0, 0, 64, 64 },
+	};
 
 	game->scene.gameplay = (Gameplay) {
 		.room_width = screen_width * 2,
@@ -31,15 +37,9 @@ void Gameplay_initialize(Game* game) {
 				.zoom = 1.0f,
 			},
 		.bg_texture_id = ResourceManager_load_texture(&game->resources, "resource/image/grass_tile.png"),
-		.player_id = add_physical_object(
-			&game->entities,
-			Vector2Zero(),
-			(Sprite) {
-				.texture_id = player_texture_id,
-				.clip_rect = player_sprite_rect,
-			},
-			Shape_circle((Circle) { .radius = 16 })
-		),
+		.player_id = add_physical_object(&game->entities, Vector2Zero(), player_sprite, Shape_circle((Circle) { .radius = 16 })),
+		.donut_id = add_physical_object(&game->entities, (Vector2) { -48, 0 }, donut_sprite, Shape_circle((Circle) { .radius = 8 })),
+		.donut2_id = add_physical_object(&game->entities, (Vector2) { -112, 0 }, donut_sprite, Shape_circle((Circle) { .radius = 8 })),
 	};
 }
 
@@ -135,12 +135,31 @@ void Gameplay_render(const Game* game) {
 				.y = position.y - sprite.clip_rect.height / 2,
 			};
 
-			/* Draw shadow */
-			DrawEllipseV(Vector2Add(position, (Vector2) { 0, 20 }), 18, 12, ColorAlpha(BLACK, 0.17f));
-
 			/* Draw current sprite */
 			DrawTextureRec(texture, sprite.clip_rect, sprite_top_left, WHITE);
 		}
+
+		/* Draw collision shapes */
+		if (game->show_debug_overlay) {
+			for (int i = 0; i < game->entities.components.collision_shapes.size; i++) {
+				const Entity* entity = &game->entities.entities.values[i];
+				Vector2 position = { 0 };
+				Shape collision_shape = { 0 };
+				EntityManager_get_position(&game->entities, entity->id, &position);
+				EntityManager_get_collision_shape(&game->entities, entity->id, &collision_shape);
+
+				switch (collision_shape.type) {
+					case ShapeType_Circle:
+						DrawCircle(position.x, position.y, collision_shape.circle.radius, ColorAlpha(GREEN, 0.5f));
+						DrawCircleLines(position.x, position.y, collision_shape.circle.radius, GREEN);
+						break;
+				}
+			}
+		}
 	}
 	EndMode2D();
+
+	/* Render HUD*/
+	{
+	}
 }

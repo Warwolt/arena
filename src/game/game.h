@@ -10,6 +10,7 @@
 
 typedef struct Game {
 	bool should_quit;
+	bool show_debug_overlay;
 	RenderTexture screen;
 	ResourceManager resources;
 	EntityManager entities;

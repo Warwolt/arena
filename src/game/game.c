@@ -25,6 +25,10 @@ void Game_update(Game* game) {
 		Window_toggle_fullscreen();
 	}
 
+	if (IsKeyPressed(KEY_F3)) {
+		game->show_debug_overlay = !game->show_debug_overlay;
+	}
+
 	/* Update scene */
 	switch (game->scene.id) {
 		case SceneID_MainMenu:

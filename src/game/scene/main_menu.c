@@ -48,11 +48,11 @@ void MainMenu_update(Game* game) {
 		}
 	}
 
-	if (IsKeyPressed(KEY_DOWN)) {
+	if (IsKeyPressed(KEY_DOWN) || IsKeyPressed('S')) {
 		main_menu->selected_menu_item = (MenuItem_Count + main_menu->selected_menu_item + 1) % MenuItem_Count;
 	}
 
-	if (IsKeyPressed(KEY_UP)) {
+	if (IsKeyPressed(KEY_UP) || IsKeyPressed('W')) {
 		main_menu->selected_menu_item = (MenuItem_Count + main_menu->selected_menu_item - 1) % MenuItem_Count;
 	}
 }
