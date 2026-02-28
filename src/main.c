@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-// UFO 50 is 16:9 at 384x216 resolution
+// low resolution 16:9
 #define RESOLUTION_WIDTH (int)768
 #define RESOLUTION_HEIGHT (int)432
 
@@ -30,12 +30,8 @@ int main(void) {
 	LOG_INFO("Created window");
 
 	/* State */
-	Game game = {
-		.should_quit = false,
-		.scene = { .id = SceneID_MainMenu },
-		.resources = { 0 },
-		.screen = LoadRenderTexture(RESOLUTION_WIDTH, RESOLUTION_HEIGHT),
-	};
+	Game game = { 0 };
+	Game_initialize(&game, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
 
 	/* Run program */
 	while (!game.should_quit) {

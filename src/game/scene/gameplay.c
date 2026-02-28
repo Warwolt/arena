@@ -1,9 +1,14 @@
 #include "game/scene/gameplay.h"
 
 #include "game/game.h"
+#include "platform/logging.h"
 
 #include <raylib.h>
 #include <raymath.h>
+
+void Gameplay_initialize(Game* game) {
+	LOG_DEBUG("Gameplay initialize");
+}
 
 void Gameplay_update(Game* game) {
 	if (IsKeyPressed(KEY_ESCAPE)) {

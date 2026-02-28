@@ -1,6 +1,7 @@
 #include "game/scene/main_menu.h"
 
 #include "game/game.h"
+#include "platform/logging.h"
 
 #include <raylib.h>
 #include <raymath.h>
@@ -11,7 +12,7 @@ typedef enum MenuItem {
 	MenuItem_Count,
 } MenuItem;
 
-void draw_centered_horizontally(const Game* game, const char* text, int font_size, int y) {
+static void draw_centered_horizontally(const Game* game, const char* text, int font_size, int y) {
 	int text_width = MeasureText(text, font_size);
 	Rectangle screen = Game_screen_rect(game);
 	Vector2 position = {
@@ -19,6 +20,10 @@ void draw_centered_horizontally(const Game* game, const char* text, int font_siz
 		.y = y,
 	};
 	DrawText(text, position.x, position.y, font_size, WHITE);
+}
+
+void MainMenu_initialize(Game* game) {
+	LOG_DEBUG("MainMenu initialize");
 }
 
 void MainMenu_update(Game* game) {

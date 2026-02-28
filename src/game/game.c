@@ -7,6 +7,15 @@
 
 #include <stdlib.h>
 
+void Game_initialize(Game* game, int screen_width, int screen_height) {
+	*game = (Game) {
+		.should_quit = false,
+		.resources = { 0 },
+		.screen = LoadRenderTexture(screen_width, screen_height),
+	};
+	Game_switch_scene(game, SceneID_MainMenu);
+}
+
 void Game_update(Game* game) {
 	/* Global behavior */
 	game->should_quit = WindowShouldClose();
@@ -73,6 +82,15 @@ void Game_quit(Game* game) {
 
 void Game_switch_scene(Game* game, SceneID id) {
 	game->scene = (Scene) { .id = id };
+	switch (id) {
+		case SceneID_MainMenu:
+			MainMenu_initialize(game);
+			break;
+
+		case SceneID_Gameplay:
+			Gameplay_initialize(game);
+			break;
+	}
 }
 
 Rectangle Game_screen_rect(const Game* game) {
