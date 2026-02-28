@@ -19,11 +19,11 @@ endif()
 add_library(source
     src/core/arena.c
     src/core/sparse_array.c
+    src/engine/entity.c
+    src/engine/resource.c
     src/platform/window.c
-    src/entity.c
-    src/logging.c
+    src/platform/logging.c
     src/raylib_extra.c
-    src/resource.c
 )
 target_include_directories(source PUBLIC src lib)
 target_link_libraries(source raylib)

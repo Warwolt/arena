@@ -1,9 +1,9 @@
-#include "component.h"
 #include "core/sparse_array.h"
-#include "entity.h"
-#include "logging.h"
+#include "engine/component.h"
+#include "engine/entity.h"
+#include "engine/resource.h"
+#include "platform/logging.h"
 #include "platform/window.h"
-#include "resource.h"
 
 #include "raylib_extra.h"
 #include <raylib.h>

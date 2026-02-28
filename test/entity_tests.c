@@ -1,6 +1,6 @@
 #include <rktest/rktest.h>
 
-#include "entity.h"
+#include "engine/entity.h"
 
 #include <raymath.h>
 
