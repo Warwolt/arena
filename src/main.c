@@ -1,8 +1,8 @@
 #include "component.h"
 #include "entity.h"
 #include "logging.h"
-#include "sparse_array.h"
 #include "resource.h"
+#include "sparse_array.h"
 #include "win32.h"
 
 #include "raylib_extra.h"
