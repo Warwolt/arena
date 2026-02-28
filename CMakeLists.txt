@@ -14,6 +14,7 @@ add_compile_options(
     /W4
     /wd4244 # allow implicit conversion int and float
     /wd4100 # allow function parameters to be declared but not used
+    /wd4028 # formal parameter different from declaration (allow forward declare typedef struct)
     /w44062 # warn about missing cases in switch-case
 )
 if (WARNINGS_AS_ERRORS)
@@ -25,9 +26,10 @@ add_library(source
     src/arena.c
     src/entity.c
     src/logging.c
-    src/sparse_array.c
     src/raylib_extra.c
     src/resource.c
+    src/scene.c
+    src/sparse_array.c
     src/win32.c
 )
 target_include_directories(source PUBLIC src lib)
