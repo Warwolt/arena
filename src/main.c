@@ -30,7 +30,7 @@ int main(void) {
 	LOG_INFO("Created window");
 
 	/* State */
-	GameState game = { .scene_id = SceneID_MainMenu };
+	Game game = { .scene = { .id = SceneID_MainMenu } };
 	RenderTexture2D screen_texture = LoadRenderTexture(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
 
 	/* Run program */
@@ -43,7 +43,8 @@ int main(void) {
 				Window_toggle_fullscreen();
 			}
 
-			switch (game.scene_id) {
+			/* Update scene */
+			switch (game.scene.id) {
 				case SceneID_MainMenu:
 					MainMenu_update(&game);
 					break;
@@ -57,7 +58,7 @@ int main(void) {
 		/* Render scene */
 		BeginTextureMode(screen_texture);
 		{
-			switch (game.scene_id) {
+			switch (game.scene.id) {
 				case SceneID_MainMenu:
 					MainMenu_render(&game);
 					break;

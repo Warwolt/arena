@@ -1,14 +1,32 @@
 #pragma once
 
-typedef struct GameState GameState;
+#include <stdbool.h>
+
+typedef struct Game Game;
 
 typedef enum SceneID {
 	SceneID_MainMenu,
 	SceneID_Gameplay,
 } SceneID;
 
-void MainMenu_update(GameState* game);
-void MainMenu_render(GameState* game);
+typedef struct MainMenu {
+	int value;
+} MainMenu;
 
-void Gameplay_update(GameState* game);
-void Gameplay_render(GameState* game);
+typedef struct Gameplay {
+	int value;
+} Gameplay;
+
+typedef struct Scene {
+	SceneID id;
+	union {
+		MainMenu main_menu;
+		Gameplay gameplay;
+	};
+} Scene;
+
+void MainMenu_update(Game* game);
+void MainMenu_render(const Game* game);
+
+void Gameplay_update(Game* game);
+void Gameplay_render(const Game* game);

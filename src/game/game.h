@@ -5,8 +5,8 @@
 
 #include <stdbool.h>
 
-typedef struct GameState {
-	SceneID scene_id;
+typedef struct Game {
 	bool should_quit;
-	EngineState engine;
-} GameState;
+	Scene scene;
+	Engine engine;
+} Game;

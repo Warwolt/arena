@@ -2,6 +2,6 @@
 
 #include "engine/resource.h"
 
-typedef struct EngineState {
+typedef struct Engine {
 	ResourceManager resources;
-} EngineState;
+} Engine;
