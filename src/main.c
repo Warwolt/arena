@@ -2,11 +2,10 @@
 #include "engine/component.h"
 #include "engine/entity.h"
 #include "engine/resource.h"
+#include "game/game.h"
+#include "game/scene.h"
 #include "platform/logging.h"
 #include "platform/window.h"
-
-#include "game.h"
-#include "scene.h"
 
 #include "raylib_extra.h"
 #include <raylib.h>

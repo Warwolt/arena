@@ -27,10 +27,10 @@ add_library(source
     src/core/sparse_array.c
     src/engine/entity.c
     src/engine/resource.c
-    src/platform/window.c
+    src/game/scene.c
     src/platform/logging.c
+    src/platform/window.c
     src/raylib_extra.c
-    src/scene.c
 )
 target_include_directories(source PUBLIC src lib)
 target_link_libraries(source raylib)

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "scene.h"
+#include "game/scene.h"
 
 #include <stdbool.h>
 
