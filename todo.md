@@ -5,9 +5,8 @@
 - Settings screen, toggle fullscreen on/off
 - DLL based hot reloading
 
-- Pause menu (render as overlay, stop updating game while paused)
-
 # Done
+- Pause menu (render as overlay, stop updating game while paused)
 - Add for_each macro for nice iteration
 - Basic scene handling
 - Rename Map to SparseArray
