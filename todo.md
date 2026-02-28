@@ -1,6 +1,9 @@
 # TODO
-- Integrate ImGui so we can visualize system states
+- Basic scene handling
 - Fix a better clang format file
+- Implement a HashMap data structure (map string to value)
+- When loading already loaded resource, return existing ID (needs HashMap)
+- Integrate ImGui so we can visualize system states
 
 # Done
 - Rename Map to SparseArray

@@ -41,6 +41,10 @@ void MainMenu_update(Game* game) {
 		}
 	}
 
+	if (IsKeyPressed(KEY_ESCAPE)) {
+		main_menu->selected_menu_item = MenuItem_Quit;
+	}
+
 	if (IsKeyPressed(KEY_DOWN)) {
 		main_menu->selected_menu_item = (MenuItem_Count + main_menu->selected_menu_item + 1) % MenuItem_Count;
 	}
