@@ -7,6 +7,10 @@
 
 # Doing
 - DLL based hot reloading
+  - [x] link Raylib as a DLL
+  - [] link game code as a DLL
+  - [] command for rebuilding game code DLL
+  - [] load the rebuilt DLL
 
 # Done
 - Pause menu (render as overlay, stop updating game while paused)

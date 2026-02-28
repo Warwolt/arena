@@ -4,6 +4,7 @@ enable_language(C)
 include(CheckCCompilerFlag)
 
 # Add Raylib
+set(BUILD_SHARED_LIBS ON)
 add_subdirectory(lib/raylib)
 
 # Set warnings
@@ -53,3 +54,11 @@ add_executable(tests
 )
 target_include_directories(tests PUBLIC src lib)
 target_link_libraries(tests source)
+
+# Copy DLL
+add_custom_command(TARGET main POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:raylib>   # Source DLL
+        $<TARGET_FILE_DIR:main> # Destination = main exe dir
+    COMMENT "Copy raylib DLL to executable directory"
+)
