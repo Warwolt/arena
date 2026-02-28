@@ -31,10 +31,12 @@ int main(void) {
 
 	/* State */
 	Game game = {
+		.should_quit = false,
 		.scene = { .id = SceneID_MainMenu },
-		.engine = {
-			.screen_width = RESOLUTION_WIDTH,
-			.screen_height = RESOLUTION_HEIGHT,
+		.resources = { 0 },
+		.screen = {
+			.width = RESOLUTION_WIDTH,
+			.height = RESOLUTION_HEIGHT,
 		},
 	};
 	RenderTexture2D screen_texture = LoadRenderTexture(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
@@ -109,7 +111,7 @@ int main(void) {
 
 	/* Shutdown */
 	LOG_INFO("Shutdown");
-	ResourceManager_unload_resources(&game.engine.resources);
+	ResourceManager_unload_resources(&game.resources);
 	CloseWindow();
 	return 0;
 }
