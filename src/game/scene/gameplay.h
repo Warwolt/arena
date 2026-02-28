@@ -16,9 +16,7 @@ typedef struct Gameplay {
 	EntityID donut_id;
 	EntityID donut2_id;
 	EntityID coffe_id;
-	struct {
-		int selected_item;
-	} pause_menu;
+	int selected_pause_menu_item;
 } Gameplay;
 
 void Gameplay_initialize(Game* game);
