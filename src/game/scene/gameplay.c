@@ -89,7 +89,7 @@ void Gameplay_update(Game* game) {
 		gameplay->is_paused = !gameplay->is_paused;
 	}
 
-	/* Show pause menu if paused */
+	/* Show pause menu */
 	if (gameplay->is_paused) {
 		if (IsKeyPressed(KEY_DOWN) || IsKeyPressed('S')) {
 			gameplay->pause_menu.selected_item = (PauseMenuItem_Count + gameplay->pause_menu.selected_item + 1) % PauseMenuItem_Count;
@@ -109,7 +109,9 @@ void Gameplay_update(Game* game) {
 					Game_switch_scene(game, SceneID_MainMenu);
 			}
 		}
-	} else {
+	}
+	/* Update scene */
+	else {
 		/* Increment time */
 		gameplay->time_now += GetFrameTime();
 
@@ -329,7 +331,7 @@ void Gameplay_render(const Game* game) {
 			DrawText(text, pos_x, pos_y, font_size_small, WHITE);
 		}
 		{
-			int pos_x = menu_rect.x + 64;
+			int pos_x = menu_rect.x + 48;
 			int pos_y = top_margin + font_size_big + title_padding + font_size_small * gameplay->pause_menu.selected_item;
 			DrawText(">", pos_x, pos_y, font_size_small, WHITE);
 		}
