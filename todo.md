@@ -1,12 +1,13 @@
 # TODO
-- Implement iterator for SparseArray for better for-loops
 - Pause menu (render as overlay, stop updating game while paused)
 - Fix a better clang format file
 - Implement a HashMap data structure (map string to value)
 - When loading already loaded resource, return existing ID (needs HashMap)
 - Integrate ImGui so we can visualize system states
+- Settings screen, toggle fullscreen on/off
 
 # Done
+- Add for_each macro for nice iteration
 - Basic scene handling
 - Rename Map to SparseArray
 - Render drop shadows

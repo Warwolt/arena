@@ -64,7 +64,7 @@ void MainMenu_render(const Game* game) {
 	const int small_font_size = 48;
 
 	Rectangle screen = Game_screen_rect(game);
-	draw_centered_horizontally(game, "Main Menu", big_font_size, big_font_size + big_font_size);
+	draw_centered_horizontally(game, "Game", big_font_size, big_font_size + big_font_size);
 	draw_centered_horizontally(game, "Play", small_font_size, screen.height / 2);
 	draw_centered_horizontally(game, "Quit", small_font_size, screen.height / 2 + small_font_size);
 

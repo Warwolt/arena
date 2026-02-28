@@ -34,6 +34,14 @@ bool TestSparseArray_contains(TestSparseArray* array, size_t key) {
 	return SparseArray_contains(array, key);
 }
 
+int* TestSparseArray_begin(TestSparseArray* array) {
+	return &array->values[0];
+}
+
+int* TestSparseArray_end(TestSparseArray* array) {
+	return &array->values[array->size];
+}
+
 TEST(SparseArrayTests, InsertElement_GetElement) {
 	TestSparseArray array = { 0 };
 	size_t key = 11;

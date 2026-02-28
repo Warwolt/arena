@@ -44,6 +44,20 @@ bool EntityManager_remove_entity(EntityManager* entities, EntityID id) {
 	return entity != NULL;
 }
 
+bool EntityManager_has_component(const EntityManager* entities, EntityID id, ComponentType component) {
+	const Entity* entity = NULL;
+	SparseArray_get_ptr(&entities->entities, id.value, &entity);
+	if (!entity) {
+		return false;
+	}
+	for (size_t i = 0; i < entity->num_components; i++) {
+		if (entity->components[i] == component) {
+			return true;
+		}
+	}
+	return false;
+}
+
 bool EntityManager_get_position(const EntityManager* entities, EntityID id, Vector2* position) {
 	Entity* entity = NULL;
 	SparseArray_get_ptr(&entities->entities, id.value, &entity);
