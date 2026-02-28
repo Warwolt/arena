@@ -41,7 +41,11 @@ void MainMenu_update(Game* game) {
 	}
 
 	if (IsKeyPressed(KEY_ESCAPE)) {
-		main_menu->selected_menu_item = MenuItem_Quit;
+		if (main_menu->selected_menu_item == MenuItem_Quit) {
+			game->should_quit = true;
+		} else {
+			main_menu->selected_menu_item = MenuItem_Quit;
+		}
 	}
 
 	if (IsKeyPressed(KEY_DOWN)) {

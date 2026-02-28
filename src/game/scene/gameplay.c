@@ -6,9 +6,19 @@
 #include <raylib.h>
 #include <raymath.h>
 
+static EntityID add_physical_object(EntityManager* entities, Vector2 position, Sprite sprite, Shape collision_shape) {
+	EntityID id = EntityManager_add_entity(entities, position);
+	EntityManager_add_sprite(entities, id, sprite);
+	EntityManager_add_collision_shape(entities, id, collision_shape);
+	return id;
+}
+
 void Gameplay_initialize(Game* game) {
 	const int screen_width = game->screen.texture.width;
 	const int screen_height = game->screen.texture.height;
+
+	const TextureID player_texture_id = ResourceManager_load_texture(&game->resources, "resource/image/pill.png");
+	const Rectangle player_sprite_rect = (Rectangle) { 0, 0, 64, 64 };
 
 	game->scene.gameplay = (Gameplay) {
 		.room_width = screen_width * 2,
@@ -16,11 +26,20 @@ void Gameplay_initialize(Game* game) {
 		.camera =
 			(Camera2D) {
 				.target = Vector2Zero(),
-				.offset = { screen_width / 2, screen_height / 2 },
+				.offset = (Vector2) { screen_width / 2, screen_height / 2 },
 				.rotation = 0.0f,
 				.zoom = 1.0f,
 			},
 		.bg_texture_id = ResourceManager_load_texture(&game->resources, "resource/image/grass_tile.png"),
+		.player_id = add_physical_object(
+			&game->entities,
+			Vector2Zero(),
+			(Sprite) {
+				.texture_id = player_texture_id,
+				.clip_rect = player_sprite_rect,
+			},
+			Shape_circle((Circle) { .radius = 16 })
+		),
 	};
 }
 
@@ -36,6 +55,7 @@ void Gameplay_update(Game* game) {
 		.x = room_width / 2,
 		.y = room_height / 2,
 	};
+
 	if (IsKeyPressed(KEY_ESCAPE)) {
 		Game_switch_scene(game, SceneID_MainMenu);
 	}
@@ -57,20 +77,31 @@ void Gameplay_update(Game* game) {
 		}
 		input_vec = Vector2Normalize(input_vec);
 
-		// Vector2 player_pos = Vector2Zero();
-		Vector2 player_pos = gameplay->player_position;
+		Vector2 player_pos = Vector2Zero();
 		const float delta_time = GetFrameTime();
 		const float player_speed = 300; // px / second
-		// EntityManager_get_position(&entities, player_id, &player_pos);
+		EntityManager_get_position(&game->entities, gameplay->player_id, &player_pos);
 
 		const Vector2 delta = Vector2Scale(input_vec, delta_time * player_speed);
 		const Vector2 moved_player_pos = Vector2Clamp(Vector2Add(player_pos, delta), room_top_left, room_bottom_right);
-		// EntityManager_set_position(&entities, player_id, moved_player_pos);
-		gameplay->player_position = moved_player_pos;
+		EntityManager_set_position(&game->entities, gameplay->player_id, moved_player_pos);
 	}
 
-	// temp
-	gameplay->camera.target = gameplay->player_position;
+	/* Move camera */
+	{
+		Vector2 player_position = { 0 };
+		EntityManager_get_position(&game->entities, gameplay->player_id, &player_position);
+		const Vector2 camera_top_left_bound = {
+			.x = room_top_left.x + game->screen.texture.width / 2,
+			.y = room_top_left.y + game->screen.texture.height / 2,
+		};
+		const Vector2 camera_bottom_right_bound = {
+			.x = room_bottom_right.x - game->screen.texture.width / 2,
+			.y = room_bottom_right.y - game->screen.texture.height / 2,
+
+		};
+		gameplay->camera.target = Vector2Clamp(player_position, camera_top_left_bound, camera_bottom_right_bound);
+	}
 }
 
 void Gameplay_render(const Game* game) {
@@ -83,11 +114,30 @@ void Gameplay_render(const Game* game) {
 	/* Render in camera */
 	BeginMode2D(gameplay->camera);
 	{
-		// Draw background
+		/* Draw background */
 		ClearBackground(BLACK);
 		Texture2D bg_texture = { 0 };
 		ResourceManager_get_texture(&game->resources, gameplay->bg_texture_id, &bg_texture);
 		DrawTextureRec(bg_texture, (Rectangle) { .width = gameplay->room_width, .height = gameplay->room_height }, room_top_left, WHITE);
+
+		/* Draw sprites */
+		for (int i = 0; i < game->entities.entities.size; i++) {
+			const Entity* entity = &game->entities.entities.values[i];
+			Vector2 position = { 0 };
+			Sprite sprite = { 0 };
+			Texture texture = { 0 };
+			EntityManager_get_position(&game->entities, entity->id, &position);
+			EntityManager_get_sprite(&game->entities, entity->id, &sprite);
+			ResourceManager_get_texture(&game->resources, sprite.texture_id, &texture);
+
+			Vector2 sprite_top_left = (Vector2) {
+				.x = position.x - sprite.clip_rect.width / 2,
+				.y = position.y - sprite.clip_rect.height / 2,
+			};
+
+			/* Draw current sprite */
+			DrawTextureRec(texture, sprite.clip_rect, sprite_top_left, WHITE);
+		}
 	}
 	EndMode2D();
 }

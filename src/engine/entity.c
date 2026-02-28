@@ -44,7 +44,7 @@ bool EntityManager_remove_entity(EntityManager* entities, EntityID id) {
 	return entity != NULL;
 }
 
-bool EntityManager_get_position(EntityManager* entities, EntityID id, Vector2* position) {
+bool EntityManager_get_position(const EntityManager* entities, EntityID id, Vector2* position) {
 	Entity* entity = NULL;
 	SparseArray_get_ptr(&entities->entities, id.value, &entity);
 	if (entity) {
@@ -69,7 +69,7 @@ void EntityManager_add_sprite(EntityManager* entities, EntityID id, Sprite sprit
 	}
 }
 
-bool EntityManager_get_sprite(EntityManager* entities, EntityID id, Sprite* sprite) {
+bool EntityManager_get_sprite(const EntityManager* entities, EntityID id, Sprite* sprite) {
 	return SparseArray_get(&entities->components.sprites, id.value, sprite);
 }
 
@@ -85,7 +85,7 @@ void EntityManager_add_collision_shape(EntityManager* entities, EntityID id, Sha
 	}
 }
 
-bool EntityManager_get_collision_shape(EntityManager* entities, EntityID id, Shape* shape) {
+bool EntityManager_get_collision_shape(const EntityManager* entities, EntityID id, Shape* shape) {
 	return SparseArray_get(&entities->components.collision_shapes, id.value, shape);
 }
 
