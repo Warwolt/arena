@@ -6,6 +6,8 @@
 typedef struct Game Game;
 
 typedef struct Gameplay {
+	bool is_paused;
+	float time_now;
 	int room_width;
 	int room_height;
 	Camera2D camera;
