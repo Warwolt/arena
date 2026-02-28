@@ -1,6 +1,6 @@
-#include "resource.h"
+#include "engine/resource.h"
 
-#include "logging.h"
+#include "platform/logging.h"
 
 TextureID ResourceManager_load_texture(ResourceManager* resources, const char* filename) {
 	if (resources->textures.size == MAX_TEXTURE_RESOURCES) {

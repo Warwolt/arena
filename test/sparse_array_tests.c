@@ -1,6 +1,6 @@
 #include <rktest/rktest.h>
 
-#include "sparse_array.h"
+#include "core/sparse_array.h"
 
 #define MAX_TEST_ITEMS 64
 typedef struct TestSparseArray {

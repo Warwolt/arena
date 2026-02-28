@@ -1,11 +1,12 @@
-#include "component.h"
-#include "entity.h"
+#include "core/sparse_array.h"
+#include "engine/component.h"
+#include "engine/entity.h"
+#include "engine/resource.h"
+#include "platform/logging.h"
+#include "platform/window.h"
+
 #include "game.h"
-#include "logging.h"
-#include "resource.h"
 #include "scene.h"
-#include "sparse_array.h"
-#include "win32.h"
 
 #include "raylib_extra.h"
 #include <raylib.h>
@@ -41,7 +42,7 @@ int main(void) {
 	/* Run program */
 	while (!game.should_quit) {
 		if (IsKeyPressed(KEY_F11)) {
-			toggle_fullscreen();
+			Window_toggle_fullscreen();
 		}
 
 		game.should_quit = WindowShouldClose();

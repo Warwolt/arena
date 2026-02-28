@@ -1,4 +1,4 @@
-#include "sparse_array.h"
+#include "core/sparse_array.h"
 
 #include <string.h>
 
