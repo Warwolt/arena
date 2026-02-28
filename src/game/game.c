@@ -5,6 +5,7 @@
 #include <raylib.h>
 #include <raymath.h>
 
+#include <stdio.h>
 #include <stdlib.h>
 
 void Game_initialize(Game* game, int screen_width, int screen_height) {
@@ -42,9 +43,10 @@ void Game_update(Game* game) {
 }
 
 void Game_render(const Game* game) {
-	/* Render scene */
+	/* Render onto screen texture */
 	BeginTextureMode(game->screen);
 	{
+		/* Render scene */
 		switch (game->scene.id) {
 			case SceneID_MainMenu:
 				MainMenu_render(game);
@@ -53,6 +55,19 @@ void Game_render(const Game* game) {
 			case SceneID_Gameplay:
 				Gameplay_render(game);
 				break;
+		}
+
+		/* Render debug overlay */
+		if (game->show_debug_overlay) {
+			int font_size = 24;
+			int row = 0;
+			char text[128] = { 0 };
+
+			snprintf(text, sizeof(text), "FPS: %d", GetFPS());
+			DrawText(text, 1, row++ * font_size, font_size, WHITE);
+
+			snprintf(text, sizeof(text), "Entities: %zu", game->entities.entities.size);
+			DrawText(text, 1, row++ * font_size, font_size, WHITE);
 		}
 	}
 	EndTextureMode();
