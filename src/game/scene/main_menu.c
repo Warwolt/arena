@@ -20,5 +20,5 @@ void MainMenu_render(const Game* game) {
 	const int font_size = 64;
 	const char* text = "Main Menu";
 	int text_width = MeasureText(text, font_size);
-	DrawText(text, (game->screen.width - text_width) / 2, (game->screen.height - font_size) / 2, font_size, WHITE);
+	DrawText(text, (game->screen.texture.width - text_width) / 2, (game->screen.texture.height - font_size) / 2, font_size, WHITE);
 }

@@ -6,7 +6,6 @@
 #include "game/scene/gameplay.h"
 #include "game/scene/main_menu.h"
 #include "platform/logging.h"
-#include "platform/window.h"
 
 #include "raylib_extra.h"
 #include <raylib.h>
@@ -35,48 +34,17 @@ int main(void) {
 		.should_quit = false,
 		.scene = { .id = SceneID_MainMenu },
 		.resources = { 0 },
-		.screen = {
-			.width = RESOLUTION_WIDTH,
-			.height = RESOLUTION_HEIGHT,
-		},
+		.screen = LoadRenderTexture(RESOLUTION_WIDTH, RESOLUTION_HEIGHT),
 	};
-	RenderTexture2D screen_texture = LoadRenderTexture(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
 
 	/* Run program */
 	while (!game.should_quit) {
-		/* Update */
-		{
-			/* Global behavior */
-			game.should_quit = WindowShouldClose();
-
-			if (IsKeyPressed(KEY_F11)) {
-				Window_toggle_fullscreen();
-			}
-
-			/* Update scene */
-			switch (game.scene.id) {
-				case SceneID_MainMenu:
-					MainMenu_update(&game);
-					break;
-
-				case SceneID_Gameplay:
-					Gameplay_update(&game);
-					break;
-			}
-		}
+		Game_update(&game);
 
 		/* Render scene */
-		BeginTextureMode(screen_texture);
+		BeginTextureMode(game.screen);
 		{
-			switch (game.scene.id) {
-				case SceneID_MainMenu:
-					MainMenu_render(&game);
-					break;
-
-				case SceneID_Gameplay:
-					Gameplay_render(&game);
-					break;
-			}
+			Game_render(&game);
 		}
 		EndTextureMode();
 
@@ -90,8 +58,8 @@ int main(void) {
 			int screen_width = GetScreenWidth();
 			int screen_height = GetScreenHeight();
 			int scale = min(screen_width / RESOLUTION_WIDTH, screen_height / RESOLUTION_HEIGHT);
-			int scaled_width = scale * screen_texture.texture.width;
-			int scaled_height = scale * screen_texture.texture.height;
+			int scaled_width = scale * game.screen.texture.width;
+			int scaled_height = scale * game.screen.texture.height;
 			Rectangle scaled_screen_rect = {
 				.x = (screen_width - scaled_width) / 2,
 				.y = (screen_height - scaled_height) / 2,
@@ -99,8 +67,8 @@ int main(void) {
 				.height = scaled_height,
 			};
 			DrawTexturePro(
-				screen_texture.texture,
-				(Rectangle) { 0, 0, screen_texture.texture.width, -screen_texture.texture.height },
+				game.screen.texture,
+				(Rectangle) { 0, 0, game.screen.texture.width, -game.screen.texture.height },
 				scaled_screen_rect,
 				Vector2Zero(),
 				0,

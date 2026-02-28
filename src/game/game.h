@@ -3,19 +3,19 @@
 #include "engine/resource.h"
 #include "game/scene/scene.h"
 
-#include <stdbool.h>
+#include <raylib.h>
 
-typedef struct Screen {
-	int width;
-	int height;
-} Screen;
+#include <stdbool.h>
 
 typedef struct Game {
 	bool should_quit;
-	Screen screen;
+	RenderTexture screen;
 	ResourceManager resources;
 	Scene scene;
 } Game;
+
+void Game_update(Game* game);
+void Game_render(const Game* game);
 
 inline void Game_quit(Game* game) {
 	game->should_quit = true;
