@@ -23,7 +23,7 @@ void MainMenu_render(const Game* game) {
 	const int font_size = 64;
 	const char* text = "Main Menu";
 	int text_width = MeasureText(text, font_size);
-	DrawText(text, (RESOLUTION_WIDTH - text_width) / 2, (RESOLUTION_HEIGHT - font_size) / 2, font_size, WHITE);
+	DrawText(text, (game->engine.screen_width - text_width) / 2, (game->engine.screen_height - font_size) / 2, font_size, WHITE);
 }
 
 void Gameplay_update(Game* game) {
@@ -37,5 +37,5 @@ void Gameplay_render(const Game* game) {
 	const int font_size = 64;
 	const char* text = "Gameplay";
 	int text_width = MeasureText(text, font_size);
-	DrawText(text, (RESOLUTION_WIDTH - text_width) / 2, (RESOLUTION_HEIGHT - font_size) / 2, font_size, WHITE);
+	DrawText(text, (game->engine.screen_width - text_width) / 2, (game->engine.screen_height - font_size) / 2, font_size, WHITE);
 }

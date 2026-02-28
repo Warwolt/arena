@@ -30,13 +30,20 @@ int main(void) {
 	LOG_INFO("Created window");
 
 	/* State */
-	Game game = { .scene = { .id = SceneID_MainMenu } };
+	Game game = {
+		.scene = { .id = SceneID_MainMenu },
+		.engine = {
+			.screen_width = RESOLUTION_WIDTH,
+			.screen_height = RESOLUTION_HEIGHT,
+		},
+	};
 	RenderTexture2D screen_texture = LoadRenderTexture(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
 
 	/* Run program */
 	while (!game.should_quit) {
 		/* Update */
 		{
+			/* Global behavior */
 			game.should_quit = WindowShouldClose();
 
 			if (IsKeyPressed(KEY_F11)) {
