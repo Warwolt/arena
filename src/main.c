@@ -3,7 +3,8 @@
 #include "engine/entity.h"
 #include "engine/resource.h"
 #include "game/game.h"
-#include "game/scene.h"
+#include "game/scene/main_menu.h"
+#include "game/scene/scene.h"
 #include "platform/logging.h"
 #include "platform/window.h"
 

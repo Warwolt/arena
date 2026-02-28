@@ -1,0 +1,19 @@
+#include "game/scene/scene.h"
+#include "game/game.h"
+
+#include <raylib.h>
+#include <raymath.h>
+
+void Gameplay_update(Game* game) {
+	if (IsKeyPressed(KEY_ESCAPE)) {
+		Game_switch_scene(game, SceneID_MainMenu);
+	}
+}
+
+void Gameplay_render(const Game* game) {
+	ClearBackground(GREEN);
+	const int font_size = 64;
+	const char* text = "Gameplay";
+	int text_width = MeasureText(text, font_size);
+	DrawText(text, (game->screen.width - text_width) / 2, (game->screen.height - font_size) / 2, font_size, WHITE);
+}

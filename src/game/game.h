@@ -1,7 +1,7 @@
 #pragma once
 
 #include "engine/resource.h"
-#include "game/scene.h"
+#include "game/scene/scene.h"
 
 #include <stdbool.h>
 

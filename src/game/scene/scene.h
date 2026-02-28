@@ -25,8 +25,5 @@ typedef struct Scene {
 	};
 } Scene;
 
-void MainMenu_update(Game* game);
-void MainMenu_render(const Game* game);
-
 void Gameplay_update(Game* game);
 void Gameplay_render(const Game* game);
