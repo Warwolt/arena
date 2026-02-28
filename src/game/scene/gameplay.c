@@ -6,11 +6,28 @@
 #include <raylib.h>
 #include <raymath.h>
 
+#include <stdlib.h>
+#include <string.h>
+
 static EntityID add_physical_object(EntityManager* entities, Vector2 position, Sprite sprite, Shape collision_shape) {
 	EntityID id = EntityManager_add_entity(entities, position);
 	EntityManager_add_sprite(entities, id, sprite);
 	EntityManager_add_collision_shape(entities, id, collision_shape);
 	return id;
+}
+
+static int compare_position_ids_by_y_coordinate(EntityManager* entities, const EntityID* lhs_id, const EntityID* rhs_id) {
+	Vector2 lhs_pos = { 0 };
+	Vector2 rhs_pos = { 0 };
+	EntityManager_get_position(entities, *lhs_id, &lhs_pos);
+	EntityManager_get_position(entities, *rhs_id, &rhs_pos);
+	if (lhs_pos.y < rhs_pos.y) {
+		return -1;
+	} else if (lhs_pos.y == rhs_pos.y) {
+		return 0;
+	} else {
+		return 1;
+	}
 }
 
 void Gameplay_initialize(Game* game) {
@@ -120,14 +137,25 @@ void Gameplay_render(const Game* game) {
 		ResourceManager_get_texture(&game->resources, gameplay->bg_texture_id, &bg_texture);
 		DrawTextureRec(bg_texture, (Rectangle) { .width = gameplay->room_width, .height = gameplay->room_height }, room_top_left, WHITE);
 
+		// y-sort the entities
+		EntityID y_sorted_entities[MAX_NUM_ENTITES] = { 0 };
+		memcpy(y_sorted_entities, game->entities.entities.keys, MAX_NUM_ENTITES * sizeof(EntityID));
+		qsort_s(
+			y_sorted_entities,
+			game->entities.entities.size,
+			sizeof(EntityID),
+			compare_position_ids_by_y_coordinate,
+			(EntityManager*)&game->entities
+		);
+
 		/* Draw sprites */
 		for (int i = 0; i < game->entities.entities.size; i++) {
-			const Entity* entity = &game->entities.entities.values[i];
+			EntityID entity_id = y_sorted_entities[i];
 			Vector2 position = { 0 };
 			Sprite sprite = { 0 };
 			Texture texture = { 0 };
-			EntityManager_get_position(&game->entities, entity->id, &position);
-			EntityManager_get_sprite(&game->entities, entity->id, &sprite);
+			EntityManager_get_position(&game->entities, entity_id, &position);
+			EntityManager_get_sprite(&game->entities, entity_id, &sprite);
 			ResourceManager_get_texture(&game->resources, sprite.texture_id, &texture);
 
 			Vector2 sprite_top_left = (Vector2) {

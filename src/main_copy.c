@@ -19,7 +19,7 @@
 #define RESOLUTION_WIDTH (int)768
 #define RESOLUTION_HEIGHT (int)432
 
-int compare_position_ids_by_y_coordinate(void* ctx, const void* lhs, const void* rhs) {
+int compare_entities_by_y_position(void* ctx, const void* lhs, const void* rhs) {
 	EntityManager* entities = (EntityManager*)ctx;
 	EntityID lhs_id = *(const EntityID*)lhs;
 	EntityID rhs_id = *(const EntityID*)rhs;
@@ -255,7 +255,7 @@ int main(void) {
 				EntityID y_sorted_entities[MAX_NUM_ENTITES] = { 0 };
 				{
 					memcpy(y_sorted_entities, entities.entities.keys, MAX_NUM_ENTITES * sizeof(EntityID));
-					qsort_s(y_sorted_entities, entities.entities.size, sizeof(EntityID), compare_position_ids_by_y_coordinate, &entities);
+					qsort_s(y_sorted_entities, entities.entities.size, sizeof(EntityID), compare_entities_by_y_position, &entities);
 				}
 
 				/* Render shadows */
