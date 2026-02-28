@@ -12,9 +12,9 @@ typedef struct Screen {
 
 typedef struct Game {
 	bool should_quit;
-	Scene scene;
-	ResourceManager resources;
 	Screen screen;
+	ResourceManager resources;
+	Scene scene;
 } Game;
 
 inline void Game_quit(Game* game) {

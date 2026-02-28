@@ -5,7 +5,6 @@
 #include "game/game.h"
 #include "game/scene/gameplay.h"
 #include "game/scene/main_menu.h"
-#include "game/scene/scene.h"
 #include "platform/logging.h"
 #include "platform/window.h"
 
