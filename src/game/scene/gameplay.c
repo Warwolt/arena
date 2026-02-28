@@ -305,5 +305,10 @@ void Gameplay_render(const Game* game) {
 			int pos_y = top_margin + font_size_big + title_padding + font_size_small;
 			DrawText(text, pos_x, pos_y, font_size_small, WHITE);
 		}
+		{
+			int pos_x = menu_rect.x + 64;
+			int pos_y = top_margin + font_size_big + title_padding + font_size_small * gameplay->pause_menu.selected_item;
+			DrawText(">", pos_x, pos_y, font_size_small, WHITE);
+		}
 	}
 }
