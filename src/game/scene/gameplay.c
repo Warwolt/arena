@@ -12,7 +12,7 @@ void Gameplay_update(Game* game) {
 }
 
 void Gameplay_render(const Game* game) {
-	ClearBackground(GREEN);
+	ClearBackground(BLACK);
 	const int font_size = 64;
 	const char* text = "Gameplay";
 	int text_width = MeasureText(text, font_size);

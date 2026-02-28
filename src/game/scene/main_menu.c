@@ -5,7 +5,11 @@
 #include <raylib.h>
 #include <raymath.h>
 
-#define NUM_MENU_ITEMS 2
+typedef enum MenuItem {
+	MenuItem_Play,
+	MenuItem_Quit,
+	MenuItem_Count,
+} MenuItem;
 
 void draw_centered_horizontally(const Game* game, const char* text, int font_size, int y) {
 	int text_width = MeasureText(text, font_size);
@@ -21,24 +25,28 @@ void MainMenu_update(Game* game) {
 	MainMenu* main_menu = &game->scene.main_menu;
 
 	if (IsKeyPressed(KEY_ENTER)) {
-		Game_switch_scene(game, SceneID_Gameplay);
-	}
+		switch (main_menu->selected_menu_item) {
+			case MenuItem_Play:
+				Game_switch_scene(game, SceneID_Gameplay);
+				break;
 
-	if (IsKeyPressed(KEY_ESCAPE)) {
-		Game_quit(game);
+			case MenuItem_Quit:
+				Game_quit(game);
+				break;
+		}
 	}
 
 	if (IsKeyPressed(KEY_DOWN)) {
-		main_menu->selected_menu_item = (NUM_MENU_ITEMS + main_menu->selected_menu_item + 1) % NUM_MENU_ITEMS;
+		main_menu->selected_menu_item = (MenuItem_Count + main_menu->selected_menu_item + 1) % MenuItem_Count;
 	}
 
 	if (IsKeyPressed(KEY_UP)) {
-		main_menu->selected_menu_item = (NUM_MENU_ITEMS + main_menu->selected_menu_item - 1) % NUM_MENU_ITEMS;
+		main_menu->selected_menu_item = (MenuItem_Count + main_menu->selected_menu_item - 1) % MenuItem_Count;
 	}
 }
 
 void MainMenu_render(const Game* game) {
-	ClearBackground(PURPLE);
+	ClearBackground(BLACK);
 	const MainMenu* main_menu = &game->scene.main_menu;
 	const int big_font_size = 64;
 	const int small_font_size = 48;
