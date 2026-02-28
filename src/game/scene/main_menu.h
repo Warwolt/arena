@@ -3,7 +3,7 @@
 typedef struct Game Game;
 
 typedef struct MainMenu {
-	int value;
+	int selected_menu_item;
 } MainMenu;
 
 void MainMenu_update(Game* game);
