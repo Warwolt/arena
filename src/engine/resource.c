@@ -2,6 +2,8 @@
 
 #include "platform/logging.h"
 
+#define DEBUG_RESOURCE_MANAGER false
+
 TextureID ResourceManager_load_texture(ResourceManager* resources, const char* filename) {
 	if (resources->textures.size == MAX_TEXTURE_RESOURCES) {
 		LOG_ERROR("Can't load texture \"%s\", too many already loaded (%d)", filename, MAX_TEXTURE_RESOURCES);
@@ -21,11 +23,14 @@ TextureID ResourceManager_load_texture(ResourceManager* resources, const char* f
 	SparseArray_insert(&resources->textures, id.value, texture);
 	UnloadImage(image);
 
+	if (DEBUG_RESOURCE_MANAGER) {
+		LOG_DEBUG("Loaded texture \"%s\" with id %d", filename, id.value);
+	}
 	return id;
 }
 
-bool ResourceManager_get_texture(ResourceManager* resources, TextureID id, Texture* texture) {
-	return SparseArray_get(&resources->textures, id.value, texture);
+bool ResourceManager_get_texture(const ResourceManager* resources, TextureID id, Texture* texture) {
+	 return SparseArray_get(&resources->textures, id.value, texture);
 }
 
 void ResourceManager_unload_resources(ResourceManager* resources) {
