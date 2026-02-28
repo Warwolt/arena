@@ -68,6 +68,10 @@
 // Check if array contains key
 #define SparseArray_contains(array, key) SparseArray_contains_impl((array)->indices, (array)->keys, (key))
 
+// Iterator
+#define SparseArray_begin(array) (&(array)->values[0])
+#define SparseArray_end(array) (&(array)->values[(array)->size])
+
 bool SparseArray_insert_impl(size_t elem_size, size_t* array_indices, size_t* array_keys, char* array_values, size_t* array_size, size_t key, char* value);
 bool SparseArray_remove_impl(size_t elem_size, size_t* array_indices, size_t* array_keys, char* array_values, size_t* array_size, size_t key);
 bool SparseArray_get_impl(size_t elem_size, const size_t* array_indices, const size_t* array_keys, const char* array_values, size_t key, char* value_out);

@@ -34,6 +34,14 @@ bool TestSparseArray_contains(TestSparseArray* array, size_t key) {
 	return SparseArray_contains(array, key);
 }
 
+int* TestSparseArray_begin(TestSparseArray* array) {
+	return &array->values[0];
+}
+
+int* TestSparseArray_end(TestSparseArray* array) {
+	return &array->values[array->size];
+}
+
 TEST(SparseArrayTests, InsertElement_GetElement) {
 	TestSparseArray array = { 0 };
 	size_t key = 11;
@@ -202,4 +210,25 @@ TEST(SparseArrayTests, InsertElement_GetElementPointer) {
 	TestSparseArray_get(&array, key, &value);
 
 	EXPECT_EQ(value, 4567);
+}
+
+TEST(SparseArrayTests, Iterator_VisitsEachElementInOrderOfInsertion) {
+	TestSparseArray array = { 0 };
+	const size_t key1 = 30;
+	const size_t key2 = 20;
+	const size_t key3 = 10;
+
+	TestSparseArray_insert(&array, key1, 100);
+	TestSparseArray_insert(&array, key2, 200);
+	TestSparseArray_insert(&array, key3, 300);
+
+	int values[3] = { 0 };
+	int num_values = 0;
+	for (int* it = SparseArray_begin(&array); it != SparseArray_end(&array); it++) {
+		values[num_values++] = *it;
+	}
+
+	EXPECT_EQ(values[0], 100);
+	EXPECT_EQ(values[1], 200);
+	EXPECT_EQ(values[2], 300);
 }
