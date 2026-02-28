@@ -4,11 +4,11 @@ enable_language(C)
 include(CheckCCompilerFlag)
 
 # Add Raylib
-set(CMAKE_C_STANDARD 23)
 add_subdirectory(lib/raylib)
 
 # Set warnings
 add_compile_options(
+    /std:clatest # use C23
     /W4
     /WX
     /wd4244 # allow implicit conversion int and float
