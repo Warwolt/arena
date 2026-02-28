@@ -7,7 +7,7 @@
 - Settings screen, toggle fullscreen on/off
 
 # Done
-- Implement iterator for SparseArray for better for-loops
+- Add for_each macro for nice iteration
 - Basic scene handling
 - Rename Map to SparseArray
 - Render drop shadows
