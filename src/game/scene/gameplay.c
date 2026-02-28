@@ -198,17 +198,18 @@ void Gameplay_render(const Game* game) {
 
 		// y-sort the entities
 		EntityID y_sorted_entities[MAX_NUM_ENTITES] = { 0 };
+		size_t num_y_sorted_entities = game->entities.entities.size;
 		memcpy(y_sorted_entities, game->entities.entities.keys, MAX_NUM_ENTITES * sizeof(EntityID));
 		qsort_s(
 			y_sorted_entities,
-			game->entities.entities.size,
+			num_y_sorted_entities,
 			sizeof(EntityID),
 			compare_position_ids_by_y_coordinate,
 			(EntityManager*)&game->entities
 		);
 
 		/* Draw sprites */
-		for (int i = 0; i < game->entities.entities.size; i++) {
+		for (int i = 0; i < num_y_sorted_entities; i++) {
 			EntityID entity_id = y_sorted_entities[i];
 			Vector2 position = { 0 };
 			Sprite sprite = { 0 };
@@ -216,7 +217,6 @@ void Gameplay_render(const Game* game) {
 			EntityManager_get_position(&game->entities, entity_id, &position);
 			EntityManager_get_sprite(&game->entities, entity_id, &sprite);
 			ResourceManager_get_texture(&game->resources, sprite.texture_id, &texture);
-
 			Vector2 sprite_top_left = (Vector2) {
 				.x = position.x - sprite.clip_rect.width / 2,
 				.y = position.y - sprite.clip_rect.height / 2,
@@ -228,18 +228,18 @@ void Gameplay_render(const Game* game) {
 
 		/* Draw collision shapes */
 		if (game->show_debug_overlay) {
-			for (int i = 0; i < game->entities.components.collision_shapes.size; i++) {
-				const Entity* entity = &game->entities.entities.values[i];
-				Vector2 position = { 0 };
-				Shape collision_shape = { 0 };
-				EntityManager_get_position(&game->entities, entity->id, &position);
-				EntityManager_get_collision_shape(&game->entities, entity->id, &collision_shape);
-
-				switch (collision_shape.type) {
-					case ShapeType_Circle:
-						DrawCircle(position.x, position.y, collision_shape.circle.radius, ColorAlpha(GREEN, 0.5f));
-						DrawCircleLines(position.x, position.y, collision_shape.circle.radius, GREEN);
-						break;
+			for (const Entity* entity = SparseArray_begin(&game->entities.entities); entity != SparseArray_end(&game->entities.entities); entity++) {
+				if (EntityManager_has_component(&game->entities, entity->id, ComponentType_CollisionShape)) {
+					Vector2 position = { 0 };
+					Shape collision_shape = { 0 };
+					EntityManager_get_position(&game->entities, entity->id, &position);
+					EntityManager_get_collision_shape(&game->entities, entity->id, &collision_shape);
+					switch (collision_shape.type) {
+						case ShapeType_Circle:
+							DrawCircle(position.x, position.y, collision_shape.circle.radius, ColorAlpha(GREEN, 0.5f));
+							DrawCircleLines(position.x, position.y, collision_shape.circle.radius, GREEN);
+							break;
+					}
 				}
 			}
 		}

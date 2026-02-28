@@ -4,6 +4,7 @@
 - Implement a HashMap data structure (map string to value)
 - When loading already loaded resource, return existing ID (needs HashMap)
 - Integrate ImGui so we can visualize system states
+- Settings screen, toggle fullscreen on/off
 
 # Doing
 - Implement iterator for SparseArray for better for-loops
