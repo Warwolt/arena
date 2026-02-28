@@ -3,17 +3,21 @@ project(arena)
 enable_language(C)
 include(CheckCCompilerFlag)
 
-option(WARNINGS_AS_ERRORS "Compile with warnings as errors" ON)
-
 # Add Raylib
 set(CMAKE_C_STANDARD 23)
 add_subdirectory(lib/raylib)
 
 # Set warnings
-add_compile_options(/W4 /wd4244 /w44062)
-if (WARNINGS_AS_ERRORS)
-    add_compile_options(/WX)
-endif()
+add_compile_options(
+    /W4
+    /WX
+    /wd4244 # allow implicit conversion int and float
+    /wd4100 # allow function parameters to be declared but not used
+    /wd4101 # allow unreferenced local variable
+    /wd4189 # allow local variable is initialized but not referenced
+    /wd4028 # formal parameter different from declaration (allow forward declare typedef struct)
+    /w44062 # warn about missing cases in switch-case
+)
 
 # Source
 add_library(source
@@ -21,8 +25,11 @@ add_library(source
     src/core/sparse_array.c
     src/engine/entity.c
     src/engine/resource.c
-    src/platform/window.c
+    src/game/game.c
+    src/game/scene/main_menu.c
+    src/game/scene/gameplay.c
     src/platform/logging.c
+    src/platform/window.c
     src/raylib_extra.c
 )
 target_include_directories(source PUBLIC src lib)

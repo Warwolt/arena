@@ -2,6 +2,8 @@
 
 #include "platform/logging.h"
 
+#define DEBUG_RESOURCE_MANAGER false
+
 TextureID ResourceManager_load_texture(ResourceManager* resources, const char* filename) {
 	if (resources->textures.size == MAX_TEXTURE_RESOURCES) {
 		LOG_ERROR("Can't load texture \"%s\", too many already loaded (%d)", filename, MAX_TEXTURE_RESOURCES);
@@ -16,19 +18,25 @@ TextureID ResourceManager_load_texture(ResourceManager* resources, const char* f
 	}
 
 	/* Load and store texture */
-	TextureID id = { ++resources->next_texture_id };
+	TextureID id = { ++resources->prev_texture_id };
 	Texture2D texture = LoadTextureFromImage(image);
 	SparseArray_insert(&resources->textures, id.value, texture);
 	UnloadImage(image);
 
+	if (DEBUG_RESOURCE_MANAGER) {
+		LOG_DEBUG("Loaded texture \"%s\" with id %d", filename, id.value);
+	}
+
 	return id;
 }
 
-bool ResourceManager_get_texture(ResourceManager* resources, TextureID id, Texture* texture) {
+bool ResourceManager_get_texture(const ResourceManager* resources, TextureID id, Texture* texture) {
 	return SparseArray_get(&resources->textures, id.value, texture);
 }
 
 void ResourceManager_unload_resources(ResourceManager* resources) {
+	/* Unload textures */
+	resources->prev_texture_id = 0;
 	for (size_t i = 0; i < resources->textures.size; i++) {
 		UnloadTexture(resources->textures.values[i]);
 		SparseArray_remove(&resources->textures, resources->textures.keys[i]);

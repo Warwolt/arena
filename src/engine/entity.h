@@ -38,13 +38,13 @@ typedef struct EntityManager {
 EntityID EntityManager_add_entity(EntityManager* entities, Vector2 position);
 bool EntityManager_remove_entity(EntityManager* entities, EntityID id);
 
-bool EntityManager_get_position(EntityManager* entities, EntityID id, Vector2* position);
+bool EntityManager_get_position(const EntityManager* entities, EntityID id, Vector2* position);
 void EntityManager_set_position(EntityManager* entities, EntityID id, Vector2 position);
 
 void EntityManager_add_sprite(EntityManager* entities, EntityID id, Sprite sprite);
-bool EntityManager_get_sprite(EntityManager* entities, EntityID id, Sprite* sprite);
+bool EntityManager_get_sprite(const EntityManager* entities, EntityID id, Sprite* sprite);
 void EntityManager_set_sprite(EntityManager* entities, EntityID id, Sprite sprite);
 
 void EntityManager_add_collision_shape(EntityManager* entities, EntityID id, Shape shape);
-bool EntityManager_get_collision_shape(EntityManager* entities, EntityID id, Shape* shape);
+bool EntityManager_get_collision_shape(const EntityManager* entities, EntityID id, Shape* shape);
 void EntityManager_set_collision_shape(EntityManager* entities, EntityID id, Shape shape);

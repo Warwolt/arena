@@ -8,7 +8,7 @@
 
 typedef struct ResourceManager {
 	SparseArray(Texture2D, MAX_TEXTURE_RESOURCES) textures;
-	int next_texture_id;
+	int prev_texture_id;
 } ResourceManager;
 
 typedef struct TextureID {
@@ -16,5 +16,5 @@ typedef struct TextureID {
 } TextureID;
 
 TextureID ResourceManager_load_texture(ResourceManager* resources, const char* filename);
-bool ResourceManager_get_texture(ResourceManager* resources, TextureID id, Texture* texture);
+bool ResourceManager_get_texture(const ResourceManager* resources, TextureID id, Texture* texture);
 void ResourceManager_unload_resources(ResourceManager* resources);

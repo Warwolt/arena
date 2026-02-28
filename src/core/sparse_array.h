@@ -70,7 +70,7 @@
 
 bool SparseArray_insert_impl(size_t elem_size, size_t* array_indices, size_t* array_keys, char* array_values, size_t* array_size, size_t key, char* value);
 bool SparseArray_remove_impl(size_t elem_size, size_t* array_indices, size_t* array_keys, char* array_values, size_t* array_size, size_t key);
-bool SparseArray_get_impl(size_t elem_size, size_t* array_indices, size_t* array_keys, char* array_values, size_t key, char* value_out);
-bool SparseArray_get_ptr_impl(size_t elem_size, size_t* array_indices, size_t* array_keys, char* array_values, size_t key, char** value_ptr_out);
+bool SparseArray_get_impl(size_t elem_size, const size_t* array_indices, const size_t* array_keys, const char* array_values, size_t key, char* value_out);
+bool SparseArray_get_ptr_impl(size_t elem_size, const size_t* array_indices, const size_t* array_keys, const char* array_values, size_t key, const char** value_ptr_out);
 bool SparseArray_set_impl(size_t elem_size, size_t* array_indices, size_t* array_keys, char* array_values, size_t key, char* value);
 bool SparseArray_contains_impl(size_t* array_indices, size_t* array_keys, size_t key);
