@@ -1,5 +1,6 @@
 #include "game/scene/gameplay.h"
 
+#include "core/for_each.h"
 #include "game/game.h"
 #include "platform/logging.h"
 
@@ -209,13 +210,12 @@ void Gameplay_render(const Game* game) {
 		);
 
 		/* Draw sprites */
-		for (int i = 0; i < num_y_sorted_entities; i++) {
-			EntityID entity_id = y_sorted_entities[i];
+		for_each(entity_id, y_sorted_entities, num_y_sorted_entities) {
 			Vector2 position = { 0 };
 			Sprite sprite = { 0 };
 			Texture texture = { 0 };
-			EntityManager_get_position(&game->entities, entity_id, &position);
-			EntityManager_get_sprite(&game->entities, entity_id, &sprite);
+			EntityManager_get_position(&game->entities, *entity_id, &position);
+			EntityManager_get_sprite(&game->entities, *entity_id, &sprite);
 			ResourceManager_get_texture(&game->resources, sprite.texture_id, &texture);
 			Vector2 sprite_top_left = (Vector2) {
 				.x = position.x - sprite.clip_rect.width / 2,
@@ -228,7 +228,7 @@ void Gameplay_render(const Game* game) {
 
 		/* Draw collision shapes */
 		if (game->show_debug_overlay) {
-			for (const Entity* entity = SparseArray_begin(&game->entities.entities); entity != SparseArray_end(&game->entities.entities); entity++) {
+			for_each(entity, game->entities.entities.values, game->entities.entities.size) {
 				if (EntityManager_has_component(&game->entities, entity->id, ComponentType_CollisionShape)) {
 					Vector2 position = { 0 };
 					Shape collision_shape = { 0 };
