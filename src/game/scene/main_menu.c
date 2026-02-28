@@ -23,7 +23,6 @@ static void draw_centered_horizontally(const Game* game, const char* text, int f
 }
 
 void MainMenu_initialize(Game* game) {
-	LOG_DEBUG("MainMenu initialize");
 }
 
 void MainMenu_update(Game* game) {

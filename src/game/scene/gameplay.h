@@ -5,9 +5,9 @@
 typedef struct Game Game;
 
 typedef struct Gameplay {
-	struct {
-		TextureID background_texture_id;
-	} resources;
+	TextureID bg_texture_id;
+	int room_width;
+	int room_height;
 } Gameplay;
 
 void Gameplay_initialize(Game* game);
