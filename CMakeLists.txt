@@ -17,10 +17,10 @@ endif()
 
 # Source
 add_library(source
-    src/arena.c
+    src/core/arena.c
+    src/core/sparse_array.c
     src/entity.c
     src/logging.c
-    src/sparse_array.c
     src/raylib_extra.c
     src/resource.c
     src/win32.c
