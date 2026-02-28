@@ -119,6 +119,26 @@ void Gameplay_update(Game* game) {
 		};
 		gameplay->camera.target = Vector2Clamp(player_position, camera_top_left_bound, camera_bottom_right_bound);
 	}
+
+	/* Animate donut and coffee */
+	{
+		const int time_now = GetTime() * 1000; // ms
+		const int frame_time = 70; // ms
+		const int num_frames = 12;
+		const int sprite_index = (time_now % (num_frames * frame_time)) / frame_time;
+
+		EntityID ids[3] = {
+			gameplay->donut_id,
+			gameplay->donut2_id,
+		};
+		for (size_t i = 0; i < sizeof(ids) / sizeof(*ids); i++) {
+			EntityID id = ids[i];
+			Sprite sprite = { 0 };
+			EntityManager_get_sprite(&game->entities, id, &sprite);
+			sprite.clip_rect.x = sprite_index * sprite.clip_rect.width;
+			EntityManager_set_sprite(&game->entities, id, sprite);
+		}
+	}
 }
 
 void Gameplay_render(const Game* game) {
@@ -186,8 +206,4 @@ void Gameplay_render(const Game* game) {
 		}
 	}
 	EndMode2D();
-
-	/* Render HUD*/
-	{
-	}
 }

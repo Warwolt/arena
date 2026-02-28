@@ -1,6 +1,7 @@
 # TODO
 - Basic scene handling
 - Implement iterator for SparseArray for better for-loops
+- Pause menu (render as overlay, stop updating game while paused)
 - Fix a better clang format file
 - Implement a HashMap data structure (map string to value)
 - When loading already loaded resource, return existing ID (needs HashMap)
