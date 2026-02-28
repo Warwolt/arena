@@ -92,15 +92,15 @@ void Gameplay_update(Game* game) {
 	/* Show pause menu */
 	if (gameplay->is_paused) {
 		if (IsKeyPressed(KEY_DOWN) || IsKeyPressed('S')) {
-			gameplay->selected_pause_menu_item = (PauseMenuItem_Count + gameplay->selected_pause_menu_item + 1) % PauseMenuItem_Count;
+			gameplay->focused_pause_menu_item = (PauseMenuItem_Count + gameplay->focused_pause_menu_item + 1) % PauseMenuItem_Count;
 		}
 
 		if (IsKeyPressed(KEY_UP) || IsKeyPressed('W')) {
-			gameplay->selected_pause_menu_item = (PauseMenuItem_Count + gameplay->selected_pause_menu_item - 1) % PauseMenuItem_Count;
+			gameplay->focused_pause_menu_item = (PauseMenuItem_Count + gameplay->focused_pause_menu_item - 1) % PauseMenuItem_Count;
 		}
 
 		if (IsKeyPressed(KEY_ENTER)) {
-			switch (gameplay->selected_pause_menu_item) {
+			switch (gameplay->focused_pause_menu_item) {
 				case PauseMenuItem_Continue:
 					gameplay->is_paused = false;
 					break;
@@ -332,7 +332,7 @@ void Gameplay_render(const Game* game) {
 		}
 		{
 			int pos_x = menu_rect.x + 48;
-			int pos_y = top_margin + font_size_big + title_padding + font_size_small * gameplay->selected_pause_menu_item;
+			int pos_y = top_margin + font_size_big + title_padding + font_size_small * gameplay->focused_pause_menu_item;
 			DrawText(">", pos_x, pos_y, font_size_small, WHITE);
 		}
 	}

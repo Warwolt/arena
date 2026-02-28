@@ -29,7 +29,7 @@ void MainMenu_update(Game* game) {
 	MainMenu* main_menu = &game->scene.main_menu;
 
 	if (IsKeyPressed(KEY_ENTER)) {
-		switch (main_menu->selected_menu_item) {
+		switch (main_menu->focused_menu_item) {
 			case MenuItem_Play:
 				Game_switch_scene(game, SceneID_Gameplay);
 				break;
@@ -41,19 +41,19 @@ void MainMenu_update(Game* game) {
 	}
 
 	if (IsKeyPressed(KEY_ESCAPE)) {
-		if (main_menu->selected_menu_item == MenuItem_Quit) {
+		if (main_menu->focused_menu_item == MenuItem_Quit) {
 			game->should_quit = true;
 		} else {
-			main_menu->selected_menu_item = MenuItem_Quit;
+			main_menu->focused_menu_item = MenuItem_Quit;
 		}
 	}
 
 	if (IsKeyPressed(KEY_DOWN) || IsKeyPressed('S')) {
-		main_menu->selected_menu_item = (MenuItem_Count + main_menu->selected_menu_item + 1) % MenuItem_Count;
+		main_menu->focused_menu_item = (MenuItem_Count + main_menu->focused_menu_item + 1) % MenuItem_Count;
 	}
 
 	if (IsKeyPressed(KEY_UP) || IsKeyPressed('W')) {
-		main_menu->selected_menu_item = (MenuItem_Count + main_menu->selected_menu_item - 1) % MenuItem_Count;
+		main_menu->focused_menu_item = (MenuItem_Count + main_menu->focused_menu_item - 1) % MenuItem_Count;
 	}
 }
 
@@ -70,7 +70,7 @@ void MainMenu_render(const Game* game) {
 
 	Vector2 cursor_pos = {
 		.x = screen.width / 2 - 80,
-		.y = screen.height / 2 + main_menu->selected_menu_item * small_font_size,
+		.y = screen.height / 2 + main_menu->focused_menu_item * small_font_size,
 	};
 	DrawText(">", cursor_pos.x, cursor_pos.y, small_font_size, WHITE);
 }
