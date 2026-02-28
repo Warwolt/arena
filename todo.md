@@ -1,5 +1,6 @@
 # TODO
 - Integrate ImGui so we can visualize system states
+- Fix a better clang format file
 
 # Done
 - Rename Map to SparseArray

@@ -40,42 +40,7 @@ int main(void) {
 	/* Run program */
 	while (!game.should_quit) {
 		Game_update(&game);
-
-		/* Render scene */
-		BeginTextureMode(game.screen);
-		{
-			Game_render(&game);
-		}
-		EndTextureMode();
-
-		/* Render window */
-		BeginDrawing();
-		{
-			// Draw background
-			ClearBackground(BLACK);
-
-			// Draw stretched screen texture
-			int screen_width = GetScreenWidth();
-			int screen_height = GetScreenHeight();
-			int scale = min(screen_width / RESOLUTION_WIDTH, screen_height / RESOLUTION_HEIGHT);
-			int scaled_width = scale * game.screen.texture.width;
-			int scaled_height = scale * game.screen.texture.height;
-			Rectangle scaled_screen_rect = {
-				.x = (screen_width - scaled_width) / 2,
-				.y = (screen_height - scaled_height) / 2,
-				.width = scaled_width,
-				.height = scaled_height,
-			};
-			DrawTexturePro(
-				game.screen.texture,
-				(Rectangle) { 0, 0, game.screen.texture.width, -game.screen.texture.height },
-				scaled_screen_rect,
-				Vector2Zero(),
-				0,
-				WHITE
-			);
-		}
-		EndDrawing();
+		Game_render(&game);
 	}
 
 	/* Shutdown */

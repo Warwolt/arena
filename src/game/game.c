@@ -3,6 +3,9 @@
 #include "platform/window.h"
 
 #include <raylib.h>
+#include <raymath.h>
+
+#include <stdlib.h>
 
 void Game_update(Game* game) {
 	/* Global behavior */
@@ -25,15 +28,43 @@ void Game_update(Game* game) {
 }
 
 void Game_render(const Game* game) {
-	switch (game->scene.id) {
-		case SceneID_MainMenu:
-			MainMenu_render(game);
-			break;
+	/* Render scene */
+	BeginTextureMode(game->screen);
+	{
+		switch (game->scene.id) {
+			case SceneID_MainMenu:
+				MainMenu_render(game);
+				break;
 
-		case SceneID_Gameplay:
-			Gameplay_render(game);
-			break;
+			case SceneID_Gameplay:
+				Gameplay_render(game);
+				break;
+		}
 	}
+	EndTextureMode();
+
+	/* Render window */
+	BeginDrawing();
+	{
+		// Draw background
+		ClearBackground(BLACK);
+
+		// Draw stretched screen texture
+		Rectangle screen = Game_screen_rect(game);
+		int window_width = GetScreenWidth();
+		int window_height = GetScreenHeight();
+		int scale = min(window_width / screen.width, window_height / screen.height);
+		int scaled_width = scale * screen.width;
+		int scaled_height = scale * screen.height;
+		Rectangle scaled_screen_rect = {
+			.x = (window_width - scaled_width) / 2,
+			.y = (window_height - scaled_height) / 2,
+			.width = scaled_width,
+			.height = scaled_height,
+		};
+		DrawTexturePro(game->screen.texture, (Rectangle) { 0, 0, screen.width, -screen.height }, scaled_screen_rect, Vector2Zero(), 0, WHITE);
+	}
+	EndDrawing();
 }
 
 void Game_quit(Game* game) {
