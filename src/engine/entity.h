@@ -1,8 +1,8 @@
 #pragma once
 
-#include "component.h"
-#include "resource.h"
-#include "sparse_array.h"
+#include "core/sparse_array.h"
+#include "engine/component.h"
+#include "engine/resource.h"
 
 #include <raylib.h>
 #include <stddef.h>

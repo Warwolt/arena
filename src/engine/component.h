@@ -1,6 +1,6 @@
 #pragma once
 
-#include "resource.h"
+#include "engine/resource.h"
 
 #include <raylib.h>
 
