@@ -1,9 +1,8 @@
 # TODO
 - Integrate ImGui so we can visualize system states
 
-# Doing
-
 # Done
+- Rename Map to SparseArray
 - Render drop shadows
 - Add background image and camera following player
 - Store position as part of Entity struct

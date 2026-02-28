@@ -1,8 +1,8 @@
 #pragma once
 
 #include "component.h"
-#include "map.h"
 #include "resource.h"
+#include "sparse_array.h"
 
 #include <raylib.h>
 #include <stddef.h>
@@ -24,12 +24,12 @@ typedef struct Entity {
 } Entity;
 
 typedef struct ComponentStore {
-	Map(Sprite, MAX_SPRITE_COMPONENTS) sprites;
-	Map(Shape, MAX_SPRITE_COMPONENTS) collision_shapes;
+	SparseArray(Sprite, MAX_SPRITE_COMPONENTS) sprites;
+	SparseArray(Shape, MAX_SPRITE_COMPONENTS) collision_shapes;
 } ComponentStore;
 
 typedef struct EntityManager {
-	Map(Entity, MAX_NUM_ENTITES) entities;
+	SparseArray(Entity, MAX_NUM_ENTITES) entities;
 	ComponentStore components;
 	EntityID discarded_ids[MAX_NUM_ENTITES];
 	size_t num_discarded_ids;

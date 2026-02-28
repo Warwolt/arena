@@ -20,7 +20,7 @@ add_library(source
     src/arena.c
     src/entity.c
     src/logging.c
-    src/map.c
+    src/sparse_array.c
     src/raylib_extra.c
     src/resource.c
     src/win32.c
@@ -42,7 +42,7 @@ add_executable(tests
     test/main.c
     test/arena_tests.c
     test/entity_tests.c
-    test/map_tests.c
+    test/sparse_array_tests.c
 )
 target_include_directories(tests PUBLIC src lib)
 target_link_libraries(tests source)
