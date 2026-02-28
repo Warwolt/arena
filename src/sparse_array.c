@@ -19,7 +19,7 @@ bool SparseArray_insert_impl(size_t elem_size, size_t* array_indices, size_t* ar
 	const size_t index = *array_size;
 	array_indices[key - 1] = index;
 	array_keys[index] = key;
-	memcpy(array_values + index * elem_size, value, elem_size); // map->values[index] = value;
+	memcpy(array_values + index * elem_size, value, elem_size); // array->values[index] = value;
 	*array_size += 1;
 	return true;
 }
@@ -43,11 +43,11 @@ bool SparseArray_remove_impl(size_t elem_size, size_t* array_indices, size_t* ar
 	array_indices[key - 1] = 0;
 	array_indices[last_key - 1] = index;
 	array_keys[index] = array_keys[last_index];
-	memcpy(array_values + index * elem_size, array_values + last_index * elem_size, elem_size); // map->values[index] = array_values[last_index];
+	memcpy(array_values + index * elem_size, array_values + last_index * elem_size, elem_size); // array->values[index] = array_values[last_index];
 
 	/* Remove last element */
 	array_keys[last_index] = 0;
-	memset(array_values + last_index * elem_size, 0, elem_size); // map->values[last_index] = 0;
+	memset(array_values + last_index * elem_size, 0, elem_size); // array->values[last_index] = 0;
 	*array_size -= 1;
 	return true;
 }
