@@ -10,6 +10,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+typedef enum PauseMenuItem {
+	PauseMenuItem_Continue,
+	PauseMenuItem_Quit,
+	PauseMenuItem_Count,
+} PauseMenuItem;
+
 static EntityID add_physical_object(EntityManager* entities, Vector2 position, Sprite sprite, Shape collision_shape) {
 	EntityID id = EntityManager_add_entity(entities, position);
 	EntityManager_add_sprite(entities, id, sprite);
@@ -85,7 +91,24 @@ void Gameplay_update(Game* game) {
 
 	/* Show pause menu if paused */
 	if (gameplay->is_paused) {
-		// todo update pause menu interactions
+		if (IsKeyPressed(KEY_DOWN) || IsKeyPressed('S')) {
+			gameplay->pause_menu.selected_item = (PauseMenuItem_Count + gameplay->pause_menu.selected_item + 1) % PauseMenuItem_Count;
+		}
+
+		if (IsKeyPressed(KEY_UP) || IsKeyPressed('W')) {
+			gameplay->pause_menu.selected_item = (PauseMenuItem_Count + gameplay->pause_menu.selected_item - 1) % PauseMenuItem_Count;
+		}
+
+		if (IsKeyPressed(KEY_ENTER)) {
+			switch (gameplay->pause_menu.selected_item) {
+				case PauseMenuItem_Continue:
+					gameplay->is_paused = false;
+					break;
+
+				case PauseMenuItem_Quit:
+					Game_switch_scene(game, SceneID_MainMenu);
+			}
+		}
 	} else {
 		/* Increment time */
 		gameplay->time_now += GetFrameTime();
