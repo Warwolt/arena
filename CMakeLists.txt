@@ -13,6 +13,8 @@ add_compile_options(
     /WX
     /wd4244 # allow implicit conversion int and float
     /wd4100 # allow function parameters to be declared but not used
+    /wd4101 # allow unreferenced local variable
+    /wd4189 # allow local variable is initialized but not referenced
     /wd4028 # formal parameter different from declaration (allow forward declare typedef struct)
     /w44062 # warn about missing cases in switch-case
 )
