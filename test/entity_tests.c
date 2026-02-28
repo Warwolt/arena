@@ -21,15 +21,17 @@ TEST(EntityTests, AddEntity_AddComponent_AttachesComponentToEntity) {
 	EntityManager entities = { 0 };
 
 	EntityID id = EntityManager_add_entity(&entities, Vector2Zero());
-	EntityManager_add_collision_shape(&entities, id, Shape_circle((Circle) { 0 }));
 	EntityManager_add_sprite(&entities, id, (Sprite) { (TextureID) { 1 }, (Rectangle) { 0 } });
+	bool has_sprite = EntityManager_has_component(&entities, id, ComponentType_Sprite);
+	bool has_collision = EntityManager_has_component(&entities, id, ComponentType_CollisionShape);
 
 	EXPECT_EQ((int)entities.entities.size, 1);
-	EXPECT_EQ((int)entities.entities.values[0].num_components, 2);
-	EXPECT_EQ(entities.entities.values[0].components[0], ComponentType_CollisionShape);
-	EXPECT_EQ(entities.entities.values[0].components[1], ComponentType_Sprite);
-	EXPECT_EQ((int)entities.components.collision_shapes.size, 1);
+	EXPECT_EQ((int)entities.entities.values[0].num_components, 1);
+	EXPECT_EQ(entities.entities.values[0].components[0], ComponentType_Sprite);
+	EXPECT_EQ((int)entities.components.collision_shapes.size, 0);
 	EXPECT_EQ((int)entities.components.sprites.size, 1);
+	EXPECT_TRUE(has_sprite);
+	EXPECT_FALSE(has_collision);
 }
 
 TEST(EntityTests, AddEntity_RemoveEntity_ComponentsAlsoRemoved) {
