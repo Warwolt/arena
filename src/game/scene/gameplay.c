@@ -145,6 +145,39 @@ void Gameplay_update(Game* game) {
 			EntityManager_set_sprite(&game->entities, id, sprite);
 		}
 	}
+
+	/* Check if player is colliding with other entities */
+	{
+		Vector2 player_position = { 0 };
+		Shape player_collision_shape = { 0 };
+		EntityManager_get_position(&game->entities, gameplay->player_id, &player_position);
+		EntityManager_get_collision_shape(&game->entities, gameplay->player_id, &player_collision_shape);
+		for (size_t i = 0; i < game->entities.components.collision_shapes.size; i++) {
+			EntityID id = { game->entities.components.collision_shapes.keys[i] };
+			if (id.value == gameplay->player_id.value) {
+				continue;
+			}
+			Vector2 other_position = { 0 };
+			Shape other_collision_shape = { 0 };
+			EntityManager_get_position(&game->entities, id, &other_position);
+			EntityManager_get_collision_shape(&game->entities, id, &other_collision_shape);
+			if (player_collision_shape.type == ShapeType_Circle && other_collision_shape.type == ShapeType_Circle) {
+				Circle player_circle = {
+					.center = Vector2Add(player_collision_shape.circle.center, player_position),
+					.radius = player_collision_shape.circle.radius,
+				};
+				Circle other_circle = {
+					.center = Vector2Add(other_collision_shape.circle.center, other_position),
+					.radius = other_collision_shape.circle.radius,
+				};
+				const bool is_colliding =
+					CheckCollisionCircles(player_circle.center, player_circle.radius, other_circle.center, other_circle.radius);
+				if (is_colliding) {
+					EntityManager_remove_entity(&game->entities, id);
+				}
+			}
+		}
+	}
 }
 
 void Gameplay_render(const Game* game) {
