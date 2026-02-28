@@ -12,7 +12,7 @@ typedef enum MenuItem {
 	MenuItem_Count,
 } MenuItem;
 
-static void draw_centered_horizontally(const Game* game, const char* text, int font_size, int y) {
+static void draw_text_centered_horizontally(const Game* game, const char* text, int font_size, int y) {
 	int text_width = MeasureText(text, font_size);
 	Rectangle screen = Game_screen_rect(game);
 	Vector2 position = {
@@ -29,7 +29,7 @@ void MainMenu_update(Game* game) {
 	MainMenu* main_menu = &game->scene.main_menu;
 
 	if (IsKeyPressed(KEY_ENTER)) {
-		switch (main_menu->selected_menu_item) {
+		switch (main_menu->focused_menu_item) {
 			case MenuItem_Play:
 				Game_switch_scene(game, SceneID_Gameplay);
 				break;
@@ -41,19 +41,19 @@ void MainMenu_update(Game* game) {
 	}
 
 	if (IsKeyPressed(KEY_ESCAPE)) {
-		if (main_menu->selected_menu_item == MenuItem_Quit) {
+		if (main_menu->focused_menu_item == MenuItem_Quit) {
 			game->should_quit = true;
 		} else {
-			main_menu->selected_menu_item = MenuItem_Quit;
+			main_menu->focused_menu_item = MenuItem_Quit;
 		}
 	}
 
 	if (IsKeyPressed(KEY_DOWN) || IsKeyPressed('S')) {
-		main_menu->selected_menu_item = (MenuItem_Count + main_menu->selected_menu_item + 1) % MenuItem_Count;
+		main_menu->focused_menu_item = (MenuItem_Count + main_menu->focused_menu_item + 1) % MenuItem_Count;
 	}
 
 	if (IsKeyPressed(KEY_UP) || IsKeyPressed('W')) {
-		main_menu->selected_menu_item = (MenuItem_Count + main_menu->selected_menu_item - 1) % MenuItem_Count;
+		main_menu->focused_menu_item = (MenuItem_Count + main_menu->focused_menu_item - 1) % MenuItem_Count;
 	}
 }
 
@@ -64,13 +64,13 @@ void MainMenu_render(const Game* game) {
 	const int small_font_size = 48;
 
 	Rectangle screen = Game_screen_rect(game);
-	draw_centered_horizontally(game, "Game", big_font_size, big_font_size + big_font_size);
-	draw_centered_horizontally(game, "Play", small_font_size, screen.height / 2);
-	draw_centered_horizontally(game, "Quit", small_font_size, screen.height / 2 + small_font_size);
+	draw_text_centered_horizontally(game, "Game", big_font_size, big_font_size + big_font_size);
+	draw_text_centered_horizontally(game, "Play", small_font_size, screen.height / 2);
+	draw_text_centered_horizontally(game, "Quit", small_font_size, screen.height / 2 + small_font_size);
 
 	Vector2 cursor_pos = {
 		.x = screen.width / 2 - 80,
-		.y = screen.height / 2 + main_menu->selected_menu_item * small_font_size,
+		.y = screen.height / 2 + main_menu->focused_menu_item * small_font_size,
 	};
 	DrawText(">", cursor_pos.x, cursor_pos.y, small_font_size, WHITE);
 }

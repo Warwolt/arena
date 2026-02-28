@@ -6,6 +6,8 @@
 typedef struct Game Game;
 
 typedef struct Gameplay {
+	bool is_paused;
+	float time_now;
 	int room_width;
 	int room_height;
 	Camera2D camera;
@@ -14,6 +16,7 @@ typedef struct Gameplay {
 	EntityID donut_id;
 	EntityID donut2_id;
 	EntityID coffe_id;
+	int focused_pause_menu_item;
 } Gameplay;
 
 void Gameplay_initialize(Game* game);

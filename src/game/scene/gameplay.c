@@ -10,6 +10,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+typedef enum PauseMenuItem {
+	PauseMenuItem_Continue,
+	PauseMenuItem_Quit,
+	PauseMenuItem_Count,
+} PauseMenuItem;
+
 static EntityID add_physical_object(EntityManager* entities, Vector2 position, Sprite sprite, Shape collision_shape) {
 	EntityID id = EntityManager_add_entity(entities, position);
 	EntityManager_add_sprite(entities, id, sprite);
@@ -80,101 +86,132 @@ void Gameplay_update(Game* game) {
 	};
 
 	if (IsKeyPressed(KEY_ESCAPE)) {
-		Game_switch_scene(game, SceneID_MainMenu);
+		gameplay->is_paused = !gameplay->is_paused;
 	}
 
-	/* Move player */
-	{
-		Vector2 input_vec = Vector2Zero();
-		if (IsKeyDown('A')) {
-			input_vec = Vector2Add(input_vec, (Vector2) { -1, 0 });
+	/* Show pause menu */
+	if (gameplay->is_paused) {
+		if (IsKeyPressed(KEY_DOWN) || IsKeyPressed('S')) {
+			gameplay->focused_pause_menu_item = (PauseMenuItem_Count + gameplay->focused_pause_menu_item + 1) % PauseMenuItem_Count;
 		}
-		if (IsKeyDown('D')) {
-			input_vec = Vector2Add(input_vec, (Vector2) { 1, 0 });
+
+		if (IsKeyPressed(KEY_UP) || IsKeyPressed('W')) {
+			gameplay->focused_pause_menu_item = (PauseMenuItem_Count + gameplay->focused_pause_menu_item - 1) % PauseMenuItem_Count;
 		}
-		if (IsKeyDown('W')) {
-			input_vec = Vector2Add(input_vec, (Vector2) { 0, -1 });
-		}
-		if (IsKeyDown('S')) {
-			input_vec = Vector2Add(input_vec, (Vector2) { 0, 1 });
-		}
-		input_vec = Vector2Normalize(input_vec);
 
-		Vector2 player_pos = Vector2Zero();
-		const float delta_time = GetFrameTime();
-		const float player_speed = 300; // px / second
-		EntityManager_get_position(&game->entities, gameplay->player_id, &player_pos);
+		if (IsKeyPressed(KEY_ENTER)) {
+			switch (gameplay->focused_pause_menu_item) {
+				case PauseMenuItem_Continue:
+					gameplay->is_paused = false;
+					break;
 
-		const Vector2 delta = Vector2Scale(input_vec, delta_time * player_speed);
-		const Vector2 moved_player_pos = Vector2Clamp(Vector2Add(player_pos, delta), room_top_left, room_bottom_right);
-		EntityManager_set_position(&game->entities, gameplay->player_id, moved_player_pos);
-	}
-
-	/* Move camera */
-	{
-		Vector2 player_position = { 0 };
-		EntityManager_get_position(&game->entities, gameplay->player_id, &player_position);
-		const Vector2 camera_top_left_bound = {
-			.x = room_top_left.x + game->screen.texture.width / 2,
-			.y = room_top_left.y + game->screen.texture.height / 2,
-		};
-		const Vector2 camera_bottom_right_bound = {
-			.x = room_bottom_right.x - game->screen.texture.width / 2,
-			.y = room_bottom_right.y - game->screen.texture.height / 2,
-
-		};
-		gameplay->camera.target = Vector2Clamp(player_position, camera_top_left_bound, camera_bottom_right_bound);
-	}
-
-	/* Animate donut and coffee */
-	{
-		const int time_now = GetTime() * 1000; // ms
-		const int frame_time = 70; // ms
-		const int num_frames = 12;
-		const int sprite_index = (time_now % (num_frames * frame_time)) / frame_time;
-
-		EntityID ids[3] = {
-			gameplay->donut_id,
-			gameplay->donut2_id,
-			gameplay->coffe_id,
-		};
-		for (size_t i = 0; i < sizeof(ids) / sizeof(*ids); i++) {
-			EntityID id = ids[i];
-			Sprite sprite = { 0 };
-			EntityManager_get_sprite(&game->entities, id, &sprite);
-			sprite.clip_rect.x = sprite_index * sprite.clip_rect.width;
-			EntityManager_set_sprite(&game->entities, id, sprite);
-		}
-	}
-
-	/* Check if player is colliding with other entities */
-	{
-		Vector2 player_position = { 0 };
-		Shape player_collision_shape = { 0 };
-		EntityManager_get_position(&game->entities, gameplay->player_id, &player_position);
-		EntityManager_get_collision_shape(&game->entities, gameplay->player_id, &player_collision_shape);
-		for (size_t i = 0; i < game->entities.components.collision_shapes.size; i++) {
-			EntityID id = { game->entities.components.collision_shapes.keys[i] };
-			if (id.value == gameplay->player_id.value) {
-				continue;
+				case PauseMenuItem_Quit:
+					Game_switch_scene(game, SceneID_MainMenu);
 			}
-			Vector2 other_position = { 0 };
-			Shape other_collision_shape = { 0 };
-			EntityManager_get_position(&game->entities, id, &other_position);
-			EntityManager_get_collision_shape(&game->entities, id, &other_collision_shape);
-			if (player_collision_shape.type == ShapeType_Circle && other_collision_shape.type == ShapeType_Circle) {
-				Circle player_circle = {
-					.center = Vector2Add(player_collision_shape.circle.center, player_position),
-					.radius = player_collision_shape.circle.radius,
-				};
-				Circle other_circle = {
-					.center = Vector2Add(other_collision_shape.circle.center, other_position),
-					.radius = other_collision_shape.circle.radius,
-				};
-				const bool is_colliding =
-					CheckCollisionCircles(player_circle.center, player_circle.radius, other_circle.center, other_circle.radius);
-				if (is_colliding) {
-					EntityManager_remove_entity(&game->entities, id);
+		}
+	}
+	/* Update scene */
+	else {
+		/* Increment time */
+		gameplay->time_now += GetFrameTime();
+
+		/* Move player */
+		{
+			Vector2 input_vec = Vector2Zero();
+			if (IsKeyDown('A')) {
+				input_vec = Vector2Add(input_vec, (Vector2) { -1, 0 });
+			}
+			if (IsKeyDown('D')) {
+				input_vec = Vector2Add(input_vec, (Vector2) { 1, 0 });
+			}
+			if (IsKeyDown('W')) {
+				input_vec = Vector2Add(input_vec, (Vector2) { 0, -1 });
+			}
+			if (IsKeyDown('S')) {
+				input_vec = Vector2Add(input_vec, (Vector2) { 0, 1 });
+			}
+			input_vec = Vector2Normalize(input_vec);
+
+			Vector2 player_pos = Vector2Zero();
+			const float delta_time = GetFrameTime();
+			const float player_speed = 300; // px / second
+			EntityManager_get_position(&game->entities, gameplay->player_id, &player_pos);
+
+			const Vector2 delta = Vector2Scale(input_vec, delta_time * player_speed);
+			const Vector2 moved_player_pos = Vector2Clamp(Vector2Add(player_pos, delta), room_top_left, room_bottom_right);
+			EntityManager_set_position(&game->entities, gameplay->player_id, moved_player_pos);
+		}
+
+		/* Move camera */
+		{
+			Vector2 player_position = { 0 };
+			EntityManager_get_position(&game->entities, gameplay->player_id, &player_position);
+			const Vector2 camera_top_left_bound = {
+				.x = room_top_left.x + game->screen.texture.width / 2,
+				.y = room_top_left.y + game->screen.texture.height / 2,
+			};
+			const Vector2 camera_bottom_right_bound = {
+				.x = room_bottom_right.x - game->screen.texture.width / 2,
+				.y = room_bottom_right.y - game->screen.texture.height / 2,
+
+			};
+			gameplay->camera.target = Vector2Clamp(player_position, camera_top_left_bound, camera_bottom_right_bound);
+		}
+
+		/* Animate donut and coffee */
+		{
+			const int time_now_ms = (int)(gameplay->time_now * 1000);
+			const int frame_time = 70; // ms
+			const int num_frames = 12;
+			const int sprite_index = (time_now_ms % (num_frames * frame_time)) / frame_time;
+
+			EntityID ids[3] = {
+				gameplay->donut_id,
+				gameplay->donut2_id,
+				gameplay->coffe_id,
+			};
+			for (size_t i = 0; i < sizeof(ids) / sizeof(*ids); i++) {
+				EntityID id = ids[i];
+				Sprite sprite = { 0 };
+				EntityManager_get_sprite(&game->entities, id, &sprite);
+				sprite.clip_rect.x = sprite_index * sprite.clip_rect.width;
+				EntityManager_set_sprite(&game->entities, id, sprite);
+			}
+		}
+
+		/* Check if player is colliding with other entities */
+		{
+			Vector2 player_position = { 0 };
+			Shape player_collision_shape = { 0 };
+			EntityManager_get_position(&game->entities, gameplay->player_id, &player_position);
+			EntityManager_get_collision_shape(&game->entities, gameplay->player_id, &player_collision_shape);
+			for (size_t i = 0; i < game->entities.components.collision_shapes.size; i++) {
+				EntityID id = { game->entities.components.collision_shapes.keys[i] };
+				if (id.value == gameplay->player_id.value) {
+					continue;
+				}
+				Vector2 other_position = { 0 };
+				Shape other_collision_shape = { 0 };
+				EntityManager_get_position(&game->entities, id, &other_position);
+				EntityManager_get_collision_shape(&game->entities, id, &other_collision_shape);
+				if (player_collision_shape.type == ShapeType_Circle && other_collision_shape.type == ShapeType_Circle) {
+					Circle player_circle = {
+						.center = Vector2Add(player_collision_shape.circle.center, player_position),
+						.radius = player_collision_shape.circle.radius,
+					};
+					Circle other_circle = {
+						.center = Vector2Add(other_collision_shape.circle.center, other_position),
+						.radius = other_collision_shape.circle.radius,
+					};
+					const bool is_colliding = CheckCollisionCircles(
+						player_circle.center,
+						player_circle.radius,
+						other_circle.center,
+						other_circle.radius
+					);
+					if (is_colliding) {
+						EntityManager_remove_entity(&game->entities, id);
+					}
 				}
 			}
 		}
@@ -187,6 +224,11 @@ void Gameplay_render(const Game* game) {
 		.x = -gameplay->room_width / 2,
 		.y = -gameplay->room_height / 2,
 	};
+	const Vector2 screen_middle = {
+		.x = game->screen.texture.width / 2,
+		.y = game->screen.texture.height / 2,
+	};
+	const int screen_height = game->screen.texture.height;
 
 	/* Render in camera */
 	BeginMode2D(gameplay->camera);
@@ -245,4 +287,53 @@ void Gameplay_render(const Game* game) {
 		}
 	}
 	EndMode2D();
+
+	/* Draw pause menu */
+	if (gameplay->is_paused) {
+		const int menu_width = 300;
+		const int menu_height = 200;
+		const Rectangle menu_rect = {
+			.x = screen_middle.x - menu_width / 2,
+			.y = screen_middle.y - menu_height / 2,
+			.width = menu_width,
+			.height = menu_height,
+		};
+		const Vector2 menu_middle = {
+			.x = menu_rect.x + menu_width / 2,
+			.y = menu_rect.y + menu_height / 2,
+		};
+		const int font_size_big = 48;
+		const int font_size_small = 32;
+
+		const int title_padding = 12;
+		const int top_margin = (screen_height - font_size_big - title_padding - 2 * font_size_small) / 2;
+
+		DrawRectangleRec(menu_rect, BLACK);
+		{
+			const char* text = "Paused";
+			int text_width = MeasureText(text, font_size_big);
+			int pos_x = menu_middle.x - text_width / 2;
+			int pos_y = top_margin;
+			DrawText(text, pos_x, pos_y, font_size_big, WHITE);
+		}
+		{
+			const char* text = "Continue";
+			int text_width = MeasureText(text, font_size_small);
+			int pos_x = menu_middle.x - text_width / 2;
+			int pos_y = top_margin + font_size_big + title_padding;
+			DrawText(text, pos_x, pos_y, font_size_small, WHITE);
+		}
+		{
+			const char* text = "Quit";
+			int text_width = MeasureText(text, font_size_small);
+			int pos_x = menu_middle.x - text_width / 2;
+			int pos_y = top_margin + font_size_big + title_padding + font_size_small;
+			DrawText(text, pos_x, pos_y, font_size_small, WHITE);
+		}
+		{
+			int pos_x = menu_rect.x + 48;
+			int pos_y = top_margin + font_size_big + title_padding + font_size_small * gameplay->focused_pause_menu_item;
+			DrawText(">", pos_x, pos_y, font_size_small, WHITE);
+		}
+	}
 }

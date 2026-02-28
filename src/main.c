@@ -27,6 +27,7 @@ int main(void) {
 	SetTraceLogLevel(LOG_WARNING);
 	InitWindow(RESOLUTION_WIDTH, RESOLUTION_HEIGHT, "Program");
 	SetExitKey(KEY_NULL);
+	SetTargetFPS(120);
 	LOG_INFO("Created window");
 
 	/* State */
