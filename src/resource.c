@@ -18,19 +18,19 @@ TextureID ResourceManager_load_texture(ResourceManager* resources, const char* f
 	/* Load and store texture */
 	TextureID id = { ++resources->next_texture_id };
 	Texture2D texture = LoadTextureFromImage(image);
-	Map_insert(&resources->textures, id.value, texture);
+	SparseArray_insert(&resources->textures, id.value, texture);
 	UnloadImage(image);
 
 	return id;
 }
 
 bool ResourceManager_get_texture(ResourceManager* resources, TextureID id, Texture* texture) {
-	return Map_get(&resources->textures, id.value, texture);
+	return SparseArray_get(&resources->textures, id.value, texture);
 }
 
 void ResourceManager_unload_resources(ResourceManager* resources) {
 	for (size_t i = 0; i < resources->textures.size; i++) {
 		UnloadTexture(resources->textures.values[i]);
-		Map_remove(&resources->textures, resources->textures.keys[i]);
+		SparseArray_remove(&resources->textures, resources->textures.keys[i]);
 	}
 }

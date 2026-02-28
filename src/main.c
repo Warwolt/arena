@@ -1,7 +1,7 @@
 #include "component.h"
 #include "entity.h"
 #include "logging.h"
-#include "map.h"
+#include "sparse_array.h"
 #include "resource.h"
 #include "win32.h"
 

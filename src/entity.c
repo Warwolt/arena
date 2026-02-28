@@ -15,13 +15,13 @@ EntityID EntityManager_add_entity(EntityManager* entities, Vector2 position) {
 		.id = id,
 		.position = position,
 	};
-	Map_insert(&entities->entities, id.value, entity);
+	SparseArray_insert(&entities->entities, id.value, entity);
 	return id;
 }
 
 bool EntityManager_remove_entity(EntityManager* entities, EntityID id) {
 	Entity* entity = NULL;
-	Map_get_ptr(&entities->entities, id.value, &entity);
+	SparseArray_get_ptr(&entities->entities, id.value, &entity);
 	if (entity) {
 		/* Remove components */
 		for (size_t i = 0; i < entity->num_components; i++) {
@@ -29,16 +29,16 @@ bool EntityManager_remove_entity(EntityManager* entities, EntityID id) {
 				case ComponentType_None:
 					break;
 				case ComponentType_Sprite:
-					Map_remove(&entities->components.sprites, id.value);
+					SparseArray_remove(&entities->components.sprites, id.value);
 					break;
 				case ComponentType_CollisionShape:
-					Map_remove(&entities->components.collision_shapes, id.value);
+					SparseArray_remove(&entities->components.collision_shapes, id.value);
 					break;
 			}
 		}
 
 		/* Remove entity */
-		Map_remove(&entities->entities, id.value);
+		SparseArray_remove(&entities->entities, id.value);
 		entities->discarded_ids[entities->num_discarded_ids++] = id;
 	}
 	return entity != NULL;
@@ -46,7 +46,7 @@ bool EntityManager_remove_entity(EntityManager* entities, EntityID id) {
 
 bool EntityManager_get_position(EntityManager* entities, EntityID id, Vector2* position) {
 	Entity* entity = NULL;
-	Map_get_ptr(&entities->entities, id.value, &entity);
+	SparseArray_get_ptr(&entities->entities, id.value, &entity);
 	if (entity) {
 		*position = entity->position;
 	}
@@ -55,40 +55,40 @@ bool EntityManager_get_position(EntityManager* entities, EntityID id, Vector2* p
 
 void EntityManager_set_position(EntityManager* entities, EntityID id, Vector2 position) {
 	Entity* entity = NULL;
-	Map_get_ptr(&entities->entities, id.value, &entity);
+	SparseArray_get_ptr(&entities->entities, id.value, &entity);
 	if (entity) {
 		entity->position = position;
 	}
 }
 
 void EntityManager_add_sprite(EntityManager* entities, EntityID id, Sprite sprite) {
-	if (Map_insert(&entities->components.sprites, id.value, sprite)) {
+	if (SparseArray_insert(&entities->components.sprites, id.value, sprite)) {
 		Entity* entity = NULL;
-		Map_get_ptr(&entities->entities, id.value, &entity);
+		SparseArray_get_ptr(&entities->entities, id.value, &entity);
 		entity->components[entity->num_components++] = ComponentType_Sprite;
 	}
 }
 
 bool EntityManager_get_sprite(EntityManager* entities, EntityID id, Sprite* sprite) {
-	return Map_get(&entities->components.sprites, id.value, sprite);
+	return SparseArray_get(&entities->components.sprites, id.value, sprite);
 }
 
 void EntityManager_set_sprite(EntityManager* entities, EntityID id, Sprite sprite) {
-	Map_set(&entities->components.sprites, id.value, sprite);
+	SparseArray_set(&entities->components.sprites, id.value, sprite);
 }
 
 void EntityManager_add_collision_shape(EntityManager* entities, EntityID id, Shape shape) {
-	if (Map_insert(&entities->components.collision_shapes, id.value, shape)) {
+	if (SparseArray_insert(&entities->components.collision_shapes, id.value, shape)) {
 		Entity* entity = NULL;
-		Map_get_ptr(&entities->entities, id.value, &entity);
+		SparseArray_get_ptr(&entities->entities, id.value, &entity);
 		entity->components[entity->num_components++] = ComponentType_CollisionShape;
 	}
 }
 
 bool EntityManager_get_collision_shape(EntityManager* entities, EntityID id, Shape* shape) {
-	return Map_get(&entities->components.collision_shapes, id.value, shape);
+	return SparseArray_get(&entities->components.collision_shapes, id.value, shape);
 }
 
 void EntityManager_set_collision_shape(EntityManager* entities, EntityID id, Shape shape) {
-	Map_set(&entities->components.collision_shapes, id.value, shape);
+	SparseArray_set(&entities->components.collision_shapes, id.value, shape);
 }
