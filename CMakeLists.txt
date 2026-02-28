@@ -3,8 +3,9 @@ project(arena)
 enable_language(C)
 
 # Add Raylib
-set(BUILD_SHARED_LIBS ON)
+set(BUILD_SHARED_LIBS ON CACHE BOOL "" FORCE)
 add_subdirectory(lib/raylib)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
 # Set warnings
 add_compile_options(
