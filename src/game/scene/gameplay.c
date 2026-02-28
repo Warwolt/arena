@@ -203,6 +203,7 @@ void Gameplay_render(const Game* game) {
 		.x = game->screen.texture.width / 2,
 		.y = game->screen.texture.height / 2,
 	};
+	const int screen_height = game->screen.texture.height;
 
 	/* Render in camera */
 	BeginMode2D(gameplay->camera);
@@ -266,22 +267,43 @@ void Gameplay_render(const Game* game) {
 	if (gameplay->is_paused) {
 		const int menu_width = 300;
 		const int menu_height = 200;
-		Rectangle menu_rect = {
+		const Rectangle menu_rect = {
 			.x = screen_middle.x - menu_width / 2,
 			.y = screen_middle.y - menu_height / 2,
 			.width = menu_width,
 			.height = menu_height,
 		};
-		Vector2 menu_middle = {
+		const Vector2 menu_middle = {
 			.x = menu_rect.x + menu_width / 2,
 			.y = menu_rect.y + menu_height / 2,
 		};
+		const int font_size_big = 48;
+		const int font_size_small = 32;
 
-		const int font_size = 32;
-		const char* text = "Paused";
-		int text_width = MeasureText(text, font_size);
+		const int title_padding = 12;
+		const int top_margin = (screen_height - font_size_big - title_padding - 2 * font_size_small) / 2;
 
 		DrawRectangleRec(menu_rect, BLACK);
-		DrawText("Paused", menu_middle.x - text_width / 2, menu_rect.y + font_size, font_size, WHITE);
+		{
+			const char* text = "Paused";
+			int text_width = MeasureText(text, font_size_big);
+			int pos_x = menu_middle.x - text_width / 2;
+			int pos_y = top_margin;
+			DrawText(text, pos_x, pos_y, font_size_big, WHITE);
+		}
+		{
+			const char* text = "Continue";
+			int text_width = MeasureText(text, font_size_small);
+			int pos_x = menu_middle.x - text_width / 2;
+			int pos_y = top_margin + font_size_big + title_padding;
+			DrawText(text, pos_x, pos_y, font_size_small, WHITE);
+		}
+		{
+			const char* text = "Quit";
+			int text_width = MeasureText(text, font_size_small);
+			int pos_x = menu_middle.x - text_width / 2;
+			int pos_y = top_margin + font_size_big + title_padding + font_size_small;
+			DrawText(text, pos_x, pos_y, font_size_small, WHITE);
+		}
 	}
 }

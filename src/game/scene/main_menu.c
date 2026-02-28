@@ -12,7 +12,7 @@ typedef enum MenuItem {
 	MenuItem_Count,
 } MenuItem;
 
-static void draw_centered_horizontally(const Game* game, const char* text, int font_size, int y) {
+static void draw_text_centered_horizontally(const Game* game, const char* text, int font_size, int y) {
 	int text_width = MeasureText(text, font_size);
 	Rectangle screen = Game_screen_rect(game);
 	Vector2 position = {
@@ -64,9 +64,9 @@ void MainMenu_render(const Game* game) {
 	const int small_font_size = 48;
 
 	Rectangle screen = Game_screen_rect(game);
-	draw_centered_horizontally(game, "Game", big_font_size, big_font_size + big_font_size);
-	draw_centered_horizontally(game, "Play", small_font_size, screen.height / 2);
-	draw_centered_horizontally(game, "Quit", small_font_size, screen.height / 2 + small_font_size);
+	draw_text_centered_horizontally(game, "Game", big_font_size, big_font_size + big_font_size);
+	draw_text_centered_horizontally(game, "Play", small_font_size, screen.height / 2);
+	draw_text_centered_horizontally(game, "Quit", small_font_size, screen.height / 2 + small_font_size);
 
 	Vector2 cursor_pos = {
 		.x = screen.width / 2 - 80,
