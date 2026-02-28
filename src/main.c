@@ -29,25 +29,20 @@ int main(void) {
 	SetExitKey(KEY_NULL);
 	LOG_INFO("Created window");
 
-	// Render texture
-	RenderTexture2D screen_texture = LoadRenderTexture(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
-
-	/* Load resources */
-	ResourceManager resources = { 0 };
-
 	/* State */
 	GameState game = { .scene_id = SceneID_MainMenu };
+	RenderTexture2D screen_texture = LoadRenderTexture(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
 
 	/* Run program */
 	while (!game.should_quit) {
-		if (IsKeyPressed(KEY_F11)) {
-			Window_toggle_fullscreen();
-		}
-
-		game.should_quit = WindowShouldClose();
-
 		/* Update */
 		{
+			game.should_quit = WindowShouldClose();
+
+			if (IsKeyPressed(KEY_F11)) {
+				Window_toggle_fullscreen();
+			}
+
 			switch (game.scene_id) {
 				case SceneID_MainMenu:
 					MainMenu_update(&game);
@@ -106,7 +101,7 @@ int main(void) {
 
 	/* Shutdown */
 	LOG_INFO("Shutdown");
-	ResourceManager_unload_resources(&resources);
+	ResourceManager_unload_resources(&game.engine.resources);
 	CloseWindow();
 	return 0;
 }
