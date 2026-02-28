@@ -8,7 +8,7 @@
 
 typedef struct ResourceManager {
 	SparseArray(Texture2D, MAX_TEXTURE_RESOURCES) textures;
-	int next_texture_id;
+	int prev_texture_id;
 } ResourceManager;
 
 typedef struct TextureID {

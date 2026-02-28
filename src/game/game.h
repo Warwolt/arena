@@ -1,5 +1,6 @@
 #pragma once
 
+#include "engine/entity.h"
 #include "engine/resource.h"
 #include "game/scene/scene.h"
 
@@ -11,6 +12,7 @@ typedef struct Game {
 	bool should_quit;
 	RenderTexture screen;
 	ResourceManager resources;
+	EntityManager entities;
 	Scene scene;
 } Game;
 

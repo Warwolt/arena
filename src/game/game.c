@@ -82,6 +82,8 @@ void Game_quit(Game* game) {
 
 void Game_switch_scene(Game* game, SceneID id) {
 	game->scene = (Scene) { .id = id };
+	game->entities = (EntityManager) { 0 };
+	ResourceManager_unload_resources(&game->resources);
 	switch (id) {
 		case SceneID_MainMenu:
 			MainMenu_initialize(game);

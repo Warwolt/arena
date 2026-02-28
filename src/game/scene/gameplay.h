@@ -1,13 +1,19 @@
 #pragma once
 
+#include "engine/entity.h"
 #include "engine/resource.h"
 
 typedef struct Game Game;
 
 typedef struct Gameplay {
-	TextureID bg_texture_id;
 	int room_width;
 	int room_height;
+	Camera2D camera;
+	TextureID bg_texture_id;
+	EntityID player_id;
+
+	// temp
+	Vector2 player_position;
 } Gameplay;
 
 void Gameplay_initialize(Game* game);
