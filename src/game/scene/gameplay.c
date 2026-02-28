@@ -42,6 +42,10 @@ void Gameplay_initialize(Game* game) {
 		.texture_id = ResourceManager_load_texture(&game->resources, "resource/image/spinning_donut.png"),
 		.clip_rect = (Rectangle) { 0, 0, 64, 64 },
 	};
+	const Sprite coffee_sprite = {
+		.texture_id = ResourceManager_load_texture(&game->resources, "resource/image/spinning_coffee.png"),
+		.clip_rect = (Rectangle) { 0, 0, 64, 64 },
+	};
 
 	game->scene.gameplay = (Gameplay) {
 		.room_width = screen_width * 2,
@@ -57,6 +61,7 @@ void Gameplay_initialize(Game* game) {
 		.player_id = add_physical_object(&game->entities, Vector2Zero(), player_sprite, Shape_circle((Circle) { .radius = 16 })),
 		.donut_id = add_physical_object(&game->entities, (Vector2) { -48, 0 }, donut_sprite, Shape_circle((Circle) { .radius = 8 })),
 		.donut2_id = add_physical_object(&game->entities, (Vector2) { -112, 0 }, donut_sprite, Shape_circle((Circle) { .radius = 8 })),
+		.coffe_id = add_physical_object(&game->entities, (Vector2) { 48, 0 }, coffee_sprite, Shape_circle((Circle) { .radius = 8 })),
 	};
 }
 
@@ -130,6 +135,7 @@ void Gameplay_update(Game* game) {
 		EntityID ids[3] = {
 			gameplay->donut_id,
 			gameplay->donut2_id,
+			gameplay->coffe_id,
 		};
 		for (size_t i = 0; i < sizeof(ids) / sizeof(*ids); i++) {
 			EntityID id = ids[i];

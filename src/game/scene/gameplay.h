@@ -13,6 +13,7 @@ typedef struct Gameplay {
 	EntityID player_id;
 	EntityID donut_id;
 	EntityID donut2_id;
+	EntityID coffe_id;
 } Gameplay;
 
 void Gameplay_initialize(Game* game);
