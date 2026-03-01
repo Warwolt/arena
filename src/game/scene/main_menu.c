@@ -1,6 +1,6 @@
 #include "game/scene/main_menu.h"
 
-#include "game/game.h"
+#include "game.h"
 #include "platform/logging.h"
 
 #include <raylib.h>

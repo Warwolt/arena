@@ -1,7 +1,7 @@
 #include "game/scene/gameplay.h"
 
 #include "core/for_each.h"
-#include "game/game.h"
+#include "game.h"
 #include "platform/logging.h"
 
 #include <raylib.h>

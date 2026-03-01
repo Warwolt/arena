@@ -2,7 +2,7 @@
 #include "engine/component.h"
 #include "engine/entity.h"
 #include "engine/resource.h"
-#include "game/game.h"
+#include "game.h"
 #include "game/scene/gameplay.h"
 #include "game/scene/main_menu.h"
 #include "platform/logging.h"

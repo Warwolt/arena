@@ -22,11 +22,11 @@ add_compile_options(
 
 # Source
 add_library(Source
+    src/game.c
     src/core/arena.c
     src/core/sparse_array.c
     src/engine/entity.c
     src/engine/resource.c
-    src/game/game.c
     src/game/scene/main_menu.c
     src/game/scene/gameplay.c
     src/platform/logging.c
