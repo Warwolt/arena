@@ -1,34 +1,56 @@
-#include "core/sparse_array.h"
-#include "engine/component.h"
-#include "engine/entity.h"
-#include "engine/resource.h"
 #include "game.h"
-#include "game/scene/gameplay.h"
-#include "game/scene/main_menu.h"
-#include "platform/logging.h"
 
-#include "raylib_extra.h"
-#include <raylib.h>
-#include <raymath.h>
-
-#include <math.h>
-#include <stdint.h>
+#define _AMD64_ 1
+#define _M_X64 100
+#include <libloaderapi.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+
+typedef struct GameLibrary {
+	HMODULE handle;
+	typeof(&Game_initialize) initialize;
+	typeof(&Game_shutdown) shutdown;
+	typeof(&Game_update) update;
+	typeof(&Game_render) render;
+} GameLibrary;
+
+GameLibrary load_library(const char* library_path) {
+	HMODULE handle = LoadLibraryA(library_path);
+	return (GameLibrary) {
+		.handle = handle,
+		.initialize = (typeof(&Game_initialize))GetProcAddress(handle, "Game_initialize"),
+		.shutdown = (typeof(&Game_shutdown))GetProcAddress(handle, "Game_shutdown"),
+		.update = (typeof(&Game_update))GetProcAddress(handle, "Game_update"),
+		.render = (typeof(&Game_render))GetProcAddress(handle, "Game_render"),
+	};
+}
 
 int main(void) {
+	/* Load DLL */
+	const char* library_path = "Game.dll";
+	GameLibrary game_lib = load_library(library_path);
+	if (!game_lib.handle) {
+		fprintf(stderr, "Fatal: Couldn't load library \"%s\"!\n", library_path);
+		return 1;
+	}
+
 	/* State */
-	Game game = { 0 };
-	Game_initialize(&game);
+	Game game_state = { 0 };
+	game_lib.initialize(&game_state);
 
 	/* Run program */
-	while (!game.should_quit) {
-		Game_update(&game);
-		Game_render(&game);
+	while (!game_state.should_quit) {
+		/* Check hot reload */
+		if (IsKeyPressed(KEY_F5)) {
+			printf("F5\n");
+		}
+
+		/* Run game frame */
+		game_lib.update(&game_state);
+		game_lib.render(&game_state);
 	}
 
 	/* Shutdown */
-	Game_shutdown(&game);
+	game_lib.shutdown(&game_state);
+	FreeLibrary(game_lib.handle);
 	return 0;
 }

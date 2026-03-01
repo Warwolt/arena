@@ -41,6 +41,7 @@ target_link_libraries(Source raylib)
 add_library(Library SHARED ${SRC})
 target_include_directories(Library PUBLIC src lib)
 target_link_libraries(Library raylib)
+set_target_properties(Library PROPERTIES OUTPUT_NAME "Game")
 
 # Main
 add_executable(Executable
