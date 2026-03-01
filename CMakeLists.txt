@@ -21,7 +21,7 @@ add_compile_options(
 )
 
 # Source
-add_library(Source
+set(SRC
     src/game.c
     src/core/arena.c
     src/core/sparse_array.c
@@ -33,15 +33,21 @@ add_library(Source
     src/platform/window.c
     src/raylib_extra.c
 )
+
+add_library(Source STATIC ${SRC})
 target_include_directories(Source PUBLIC src lib)
 target_link_libraries(Source raylib)
+
+add_library(Library SHARED ${SRC})
+target_include_directories(Library PUBLIC src lib)
+target_link_libraries(Library raylib)
 
 # Main
 add_executable(Executable
     src/main.c
 )
 target_include_directories(Executable PUBLIC src lib)
-target_link_libraries(Executable Source)
+target_link_libraries(Executable Library)
 set_property(TARGET Executable PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Executable)
 set_target_properties(Executable PROPERTIES OUTPUT_NAME "Game")
