@@ -136,6 +136,19 @@ bool Win32_copy_file(const char* src_path, const char* dst_path) {
 	return CopyFileA(src_path, dst_path, false) != 0;
 }
 
+uint64_t Win32_get_file_last_modified(const char* file_path) {
+	WIN32_FILE_ATTRIBUTE_DATA file_info;
+	if (!GetFileAttributesExA(file_path, GetFileExInfoStandard, &file_info)) {
+		return 0;
+	}
+
+	ULARGE_INTEGER ull;
+	ull.LowPart = file_info.ftLastWriteTime.dwLowDateTime;
+	ull.HighPart = file_info.ftLastWriteTime.dwHighDateTime;
+
+	return ull.QuadPart;
+}
+
 void Win32_run_command(const char* command, void (*on_command_done)(int exit_code)) {
 	RunCommandThreadArgs* thread_args = malloc(sizeof(RunCommandThreadArgs));
 	*thread_args = (RunCommandThreadArgs) {
