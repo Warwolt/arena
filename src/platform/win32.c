@@ -7,6 +7,10 @@
 // forward declare from raylib.h
 void* GetWindowHandle(void);
 
+void Win32_set_process_dpi_aware(void) {
+	SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+}
+
 // Based on Raymond Chen's "How do I switch a window between normal and fullscreen?"
 // https://devblogs.microsoft.com/oldnewthing/20100412-00/?p=14353
 void Win32_toggle_fullscreen() {
@@ -33,17 +37,18 @@ void Win32_toggle_fullscreen() {
 
 void Win32_show_error_message_box(const char* text) {
 	HWND handle = GetWindowHandle();
-	SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 	MessageBoxA(handle, text, "Error", MB_OK | MB_ICONERROR);
 }
 
-bool Win32_file_exists_relative_executable(const char* relative_path) {
-	char exe_dir[MAX_PATH] = { 0 };
-	GetModuleFileName(NULL, exe_dir, MAX_PATH);
-	PathRemoveFileSpecA(exe_dir);
+void Win32_get_executable_directory(char* buffer) {
+	GetModuleFileName(NULL, buffer, MAX_PATH);
+	PathRemoveFileSpecA(buffer);
+}
 
-	char full_path[MAX_PATH] = { 0 };
-	snprintf(full_path, MAX_PATH, "%s\\%s", exe_dir, relative_path);
-
+bool Win32_file_exists(const char* full_path) {
 	return PathFileExistsA(full_path);
+}
+
+bool Win32_copy_file(const char* src_path, const char* dst_path) {
+	return CopyFileA(src_path, dst_path, false) != 0;
 }
