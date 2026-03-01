@@ -51,6 +51,7 @@ set_target_properties(Library PROPERTIES OUTPUT_NAME "Game")
 add_executable(Executable
     src/main.c
     src/platform/win32.c
+    src/platform/logging.c
 )
 target_include_directories(Executable PUBLIC src lib)
 target_link_libraries(Executable Library)

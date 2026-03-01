@@ -1,5 +1,6 @@
 #include "game.h"
 
+#include "platform/logging.h"
 #include "platform/win32.h"
 
 #define _AMD64_ 1
@@ -81,7 +82,8 @@ int main(void) {
 	while (!game_state.should_quit) {
 		/* Check hot reload */
 		if (IsKeyPressed(KEY_F5)) {
-			printf("F5\n");
+			LOG_INFO("Rebuilding game code");
+			Win32_run_command("cmake --build build --target Executable");
 		}
 
 		/* Run game frame */
