@@ -16,5 +16,5 @@ jobs:
       - name: Build
         run: cmake --build build
 
-      - name: Run test suite
-        run: ./build/Debug/tests
+      - name: Run tests
+        run: ./build/Debug/Tests.exe

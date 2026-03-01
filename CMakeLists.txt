@@ -21,7 +21,7 @@ add_compile_options(
 )
 
 # Source
-add_library(source
+add_library(Source
     src/core/arena.c
     src/core/sparse_array.c
     src/engine/entity.c
@@ -33,32 +33,33 @@ add_library(source
     src/platform/window.c
     src/raylib_extra.c
 )
-target_include_directories(source PUBLIC src lib)
-target_link_libraries(source raylib)
+target_include_directories(Source PUBLIC src lib)
+target_link_libraries(Source raylib)
 
 # Main
-add_executable(main
+add_executable(Executable
     src/main.c
 )
-target_include_directories(main PUBLIC src lib)
-target_link_libraries(main source)
-set_property(TARGET main PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT main)
+target_include_directories(Executable PUBLIC src lib)
+target_link_libraries(Executable Source)
+set_property(TARGET Executable PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Executable)
+set_target_properties(Executable PROPERTIES OUTPUT_NAME "Game")
 
 # Tests
-add_executable(tests
+add_executable(Tests
     test/main.c
     test/arena_tests.c
     test/entity_tests.c
     test/sparse_array_tests.c
 )
-target_include_directories(tests PUBLIC src lib)
-target_link_libraries(tests source)
+target_include_directories(Tests PUBLIC src lib)
+target_link_libraries(Tests Source)
 
 # Copy DLL
-add_custom_command(TARGET main POST_BUILD
+add_custom_command(TARGET Executable POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:raylib>   # Source DLL
-        $<TARGET_FILE_DIR:main> # Destination = main exe dir
+        $<TARGET_FILE:raylib>         # Source DLL
+        $<TARGET_FILE_DIR:Executable> # Destination = main exe dir
     COMMENT "Copy raylib DLL to executable directory"
 )
