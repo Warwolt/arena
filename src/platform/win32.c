@@ -7,8 +7,13 @@
 // forward declare from raylib.h
 void* GetWindowHandle(void);
 
-static DWORD WINAPI run_command_thread(LPVOID* arg) {
-	const char* command = (char*)arg;
+typedef struct RunCommandThreadArgs {
+	const char* command;
+	void (*on_command_done)(int exit_code);
+} RunCommandThreadArgs;
+
+static DWORD WINAPI run_command_thread(LPVOID* void_args) {
+	RunCommandThreadArgs* args = (RunCommandThreadArgs*)void_args;
 
 	/* Setup pipes for stdout and stderr */
 	HANDLE stdout_read = NULL;
@@ -38,7 +43,7 @@ static DWORD WINAPI run_command_thread(LPVOID* arg) {
 	};
 	BOOL process_was_created = CreateProcessA(
 		NULL, // lpApplicationName
-		(LPSTR)(command), // lpCommandLine
+		(LPSTR)(args->command), // lpCommandLine
 		NULL, // lpProcessAttributes
 		NULL, // lpThreadAttributes
 		TRUE, // bInheritHandles
@@ -72,8 +77,15 @@ static DWORD WINAPI run_command_thread(LPVOID* arg) {
 	/* Wait for process to finish */
 	WaitForSingleObject(process_info.hProcess, INFINITE);
 
-	/* Free string */
-	free((void*)command);
+	/* Pass exit code to callback */
+	if (args->on_command_done != NULL) {
+		DWORD exit_code = 0;
+		GetExitCodeProcess(process_info.hProcess, &exit_code);
+		args->on_command_done(exit_code);
+	}
+
+	/* Free thread args */
+	free((void*)args);
 
 	return 0;
 }
@@ -124,7 +136,11 @@ bool Win32_copy_file(const char* src_path, const char* dst_path) {
 	return CopyFileA(src_path, dst_path, false) != 0;
 }
 
-void Win32_run_command(const char* command) {
-	const char* copied_command = strdup(command);
-	CreateThread(NULL, 0, run_command_thread, (LPVOID)copied_command, 0, NULL);
+void Win32_run_command(const char* command, void (*on_command_done)(int exit_code)) {
+	RunCommandThreadArgs* thread_args = malloc(sizeof(RunCommandThreadArgs));
+	*thread_args = (RunCommandThreadArgs) {
+		.command = _strdup(command),
+		.on_command_done = on_command_done,
+	};
+	CreateThread(NULL, 0, run_command_thread, (LPVOID)thread_args, 0, NULL);
 }

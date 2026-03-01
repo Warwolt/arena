@@ -19,7 +19,7 @@ typedef struct GameLibrary {
 	typeof(&Game_render) render;
 } GameLibrary;
 
-GameLibrary load_library(const char* library_path) {
+static GameLibrary load_library(const char* library_path) {
 	HMODULE handle = LoadLibraryA(library_path);
 	if (!handle) {
 		char message[256] = { 0 };
@@ -37,8 +37,12 @@ GameLibrary load_library(const char* library_path) {
 	};
 }
 
-void free_library(GameLibrary* library) {
-	FreeLibrary(library->handle);
+static void on_build_command_done(int exit_code) {
+	if (exit_code == 0) {
+		LOG_INFO("Game code rebuilt successfully");
+	} else {
+		LOG_ERROR("Build finished with errors!");
+	}
 }
 
 int main(void) {
@@ -83,7 +87,7 @@ int main(void) {
 		/* Check hot reload */
 		if (IsKeyPressed(KEY_F5)) {
 			LOG_INFO("Rebuilding game code");
-			Win32_run_command("cmake --build build --target Executable");
+			Win32_run_command("cmake --build build --target Library", on_build_command_done);
 		}
 
 		/* Run game frame */
@@ -93,6 +97,6 @@ int main(void) {
 
 	/* Shutdown */
 	game_lib.shutdown(&game_state);
-	free_library(&game_lib);
+	FreeLibrary(game_lib.handle);
 	return 0;
 }

@@ -16,4 +16,4 @@ bool Win32_file_exists(const char* full_path);
 bool Win32_copy_file(const char* src_path, const char* dst_path); // true if file copied
 
 // command
-void Win32_run_command(const char* command);
+void Win32_run_command(const char* command, void (*on_command_done)(int exit_code));
