@@ -1,7 +1,7 @@
 #include "game.h"
 
 #include "platform/logging.h"
-#include "platform/window.h"
+#include "platform/win32.h"
 
 #include <raylib.h>
 #include <raymath.h>
@@ -42,7 +42,7 @@ void Game_update(Game* game) {
 	game->should_quit = WindowShouldClose();
 
 	if (IsKeyPressed(KEY_F11)) {
-		Window_toggle_fullscreen();
+		Win32_toggle_fullscreen();
 	}
 
 	if (IsKeyPressed(KEY_F3)) {

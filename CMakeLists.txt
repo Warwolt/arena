@@ -30,22 +30,27 @@ set(SRC
     src/game/scene/main_menu.c
     src/game/scene/gameplay.c
     src/platform/logging.c
-    src/platform/window.c
     src/raylib_extra.c
+    src/platform/win32.c
+)
+set(LIB
+    raylib
+    shlwapi
 )
 
 add_library(Source STATIC ${SRC})
 target_include_directories(Source PUBLIC src lib)
-target_link_libraries(Source raylib)
+target_link_libraries(Source ${LIB})
 
 add_library(Library SHARED ${SRC})
 target_include_directories(Library PUBLIC src lib)
-target_link_libraries(Library raylib)
+target_link_libraries(Library ${LIB})
 set_target_properties(Library PROPERTIES OUTPUT_NAME "Game")
 
 # Main
 add_executable(Executable
     src/main.c
+    src/platform/win32.c
 )
 target_include_directories(Executable PUBLIC src lib)
 target_link_libraries(Executable Library)

@@ -1,5 +1,7 @@
 #include "game.h"
 
+#include "platform/win32.h"
+
 #define _AMD64_ 1
 #define _M_X64 100
 #include <libloaderapi.h>
@@ -27,6 +29,12 @@ GameLibrary load_library(const char* library_path) {
 int main(void) {
 	/* Load DLL */
 	const char* library_path = "Game.dll";
+	if (!Win32_file_exists_relative_executable(library_path)) {
+		char message[256] = { 0 };
+		snprintf(message, 256, "Can't find %s\n", library_path);
+		Win32_show_error_message_box(message);
+		return 1;
+	}
 	GameLibrary game_lib = load_library(library_path);
 	if (!game_lib.handle) {
 		fprintf(stderr, "Fatal: Couldn't load library \"%s\"!\n", library_path);

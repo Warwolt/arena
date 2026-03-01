@@ -1,5 +1,7 @@
-#include "platform/window.h"
+#include "platform/win32.h"
 
+#include <shlwapi.h>
+#include <stdio.h>
 #include <windows.h>
 
 // forward declare from raylib.h
@@ -7,7 +9,7 @@ void* GetWindowHandle(void);
 
 // Based on Raymond Chen's "How do I switch a window between normal and fullscreen?"
 // https://devblogs.microsoft.com/oldnewthing/20100412-00/?p=14353
-void Window_toggle_fullscreen() {
+void Win32_toggle_fullscreen() {
 	static WINDOWPLACEMENT m_placement;
 	HWND handle = GetWindowHandle();
 
@@ -27,4 +29,21 @@ void Window_toggle_fullscreen() {
 		SetWindowPlacement(handle, &m_placement);
 		SetWindowPos(handle, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
 	}
+}
+
+void Win32_show_error_message_box(const char* text) {
+	HWND handle = GetWindowHandle();
+	SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+	MessageBoxA(handle, text, "Error", MB_OK | MB_ICONERROR);
+}
+
+bool Win32_file_exists_relative_executable(const char* relative_path) {
+	char exe_dir[MAX_PATH] = { 0 };
+	GetModuleFileName(NULL, exe_dir, MAX_PATH);
+	PathRemoveFileSpecA(exe_dir);
+
+	char full_path[MAX_PATH] = { 0 };
+	snprintf(full_path, MAX_PATH, "%s\\%s", exe_dir, relative_path);
+
+	return PathFileExistsA(full_path);
 }
