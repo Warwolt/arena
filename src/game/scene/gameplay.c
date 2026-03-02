@@ -313,7 +313,7 @@ void Gameplay_render(const Game* game) {
 		const int title_padding = 12;
 		const int top_margin = (screen_rect.height - font_size_big - title_padding - 2 * font_size_small) / 2;
 
-		DrawRectangleRec(screen_rect, ColorAlpha(BLACK, 0.5f));
+		DrawRectangleRec(screen_rect, ColorAlpha(BLACK, 0.25f));
 		DrawRectangleRec(menu_rect, BLACK);
 		{
 			const char* text = "Paused";
