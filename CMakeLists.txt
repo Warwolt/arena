@@ -30,7 +30,6 @@ set(SRC
     src/game/scene/main_menu.c
     src/game/scene/gameplay.c
     src/platform/logging.c
-    src/raylib_extra.c
     src/platform/win32.c
 )
 set(LIB
