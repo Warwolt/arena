@@ -11,6 +11,7 @@
 typedef struct Game {
 	bool should_quit;
 	bool show_debug_overlay;
+	Font system_font;
 	RenderTexture screen;
 	ResourceManager resources;
 	EntityManager entities;
@@ -24,5 +25,6 @@ __declspec(dllexport) void Game_render(const Game* game);
 
 void Game_quit(Game* game);
 void Game_switch_scene(Game* game, SceneID scene_id);
+void Game_draw_text(const Game* game, const char* text, int x, int y, int size, Color color);
 
 Rectangle Game_screen_rect(const Game* game);
