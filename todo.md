@@ -1,15 +1,14 @@
 # TODO
+- DebugPhysics: add static collision detection test screen
+- DebugPhysics: add static collision resolution test screen
+- Integrate ImGui so we can visualize system states
+  - The game is low resolution so we probably should use multi viewports (https://github.com/ocornut/imgui/wiki/Multi-Viewports)
 - Settings screen, toggle fullscreen on/off
 - Implement a HashMap data structure (map string to value)
 - When loading already loaded resource, return existing ID (needs HashMap)
-- Integrate ImGui so we can visualize system states
-  - The game is low resolution so we probably should use multi viewports (https://github.com/ocornut/imgui/wiki/Multi-Viewports)
-
-# Doing
-- Physics System test screen
-  - `Game.exe --test-screen=physics` should open a screen for debugging physics system
 
 # Done
+- Add debug screen for doing writing physics code
 - DLL based hot reloading
 - Pause menu (render as overlay, stop updating game while paused)
 - Add for_each macro for nice iteration
