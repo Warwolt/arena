@@ -25,8 +25,8 @@ void Game_initialize(Game* game, int argc, char** argv) {
 	/* Parse command line */
 	SceneID start_scene = SceneID_MainMenu;
 	for (int i = 1; i < argc; i++) {
-		if (strcmp(argv[i], "--scene=debug_physics") == 0) {
-			start_scene = SceneID_DebugPhysics;
+		if (strcmp(argv[i], "--scene=debug") == 0) {
+			start_scene = SceneID_DebugScene;
 		} else {
 			LOG_ERROR("Unrecognized command: %s", argv[i]);
 		}

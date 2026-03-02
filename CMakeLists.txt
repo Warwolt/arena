@@ -28,7 +28,7 @@ set(SRC
     src/engine/resource.c
     src/game.c
     src/game/scene.c
-    src/game/scene/debug_physics.c
+    src/game/scene/debug.c
     src/game/scene/gameplay.c
     src/game/scene/main_menu.c
     src/platform/logging.c

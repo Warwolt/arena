@@ -1,8 +1,8 @@
 # TODO
 - Bug: Win32_toggle_fullscreen breaks on hot reload due to static variables
 - Fork Raylib and disable F12 screenshot (and maybe build as DLL by default?)
-- DebugPhysics: add static collision detection test screen
-- DebugPhysics: add static collision resolution test screen
+- DebugScene: add static collision detection test screen
+- DebugScene: add static collision resolution test screen
 - Integrate ImGui so we can visualize system states
   - The game is low resolution so we probably should use multi viewports (https://github.com/ocornut/imgui/wiki/Multi-Viewports)
 - Settings screen, toggle fullscreen on/off
