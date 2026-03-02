@@ -34,16 +34,16 @@ static SceneneVTable scene_vtable(SceneID scene_id) {
 
 void Scene_initialize(Game* game, SceneID scene_id) {
 	game->scene = (Scene) { .id = scene_id };
-	SceneneVTable vtable = scene_vtable(game->scene.id);
-	vtable.initialize(game);
+	SceneneVTable scene = scene_vtable(game->scene.id);
+	scene.initialize(game);
 }
 
 void Scene_update(Game* game) {
-	SceneneVTable vtable = scene_vtable(game->scene.id);
-	vtable.update(game);
+	SceneneVTable scene = scene_vtable(game->scene.id);
+	scene.update(game);
 }
 
 void Scene_render(const Game* game) {
-	SceneneVTable vtable = scene_vtable(game->scene.id);
-	vtable.render(game);
+	SceneneVTable scene = scene_vtable(game->scene.id);
+	scene.render(game);
 }

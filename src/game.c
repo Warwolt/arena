@@ -12,18 +12,28 @@
 // low resolution 16:9
 #define SCREEN_WIDTH (int)768
 #define SCREEN_HEIGHT (int)432
+#define SCREEN_TITLE "Program"
 
 void Game_initialize(Game* game, int argc, char** argv) {
+	/* Initialize systems */
 	initialize_logging();
-	SetTraceLogLevel(LOG_WARNING);
-	InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Program");
+	SetTraceLogLevel(LOG_WARNING); // disable verbose raylib output
+	InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE);
 	SetExitKey(KEY_NULL);
 	SetTargetFPS(120);
 
-	const SceneID start_scene = SceneID_MainMenu;
+	/* Parse command line */
+	SceneID start_scene = SceneID_MainMenu;
+	for (int i = 1; i < argc; i++) {
+		if (strcmp(argv[i], "--scene=debug_physics") == 0) {
+			start_scene = SceneID_DebugPhysics;
+		} else {
+			LOG_ERROR("Unrecognized command: %s", argv[i]);
+		}
+	}
+
+	/* Set initial scene */
 	*game = (Game) {
-		.should_quit = false,
-		.resources = { 0 },
 		.screen = LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT),
 	};
 	Game_switch_scene(game, start_scene);
@@ -102,8 +112,11 @@ void Game_quit(Game* game) {
 }
 
 void Game_switch_scene(Game* game, SceneID scene_id) {
+	/* Unload resources used by current scene */
 	game->entities = (EntityManager) { 0 };
 	ResourceManager_unload_resources(&game->resources);
+
+	/* Initialize scene */
 	Scene_initialize(game, scene_id);
 }
 
