@@ -13,12 +13,17 @@
 #define SCREEN_WIDTH (int)768
 #define SCREEN_HEIGHT (int)432
 
-void Game_initialize(Game* game) {
+void Game_initialize(Game* game, int argc, char** argv) {
 	initialize_logging();
 	SetTraceLogLevel(LOG_WARNING);
 	InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Program");
 	SetExitKey(KEY_NULL);
 	SetTargetFPS(120);
+
+	// FIXME:
+	// parse argc argv
+	// set start scene based on args
+	// if `--test-screen=physics` then show physics test screen
 
 	const SceneID start_scene = SceneID_MainMenu;
 	*game = (Game) {
