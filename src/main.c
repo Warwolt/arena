@@ -46,7 +46,6 @@ static void on_build_command_done(int exit_code) {
 int main(void) {
 	Win32_set_process_dpi_aware();
 
-	/* Load DLL */
 	/* Get executable directory */
 	char executable_directory[MAX_PATH] = { 0 };
 	Win32_get_executable_directory(executable_directory);
@@ -103,7 +102,7 @@ int main(void) {
 			}
 		}
 
-		/* Run game frame */
+		/* Run game */
 		game_lib.update(&game_state);
 		game_lib.render(&game_state);
 	}
