@@ -14,7 +14,7 @@ void DebugPhysics_update(Game* game) {
 }
 
 void DebugPhysics_render(const Game* game) {
-	Rectangle screen_rect = Game_screen_rect(game);
+	const Rectangle screen_rect = Game_screen_rect(game);
 	const char* text = "Physics";
 	const int font_size = 64;
 	int text_width = MeasureText(text, font_size);
