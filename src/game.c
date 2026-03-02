@@ -20,13 +20,7 @@ void Game_initialize(Game* game, int argc, char** argv) {
 	SetExitKey(KEY_NULL);
 	SetTargetFPS(120);
 
-	// FIXME:
-	// parse argc argv
-	// set start scene based on args
-	// if `--scene=debug_physics` then show physics test screen
-
-	// const SceneID start_scene = SceneID_MainMenu;
-	const SceneID start_scene = SceneID_DebugPhysics;
+	const SceneID start_scene = SceneID_MainMenu;
 	*game = (Game) {
 		.should_quit = false,
 		.resources = { 0 },
@@ -55,40 +49,14 @@ void Game_update(Game* game) {
 		game->show_debug_overlay = !game->show_debug_overlay;
 	}
 
-	/* Update scene */
-	switch (game->scene.id) {
-		case SceneID_MainMenu:
-			MainMenu_update(game);
-			break;
-
-		case SceneID_Gameplay:
-			Gameplay_update(game);
-			break;
-
-		case SceneID_DebugPhysics:
-			DebugPhysics_update(game);
-			break;
-	}
+	Scene_update(game);
 }
 
 void Game_render(const Game* game) {
 	/* Render onto screen texture */
 	BeginTextureMode(game->screen);
 	{
-		/* Render scene */
-		switch (game->scene.id) {
-			case SceneID_MainMenu:
-				MainMenu_render(game);
-				break;
-
-			case SceneID_Gameplay:
-				Gameplay_render(game);
-				break;
-
-			case SceneID_DebugPhysics:
-				DebugPhysics_render(game);
-				break;
-		}
+		Scene_render(game);
 
 		/* Render debug overlay */
 		if (game->show_debug_overlay) {
@@ -133,23 +101,10 @@ void Game_quit(Game* game) {
 	game->should_quit = true;
 }
 
-void Game_switch_scene(Game* game, SceneID id) {
-	game->scene = (Scene) { .id = id };
+void Game_switch_scene(Game* game, SceneID scene_id) {
 	game->entities = (EntityManager) { 0 };
 	ResourceManager_unload_resources(&game->resources);
-	switch (id) {
-		case SceneID_MainMenu:
-			MainMenu_initialize(game);
-			break;
-
-		case SceneID_Gameplay:
-			Gameplay_initialize(game);
-			break;
-
-		case SceneID_DebugPhysics:
-			DebugPhysics_initialize(game);
-			break;
-	}
+	Scene_initialize(game, scene_id);
 }
 
 Rectangle Game_screen_rect(const Game* game) {

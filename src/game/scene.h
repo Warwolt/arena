@@ -18,3 +18,7 @@ typedef struct Scene {
 		DebugPhysics debug_physics;
 	};
 } Scene;
+
+void Scene_initialize(Game* game, SceneID scene_id);
+void Scene_update(Game* game);
+void Scene_render(const Game* game);

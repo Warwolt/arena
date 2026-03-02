@@ -22,11 +22,12 @@ add_compile_options(
 
 # Source
 set(SRC
-    src/game.c
     src/core/arena.c
     src/core/sparse_array.c
     src/engine/entity.c
     src/engine/resource.c
+    src/game.c
+    src/game/scene.c
     src/game/scene/debug_physics.c
     src/game/scene/gameplay.c
     src/game/scene/main_menu.c
