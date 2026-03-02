@@ -1,9 +1,10 @@
 # TODO
-- Integrate ImGui so we can visualize system states
 - Physics System test screen
 - Settings screen, toggle fullscreen on/off
 - Implement a HashMap data structure (map string to value)
 - When loading already loaded resource, return existing ID (needs HashMap)
+- Integrate ImGui so we can visualize system states
+  - The game is low resolution so we probably should use multi viewports (https://github.com/ocornut/imgui/wiki/Multi-Viewports)
 
 # Done
 - DLL based hot reloading
