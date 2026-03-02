@@ -23,9 +23,10 @@ void Game_initialize(Game* game, int argc, char** argv) {
 	// FIXME:
 	// parse argc argv
 	// set start scene based on args
-	// if `--test-screen=physics` then show physics test screen
+	// if `--scene=debug_physics` then show physics test screen
 
-	const SceneID start_scene = SceneID_MainMenu;
+	// const SceneID start_scene = SceneID_MainMenu;
+	const SceneID start_scene = SceneID_DebugPhysics;
 	*game = (Game) {
 		.should_quit = false,
 		.resources = { 0 },
@@ -63,6 +64,10 @@ void Game_update(Game* game) {
 		case SceneID_Gameplay:
 			Gameplay_update(game);
 			break;
+
+		case SceneID_DebugPhysics:
+			DebugPhysics_update(game);
+			break;
 	}
 }
 
@@ -78,6 +83,10 @@ void Game_render(const Game* game) {
 
 			case SceneID_Gameplay:
 				Gameplay_render(game);
+				break;
+
+			case SceneID_DebugPhysics:
+				DebugPhysics_render(game);
 				break;
 		}
 
@@ -135,6 +144,10 @@ void Game_switch_scene(Game* game, SceneID id) {
 
 		case SceneID_Gameplay:
 			Gameplay_initialize(game);
+			break;
+
+		case SceneID_DebugPhysics:
+			DebugPhysics_initialize(game);
 			break;
 	}
 }
