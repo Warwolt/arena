@@ -94,13 +94,14 @@ void Game_render(const Game* game) {
 		int scale = min(window_width / screen.width, window_height / screen.height);
 		int scaled_width = scale * screen.width;
 		int scaled_height = scale * screen.height;
-		Rectangle scaled_screen_rect = {
+		Rectangle letterboxed_screen = {
 			.x = (window_width - scaled_width) / 2,
 			.y = (window_height - scaled_height) / 2,
 			.width = scaled_width,
 			.height = scaled_height,
 		};
-		DrawTexturePro(game->screen.texture, (Rectangle) { 0, 0, screen.width, -screen.height }, scaled_screen_rect, Vector2Zero(), 0, WHITE);
+		Rectangle flipped_screen = (Rectangle) { 0, 0, screen.width, -screen.height };
+		DrawTexturePro(game->screen.texture, flipped_screen, letterboxed_screen, Vector2Zero(), 0, WHITE);
 	}
 	EndDrawing();
 }

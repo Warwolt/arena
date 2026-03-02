@@ -203,12 +203,8 @@ void Gameplay_update(Game* game) {
 						.center = Vector2Add(other_collision_shape.circle.center, other_position),
 						.radius = other_collision_shape.circle.radius,
 					};
-					const bool is_colliding = CheckCollisionCircles(
-						player_circle.center,
-						player_circle.radius,
-						other_circle.center,
-						other_circle.radius
-					);
+					const bool is_colliding =
+						CheckCollisionCircles(player_circle.center, player_circle.radius, other_circle.center, other_circle.radius);
 					if (is_colliding) {
 						EntityManager_remove_entity(&game->entities, id);
 					}
@@ -248,13 +244,7 @@ void Gameplay_render(const Game* game) {
 		EntityID y_sorted_entities[MAX_NUM_ENTITES] = { 0 };
 		size_t num_y_sorted_entities = game->entities.entities.size;
 		memcpy(y_sorted_entities, game->entities.entities.keys, MAX_NUM_ENTITES * sizeof(EntityID));
-		qsort_s(
-			y_sorted_entities,
-			num_y_sorted_entities,
-			sizeof(EntityID),
-			compare_position_ids_by_y_coordinate,
-			(EntityManager*)&game->entities
-		);
+		qsort_s(y_sorted_entities, num_y_sorted_entities, sizeof(EntityID), compare_position_ids_by_y_coordinate, (EntityManager*)&game->entities);
 
 		/* Draw sprites */
 		for_each(entity_id, y_sorted_entities, num_y_sorted_entities) {

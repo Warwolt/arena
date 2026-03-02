@@ -5,7 +5,7 @@
 #include <time.h>
 #include <windows.h>
 
-#pragma warning(disable: 4005) // consoleapi2.h from windows.h has conflicting macros
+#pragma warning(disable : 4005) // consoleapi2.h from windows.h has conflicting macros
 
 // foreground color
 #define COLOR_BLACK "\033[30m"
@@ -98,7 +98,8 @@ void debug_log(LogLevel log_level, const char* filename, int line, const char* f
 	/* Add timestamp */
 	time_t t = time(0); // get time now
 	struct tm* now = localtime(&t);
-	offset += snprintf(buffer + offset, 1024 - offset, "%02d-%02d-%02d ", now->tm_year + 1900, now->tm_mon + 1, now->tm_mday); // year
+	offset += snprintf(buffer + offset, 1024 - offset, "%02d-%02d-%02d ", now->tm_year + 1900, now->tm_mon + 1,
+					   now->tm_mday); // year
 	offset += snprintf(buffer + offset, 1024 - offset, "%02d:%02d ", now->tm_hour, now->tm_min); // hour
 
 	/* File and line */

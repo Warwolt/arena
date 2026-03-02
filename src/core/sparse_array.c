@@ -2,7 +2,15 @@
 
 #include <string.h>
 
-bool SparseArray_insert_impl(size_t elem_size, size_t* array_indices, size_t* array_keys, char* array_values, size_t* array_size, size_t key, char* value) {
+bool SparseArray_insert_impl(
+	size_t elem_size,
+	size_t* array_indices,
+	size_t* array_keys,
+	char* array_values,
+	size_t* array_size,
+	size_t key,
+	char* value
+) {
 	/* Skip the zero-key */
 	if (key == 0) {
 		return false;
@@ -43,7 +51,8 @@ bool SparseArray_remove_impl(size_t elem_size, size_t* array_indices, size_t* ar
 	array_indices[key - 1] = 0;
 	array_indices[last_key - 1] = index;
 	array_keys[index] = array_keys[last_index];
-	memcpy(array_values + index * elem_size, array_values + last_index * elem_size, elem_size); // array->values[index] = array_values[last_index];
+	memcpy(array_values + index * elem_size, array_values + last_index * elem_size,
+		   elem_size); // array->values[index] = array_values[last_index];
 
 	/* Remove last element */
 	array_keys[last_index] = 0;
@@ -52,7 +61,14 @@ bool SparseArray_remove_impl(size_t elem_size, size_t* array_indices, size_t* ar
 	return true;
 }
 
-bool SparseArray_get_impl(size_t elem_size, const size_t* array_indices, const size_t* array_keys, const char* array_values, size_t key, char* value_out) {
+bool SparseArray_get_impl(
+	size_t elem_size,
+	const size_t* array_indices,
+	const size_t* array_keys,
+	const char* array_values,
+	size_t key,
+	char* value_out
+) {
 	/* Skip the zero-key */
 	if (key == 0) {
 		return false;
@@ -70,7 +86,14 @@ bool SparseArray_get_impl(size_t elem_size, const size_t* array_indices, const s
 	return true;
 }
 
-bool SparseArray_get_ptr_impl(size_t elem_size, const size_t* array_indices, const size_t* array_keys, const char* array_values, size_t key, const char** value_ptr_out) {
+bool SparseArray_get_ptr_impl(
+	size_t elem_size,
+	const size_t* array_indices,
+	const size_t* array_keys,
+	const char* array_values,
+	size_t key,
+	const char** value_ptr_out
+) {
 	/* Skip the zero-key */
 	if (key == 0) {
 		return false;
