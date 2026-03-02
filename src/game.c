@@ -37,18 +37,16 @@ void Game_initialize(Game* game, int argc, char** argv) {
 		.screen = LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT),
 	};
 	Game_switch_scene(game, start_scene);
-
 	LOG_INFO("Game initialized");
 }
 
 void Game_shutdown(Game* game) {
-	LOG_INFO("Game shutdown");
 	ResourceManager_unload_resources(&game->resources);
 	CloseWindow();
+	LOG_INFO("Game shutdown");
 }
 
 void Game_update(Game* game) {
-	/* Global behavior */
 	game->should_quit = WindowShouldClose();
 
 	if (IsKeyPressed(KEY_F11)) {
