@@ -17,9 +17,10 @@ typedef struct Game {
 	Scene scene;
 } Game;
 
-void Game_initialize(Game* game, int screen_width, int screen_height);
-void Game_update(Game* game);
-void Game_render(const Game* game);
+__declspec(dllexport) void Game_initialize(Game* game);
+__declspec(dllexport) void Game_shutdown(Game* game);
+__declspec(dllexport) void Game_update(Game* game);
+__declspec(dllexport) void Game_render(const Game* game);
 
 void Game_quit(Game* game);
 void Game_switch_scene(Game* game, SceneID id);

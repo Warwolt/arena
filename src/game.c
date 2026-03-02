@@ -1,6 +1,7 @@
-#include "game/game.h"
+#include "game.h"
 
-#include "platform/window.h"
+#include "platform/logging.h"
+#include "platform/win32.h"
 
 #include <raylib.h>
 #include <raymath.h>
@@ -8,14 +9,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void Game_initialize(Game* game, int screen_width, int screen_height) {
+// low resolution 16:9
+#define SCREEN_WIDTH (int)768
+#define SCREEN_HEIGHT (int)432
+
+void Game_initialize(Game* game) {
+	initialize_logging();
+	SetTraceLogLevel(LOG_WARNING);
+	InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Program");
+	SetExitKey(KEY_NULL);
+	SetTargetFPS(120);
+
 	const SceneID start_scene = SceneID_MainMenu;
 	*game = (Game) {
 		.should_quit = false,
 		.resources = { 0 },
-		.screen = LoadRenderTexture(screen_width, screen_height),
+		.screen = LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT),
 	};
 	Game_switch_scene(game, start_scene);
+
+	LOG_INFO("Game initialized");
+}
+
+void Game_shutdown(Game* game) {
+	LOG_INFO("Game shutdown");
+	ResourceManager_unload_resources(&game->resources);
+	CloseWindow();
 }
 
 void Game_update(Game* game) {
@@ -23,7 +42,7 @@ void Game_update(Game* game) {
 	game->should_quit = WindowShouldClose();
 
 	if (IsKeyPressed(KEY_F11)) {
-		Window_toggle_fullscreen();
+		Win32_toggle_fullscreen();
 	}
 
 	if (IsKeyPressed(KEY_F3)) {

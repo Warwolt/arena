@@ -1,6 +1,6 @@
 #include "game/scene/main_menu.h"
 
-#include "game/game.h"
+#include "game.h"
 #include "platform/logging.h"
 
 #include <raylib.h>
@@ -41,11 +41,7 @@ void MainMenu_update(Game* game) {
 	}
 
 	if (IsKeyPressed(KEY_ESCAPE)) {
-		if (main_menu->focused_menu_item == MenuItem_Quit) {
-			game->should_quit = true;
-		} else {
-			main_menu->focused_menu_item = MenuItem_Quit;
-		}
+		game->should_quit = true;
 	}
 
 	if (IsKeyPressed(KEY_DOWN) || IsKeyPressed('S')) {

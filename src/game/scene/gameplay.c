@@ -1,7 +1,7 @@
 #include "game/scene/gameplay.h"
 
 #include "core/for_each.h"
-#include "game/game.h"
+#include "game.h"
 #include "platform/logging.h"
 
 #include <raylib.h>
@@ -228,7 +228,12 @@ void Gameplay_render(const Game* game) {
 		.x = game->screen.texture.width / 2,
 		.y = game->screen.texture.height / 2,
 	};
-	const int screen_height = game->screen.texture.height;
+	const Rectangle screen_rect = {
+		.x = 0,
+		.y = 0,
+		.width = game->screen.texture.width,
+		.height = game->screen.texture.height,
+	};
 
 	/* Render in camera */
 	BeginMode2D(gameplay->camera);
@@ -306,8 +311,9 @@ void Gameplay_render(const Game* game) {
 		const int font_size_small = 32;
 
 		const int title_padding = 12;
-		const int top_margin = (screen_height - font_size_big - title_padding - 2 * font_size_small) / 2;
+		const int top_margin = (screen_rect.height - font_size_big - title_padding - 2 * font_size_small) / 2;
 
+		DrawRectangleRec(screen_rect, ColorAlpha(BLACK, 0.25f));
 		DrawRectangleRec(menu_rect, BLACK);
 		{
 			const char* text = "Paused";
