@@ -317,29 +317,29 @@ void Gameplay_render(const Game* game) {
 		DrawRectangleRec(menu_rect, BLACK);
 		{
 			const char* text = "Paused";
-			int text_width = MeasureText(text, font_size_big);
+			int text_width = Game_measure_text_width(game, text, font_size_big);
 			int pos_x = menu_middle.x - text_width / 2;
 			int pos_y = top_margin;
-			DrawText(text, pos_x, pos_y, font_size_big, WHITE);
+			Game_draw_text(game, text, pos_x, pos_y, font_size_big, WHITE);
 		}
 		{
 			const char* text = "Continue";
-			int text_width = MeasureText(text, font_size_small);
+			int text_width = Game_measure_text_width(game, text, font_size_small);
 			int pos_x = menu_middle.x - text_width / 2;
 			int pos_y = top_margin + font_size_big + title_padding;
-			DrawText(text, pos_x, pos_y, font_size_small, WHITE);
+			Game_draw_text(game, text, pos_x, pos_y, font_size_small, WHITE);
 		}
 		{
 			const char* text = "Quit";
-			int text_width = MeasureText(text, font_size_small);
+			int text_width = Game_measure_text_width(game, text, font_size_small);
 			int pos_x = menu_middle.x - text_width / 2;
 			int pos_y = top_margin + font_size_big + title_padding + font_size_small;
-			DrawText(text, pos_x, pos_y, font_size_small, WHITE);
+			Game_draw_text(game, text, pos_x, pos_y, font_size_small, WHITE);
 		}
 		{
 			int pos_x = menu_rect.x + 48;
 			int pos_y = top_margin + font_size_big + title_padding + font_size_small * gameplay->focused_pause_menu_item;
-			DrawText(">", pos_x, pos_y, font_size_small, WHITE);
+			Game_draw_text(game, ">", pos_x, pos_y, font_size_small, WHITE);
 		}
 	}
 }

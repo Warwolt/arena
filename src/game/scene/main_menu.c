@@ -13,13 +13,13 @@ typedef enum MenuItem {
 } MenuItem;
 
 static void draw_text_centered_horizontally(const Game* game, const char* text, int font_size, int y) {
-	int text_width = MeasureText(text, font_size);
+	int text_width = Game_measure_text_width(game, text, font_size);
 	Rectangle screen = Game_screen_rect(game);
 	Vector2 position = {
 		.x = (screen.width - text_width) / 2,
 		.y = y,
 	};
-	DrawText(text, position.x, position.y, font_size, WHITE);
+	Game_draw_text(game, text, position.x, position.y, font_size, WHITE);
 }
 
 void MainMenu_initialize(Game* game) {
@@ -68,5 +68,5 @@ void MainMenu_render(const Game* game) {
 		.x = screen.width / 2 - 80,
 		.y = screen.height / 2 + main_menu->focused_menu_item * small_font_size,
 	};
-	DrawText(">", cursor_pos.x, cursor_pos.y, small_font_size, WHITE);
+	Game_draw_text(game, ">", cursor_pos.x, cursor_pos.y, small_font_size, WHITE);
 }

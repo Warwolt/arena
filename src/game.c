@@ -129,8 +129,12 @@ void Game_switch_scene(Game* game, SceneID scene_id) {
 	Scene_initialize(game, scene_id);
 }
 
-void Game_draw_text(const Game* game, const char* text, int x, int y, int size, Color color) {
-	DrawTextEx(game->system_font, text, (Vector2) { x, y }, size, 0, color);
+void Game_draw_text(const Game* game, const char* text, int x, int y, int font_size, Color color) {
+	DrawTextEx(game->system_font, text, (Vector2) { x, y }, font_size, 0, color);
+}
+
+int Game_measure_text_width(const Game* game, const char* text, int font_size) {
+	return MeasureTextEx(game->system_font, text, font_size, 0).x;
 }
 
 Rectangle Game_screen_rect(const Game* game) {
