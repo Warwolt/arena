@@ -5,14 +5,8 @@
 - Implement a HashMap data structure (map string to value)
 - When loading already loaded resource, return existing ID (needs HashMap)
 
-# Doing
-- DLL based hot reloading
-  - [x] link Raylib as a DLL
-  - [] link game code as a DLL
-  - [] command for rebuilding game code DLL
-  - [] load the rebuilt DLL
-
 # Done
+- DLL based hot reloading
 - Pause menu (render as overlay, stop updating game while paused)
 - Add for_each macro for nice iteration
 - Basic scene handling
