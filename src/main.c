@@ -86,8 +86,6 @@ int main(void) {
 			if (IsKeyPressed(KEY_F5)) {
 				LOG_INFO("Rebuilding game library");
 				Win32_run_command("cmake --build build --target Library", on_build_command_done);
-
-				LOG_DEBUG("DEBUG: library_last_modified %zu", library_last_modified);
 			}
 
 			/* Reload library when modified */
@@ -98,11 +96,10 @@ int main(void) {
 
 				/* Copy rebuilt library */
 				Win32_copy_file(library_path, library_copy_path);
-				library_last_modified = Win32_get_file_last_modified(library_path);
 
 				/* Reload copied library */
 				game_lib = load_library(library_copy_name);
-				LOG_INFO("Reloaded game library");
+				library_last_modified = Win32_get_file_last_modified(library_path);
 			}
 		}
 
