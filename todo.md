@@ -10,6 +10,7 @@
 - When loading already loaded resource, return existing ID (needs HashMap)
 
 # Done
+- Replace default font Raylib with DOS font
 - Add debug screen for doing writing physics code
 - DLL based hot reloading
 - Pause menu (render as overlay, stop updating game while paused)
