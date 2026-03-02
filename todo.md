@@ -1,4 +1,6 @@
 # TODO
+- Bug: Win32_toggle_fullscreen breaks on hot reload due to static variables
+- Fork Raylib and disable F12 screenshot (and maybe build as DLL by default?)
 - DebugPhysics: add static collision detection test screen
 - DebugPhysics: add static collision resolution test screen
 - Integrate ImGui so we can visualize system states
@@ -8,6 +10,7 @@
 - When loading already loaded resource, return existing ID (needs HashMap)
 
 # Done
+- Replace default font Raylib with DOS font
 - Add debug screen for doing writing physics code
 - DLL based hot reloading
 - Pause menu (render as overlay, stop updating game while paused)

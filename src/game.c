@@ -32,15 +32,26 @@ void Game_initialize(Game* game, int argc, char** argv) {
 		}
 	}
 
-	/* Set initial scene */
+	/* Initialize game */
+	const char* system_font_path = "resource/font/ModernDOS8x16.ttf";
 	*game = (Game) {
 		.screen = LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT),
+		.system_font = LoadFont(system_font_path),
 	};
+
+	/* Load start scene */
 	Game_switch_scene(game, start_scene);
+
+	/* Check font */
+	if (game->system_font.glyphs == NULL) {
+		LOG_ERROR("Couldn't load font %s", system_font_path);
+	}
+
 	LOG_INFO("Game initialized");
 }
 
 void Game_shutdown(Game* game) {
+	UnloadFont(game->system_font);
 	ResourceManager_unload_resources(&game->resources);
 	CloseWindow();
 	LOG_INFO("Game shutdown");
@@ -68,15 +79,15 @@ void Game_render(const Game* game) {
 
 		/* Render debug overlay */
 		if (game->show_debug_overlay) {
-			int font_size = 24;
+			int font_size = 16;
 			int row = 0;
 			char text[128] = { 0 };
 
 			snprintf(text, sizeof(text), "FPS: %d", GetFPS());
-			DrawText(text, 1, row++ * font_size, font_size, WHITE);
+			Game_draw_text(game, text, 1, row++ * font_size, font_size, WHITE);
 
 			snprintf(text, sizeof(text), "Entities: %zu", game->entities.entities.size);
-			DrawText(text, 1, row++ * font_size, font_size, WHITE);
+			Game_draw_text(game, text, 1, row++ * font_size, font_size, WHITE);
 		}
 	}
 	EndTextureMode();
@@ -116,6 +127,14 @@ void Game_switch_scene(Game* game, SceneID scene_id) {
 
 	/* Initialize scene */
 	Scene_initialize(game, scene_id);
+}
+
+void Game_draw_text(const Game* game, const char* text, int x, int y, int font_size, Color color) {
+	DrawTextEx(game->system_font, text, (Vector2) { x, y }, font_size, 0, color);
+}
+
+int Game_measure_text_width(const Game* game, const char* text, int font_size) {
+	return MeasureTextEx(game->system_font, text, font_size, 0).x;
 }
 
 Rectangle Game_screen_rect(const Game* game) {
