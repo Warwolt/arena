@@ -3,6 +3,7 @@
 typedef struct Game Game;
 
 typedef struct DebugScene {
+	int current_screen;
 	int focused_menu_item;
 } DebugScene;
 
