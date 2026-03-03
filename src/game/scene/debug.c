@@ -8,16 +8,41 @@
 
 #define max(a, b) ((a) > (b) ? (a) : (b))
 
+typedef enum MenuItem {
+	MenuItem_Physics,
+	MenuItem_ItemTwo,
+	MenuItem_ItemThree,
+	MenuItem_Count,
+} MenuItem;
+
+static const char* menu_item_names[MenuItem_Count] = {
+	[MenuItem_Physics] = "Physics",
+	[MenuItem_ItemTwo] = "ItemTwo",
+	[MenuItem_ItemThree] = "ItemThree",
+};
+
 void DebugScene_initialize(Game* game) {
 }
 
 void DebugScene_update(Game* game) {
+	DebugScene* debug_scene = &game->scene.debug_scene;
+
 	if (IsKeyDown(KEY_ESCAPE)) {
 		Game_quit(game);
+	}
+
+	if (IsKeyPressed(KEY_DOWN)) {
+		debug_scene->focused_menu_item = (MenuItem_Count + debug_scene->focused_menu_item + 1) % MenuItem_Count;
+	}
+
+	if (IsKeyPressed(KEY_UP)) {
+		debug_scene->focused_menu_item = (MenuItem_Count + debug_scene->focused_menu_item - 1) % MenuItem_Count;
 	}
 }
 
 void DebugScene_render(const Game* game) {
+	const DebugScene* debug_scene = &game->scene.debug_scene;
+
 	ClearBackground(MIDNIGHT_COMMANDER);
 
 	const Rectangle screen_rect = Game_screen_rect(game);
@@ -46,27 +71,20 @@ void DebugScene_render(const Game* game) {
 
 	// draw menu items
 	{
-		const char* menu_items[3] = {
-			"Physics",
-			"Item 2",
-			"Item 3",
-		};
-		int num_menu_items = sizeof(menu_items) / sizeof(menu_items[0]);
-		int list_height = num_menu_items * font_size;
-
+		int list_height = MenuItem_Count * font_size;
 		int list_width = 0;
-		for (int i = 0; i < num_menu_items; i++) {
-			int text_width = Game_measure_text_width(game, menu_items[i], font_size);
+		for (int i = 0; i < MenuItem_Count; i++) {
+			int text_width = Game_measure_text_width(game, menu_item_names[i], font_size);
 			list_width = max(list_width, text_width);
 		}
 
-		for (int i = 0; i < num_menu_items; i++) {
-			const char* text = menu_items[i];
+		for (int i = 0; i < MenuItem_Count; i++) {
+			const char* text = menu_item_names[i];
 			int text_x = (screen_rect.width - list_width) / 2;
 			int text_y = (screen_rect.height - list_height) / 2 + i * font_size;
-			bool is_selected = i == 0;
-			Color background_color = is_selected ? WHITE : MIDNIGHT_COMMANDER;
-			Color text_color = is_selected ? MIDNIGHT_COMMANDER : WHITE;
+			bool is_focused = i == debug_scene->focused_menu_item;
+			Color background_color = is_focused ? WHITE : MIDNIGHT_COMMANDER;
+			Color text_color = is_focused ? MIDNIGHT_COMMANDER : WHITE;
 			DrawRectangle(text_x - 1, text_y, list_width + 1, font_size, background_color);
 			Game_draw_text(game, text, text_x, text_y, font_size, text_color);
 		}

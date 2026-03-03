@@ -1,5 +1,6 @@
 # TODO
 - Bug: Win32_toggle_fullscreen breaks on hot reload due to static variables
+- Add semantic key bindings and use those instead of raw keys
 - Fork Raylib and disable F12 screenshot (and maybe build as DLL by default?)
 - DebugScene: add static collision detection test screen
 - DebugScene: add static collision resolution test screen

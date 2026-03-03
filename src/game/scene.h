@@ -15,7 +15,7 @@ typedef struct Scene {
 	union {
 		MainMenu main_menu;
 		Gameplay gameplay;
-		DebugScene debug_physics;
+		DebugScene debug_scene;
 	};
 } Scene;
 

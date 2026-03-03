@@ -3,7 +3,7 @@
 typedef struct Game Game;
 
 typedef struct DebugScene {
-	int dummy;
+	int focused_menu_item;
 } DebugScene;
 
 void DebugScene_initialize(Game* game);
