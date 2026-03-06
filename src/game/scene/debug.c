@@ -46,6 +46,9 @@
 
 #define max(a, b) ((a) > (b) ? (a) : (b))
 
+#define DEBUG_ASSERT_IS_WITHIN_UI_FRAME()                                                                          \
+	DEBUG_ASSERT(g_ui.is_within_frame, "%s() called outside ui frame. Missing call to UI_begin()?", __FUNCTION__);
+
 #define UIMenu_MaxItemLabels 16
 #define UIMenu_MaxMenus 4
 
@@ -53,6 +56,7 @@ typedef struct UIMenu {
 	const char* item_labels[UIMenu_MaxItemLabels];
 	int num_items;
 	int focused_item;
+	bool is_open;
 } UIMenu;
 
 typedef struct UI {
@@ -61,31 +65,50 @@ typedef struct UI {
 	int num_menus;
 } UI;
 
-UI g_ui_context;
+UI g_ui;
 
-UI* UI_context(void) {
-	return &g_ui_context;
+static UIMenu* current_menu() {
+	if (g_ui.num_menus == 0) {
+		return NULL;
+	}
+	return &g_ui.menus[g_ui.num_menus - 1];
 }
 
 void UI_begin(void) {
 	// start UI frame
 	// I guess we'd want to check all inputs here any store some kind of input state if we need?
-	UI* ui = UI_context();
-	ui->is_within_frame = true;
+	DEBUG_ASSERT(!g_ui.is_within_frame, "%s() called while in ui frame. Missing call to UI_end()?", __FUNCTION__);
+	g_ui.is_within_frame = true;
 }
 
 void UI_end(void) {
-	// end UI frame
-	// any other UI calls except UI_begin should give an error at this point
-	UI* ui = UI_context();
-	ui->is_within_frame = false;
+	/* Check that each menu component is closed */
+	for (int i = 0; i < g_ui.num_menus; i++) {
+		DEBUG_ASSERT(!g_ui.menus[i].is_open, "Menu %d has missing UI_end_menu() call", i);
+	}
+
+	// not 100% sure we should set this to zero but, we'll do it for now
+	// this lets us push menus from scratch the next UI frame.
+	g_ui.num_menus = 0;
+
+	g_ui.is_within_frame = false;
 }
 
 // let user pass in focused, since what menu is focused depends on the semantics of the specific
 // menu and how it's interaction handlers are defined in user code.
 void UI_begin_menu() {
-	UI* ui = UI_context();
+	DEBUG_ASSERT(g_ui.is_within_frame, "%s() called outside ui frame. Missing call to UI_begin()?", __FUNCTION__);
+	g_ui.num_menus++;
+	g_ui.menus[g_ui.num_menus - 1].is_open = true;
 	// push a new menu to add items to
+}
+
+void UI_end_menu(void) {
+	UIMenu* menu = current_menu();
+	DEBUG_ASSERT(menu != NULL, "UI_end_menu() called with no UI_begin_menu()");
+	DEBUG_ASSERT(menu->is_open, "UI_end_menu() called with no UI_begin_menu()");
+	menu->is_open = false;
+	// after this call, any calls to `UI_menu_item` should trigger an error
 }
 
 bool UI_menu_item(const char* label) {
@@ -100,16 +123,12 @@ bool UI_menu_item(const char* label) {
 	return is_selected;
 }
 
-void UI_end_menu(void) {
-	// after this call, any calls to `UI_menu_item` should trigger an error
-	// if this isn't called, shouldn't we error?
-}
-
 void DebugScene_initialize(Game* game) {
 }
 
 void DebugScene_update(Game* game) {
 	// testing
+	UI_begin();
 	{
 		const bool main_menu_focused = true;
 		UI_begin_menu();
@@ -118,6 +137,7 @@ void DebugScene_update(Game* game) {
 		}
 		UI_end_menu();
 	}
+	UI_end();
 
 	if (IsKeyPressed(KEY_ESCAPE)) {
 		Game_quit(game);

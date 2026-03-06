@@ -1,4 +1,5 @@
 # TODO
+- Add death test support to rktest so we can test stuff using DEBUG_ASSERT
 - Bug: Win32_toggle_fullscreen breaks on hot reload due to static variables
 - Add semantic key bindings and use those instead of raw keys
 - Fork Raylib and disable F12 screenshot (and maybe build as DLL by default?)
