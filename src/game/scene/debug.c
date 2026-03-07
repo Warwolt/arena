@@ -39,9 +39,6 @@ typedef struct UIState {
 	int focused_item;
 } UIState;
 
-// ui.view.menus
-// ui.state.is_within_frame
-
 typedef struct UI {
 	UIView view;
 	UIState state;
@@ -65,23 +62,24 @@ void UI_begin(void) {
 void UI_end(void) {
 	/* Check that each menu component is closed */
 	for (int i = 0; i < g_ui.view.num_menus; i++) {
-		DEBUG_ASSERT(!g_ui.view.menus[i].is_open, "Menu %d has missing UI_end_menu() call", i);
+		DEBUG_ASSERT(!g_ui.view.menus[i].is_open, "Menu %d has missing UI_menu_end() call", i);
 	}
 
 	g_ui.state.is_within_frame = false;
 }
 
-void UI_begin_menu(const char* label) {
+void UI_menu_begin(const char* label) {
 	DEBUG_ASSERT(g_ui.state.is_within_frame, "%s() called outside ui frame. Missing call to UI_begin()?", __FUNCTION__);
+	DEBUG_ASSERT(g_ui.view.num_menus <= 1, "FIXME: Multiple menu support not yet implemented");
 	UIMenu* menu = &g_ui.view.menus[g_ui.view.num_menus++];
 	menu->is_open = true;
 	strncpy_s(menu->label, UIMenu_MaxLabelLength, label, _TRUNCATE);
 }
 
-void UI_end_menu(void) {
+void UI_menu_end(void) {
 	UIMenu* menu = UI_current_menu();
-	DEBUG_ASSERT(menu != NULL, "UI_end_menu() called without UI_begin_menu()");
-	DEBUG_ASSERT(menu->is_open, "UI_end_menu() called without UI_begin_menu()");
+	DEBUG_ASSERT(menu != NULL, "UI_menu_end() called without UI_menu_begin()");
+	DEBUG_ASSERT(menu->is_open, "UI_menu_end() called without UI_menu_begin()");
 	menu->is_open = false;
 
 	/* Handle item focus*/
@@ -96,14 +94,18 @@ void UI_end_menu(void) {
 			focus_delta = -1;
 		}
 
-		g_ui.state.focused_item = (menu->num_items + g_ui.state.focused_item + focus_delta) % menu->num_items;
+		if (menu->num_items == 0) {
+			g_ui.state.focused_item = 0;
+		} else {
+			g_ui.state.focused_item = (menu->num_items + g_ui.state.focused_item + focus_delta) % menu->num_items;
+		}
 	}
 }
 
 bool UI_menu_item(const char* label) {
 	UIMenu* menu = UI_current_menu();
-	DEBUG_ASSERT(menu != NULL, "UI_menu_item() called without UI_begin_menu()");
-	DEBUG_ASSERT(menu->is_open, "UI_menu_item() called without UI_begin_menu()");
+	DEBUG_ASSERT(menu != NULL, "UI_menu_item() called without UI_menu_begin()");
+	DEBUG_ASSERT(menu->is_open, "UI_menu_item() called without UI_menu_begin()");
 
 	const int current_item_index = menu->num_items++;
 	UIMenuItem* item = &menu->items[current_item_index];
@@ -115,38 +117,62 @@ bool UI_menu_item(const char* label) {
 	return is_selected;
 }
 
+typedef enum DebugPage {
+	DebugPage_Main,
+	DebugPage_PageOne,
+	DebugPage_PageTwo,
+} DebugPage;
+
 void DebugScene_initialize(Game* game) {
 }
 
 void DebugScene_update(Game* game) {
+	DebugScene* debug_scene = &game->scene.debug_scene;
+
 	// testing
 	UI_begin();
 	{
-		UI_begin_menu("Debug");
-		{
-			if (UI_menu_item("Item one")) {
-				LOG_DEBUG("Item one pressed");
-			}
+		switch (debug_scene->current_page) {
+			case DebugPage_Main:
+				UI_menu_begin("Debug");
+				{
+					if (IsKeyPressed(KEY_ESCAPE)) {
+						Game_quit(game);
+					}
 
-			if (UI_menu_item("Item two")) {
-				LOG_DEBUG("Item two pressed");
-			}
+					if (UI_menu_item("Page one")) {
+						debug_scene->current_page = DebugPage_PageOne;
+					}
 
-			if (UI_menu_item("Item three")) {
-				LOG_DEBUG("Item three pressed");
-			}
+					if (UI_menu_item("Page two")) {
+						debug_scene->current_page = DebugPage_PageTwo;
+					}
+				}
+				UI_menu_end();
+				break;
 
-			if (UI_menu_item("Item four")) {
-				LOG_DEBUG("Item four pressed");
-			}
+			case DebugPage_PageOne:
+				UI_menu_begin("Page One");
+				{
+					if (IsKeyPressed(KEY_ESCAPE)) {
+						debug_scene->current_page = DebugPage_Main;
+					}
+				}
+				UI_menu_end();
+				break;
+
+			case DebugPage_PageTwo:
+				UI_menu_begin("Page Two");
+				{
+					if (IsKeyPressed(KEY_ESCAPE)) {
+						debug_scene->current_page = DebugPage_Main;
+					}
+				}
+				UI_menu_end();
+				break;
 		}
-		UI_end_menu();
 	}
 	UI_end();
-
-	if (IsKeyPressed(KEY_ESCAPE)) {
-		Game_quit(game);
-	}
 }
 
 void DebugScene_render(const Game* game) {
