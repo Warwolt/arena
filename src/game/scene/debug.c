@@ -50,11 +50,15 @@
 #define DEBUG_ASSERT_IS_WITHIN_UI_FRAME()                                                                          \
 	DEBUG_ASSERT(g_ui.is_within_frame, "%s() called outside ui frame. Missing call to UI_begin()?", __FUNCTION__);
 
-#define UIMenu_MaxItemLabels 16
+#define UIMenu_MaxMenuItems 16
 #define UIMenu_MaxMenus 4
 
+typedef struct UIMenuItem {
+	const char* label;
+} UIMenuItem;
+
 typedef struct UIMenu {
-	const char* item_labels[UIMenu_MaxItemLabels];
+	UIMenuItem items[UIMenu_MaxMenuItems];
 	int num_items;
 	int focused_item;
 	bool is_open;
@@ -79,8 +83,8 @@ void UI_begin(void) {
 	// start UI frame
 	// I guess we'd want to check all inputs here any store some kind of input state if we need?
 	DEBUG_ASSERT(!g_ui.is_within_frame, "%s() called while in ui frame. Missing call to UI_end()?", __FUNCTION__);
+	g_ui = (UI) { 0 };
 	g_ui.is_within_frame = true;
-	g_ui.num_menus = 0;
 }
 
 void UI_end(void) {
@@ -98,25 +102,24 @@ void UI_begin_menu() {
 	DEBUG_ASSERT(g_ui.is_within_frame, "%s() called outside ui frame. Missing call to UI_begin()?", __FUNCTION__);
 	g_ui.num_menus++;
 	g_ui.menus[g_ui.num_menus - 1].is_open = true;
-	// push a new menu to add items to
 }
 
 void UI_end_menu(void) {
 	UIMenu* menu = current_menu();
-	DEBUG_ASSERT(menu != NULL, "UI_end_menu() called with no UI_begin_menu()");
-	DEBUG_ASSERT(menu->is_open, "UI_end_menu() called with no UI_begin_menu()");
+	DEBUG_ASSERT(menu != NULL, "UI_end_menu() called without UI_begin_menu()");
+	DEBUG_ASSERT(menu->is_open, "UI_end_menu() called without UI_begin_menu()");
 	menu->is_open = false;
-	// after this call, any calls to `UI_menu_item` should trigger an error
 }
 
 bool UI_menu_item(const char* label) {
-	// DEBUG_ASSERT(we have an open menu component);
+	UIMenu* menu = current_menu();
+	DEBUG_ASSERT(menu != NULL, "UI_menu_item() called without UI_begin_menu()");
+	DEBUG_ASSERT(menu->is_open, "UI_menu_item() called without UI_begin_menu()");
 
-	// push an item to the current open menu
-	// if no menu open, instead result in error
-	//
-	// let is_selected = menu item is focused && enter pressed
-	// return is_selected
+	// FIXME: we should be copying the `label` into the menu to avoid lifetime issues.
+	menu->num_items++;
+	menu->items[menu->num_items - 1].label = label;
+
 	bool is_selected = false;
 	return is_selected;
 }
@@ -128,10 +131,10 @@ void DebugScene_update(Game* game) {
 	// testing
 	UI_begin();
 	{
-		const bool main_menu_focused = true;
 		UI_begin_menu();
 		{
-			//
+			UI_menu_item("Item one");
+			UI_menu_item("Item two");
 		}
 		UI_end_menu();
 	}
@@ -149,8 +152,10 @@ void DebugScene_render(const Game* game) {
 
 	ClearBackground(BLACK);
 
-	char text[256];
-	snprintf(text, 256, "menus: %d", g_ui.num_menus);
-	int text_width = Game_measure_text_width(game, text, font_size);
-	Game_draw_text(game, text, (screen_rect.width - text_width) / 2, (screen_rect.height - font_size) / 2, font_size, WHITE);
+	for (int i = 0; i < g_ui.num_menus; i++) {
+		for (int j = 0; j < g_ui.menus[i].num_items; j++) {
+			const UIMenuItem* item = &g_ui.menus[i].items[j];
+			Game_draw_text(game, item->label, 0, j * font_size, font_size, WHITE);
+		}
+	}
 }
