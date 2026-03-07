@@ -59,14 +59,6 @@ void UI_begin(void) {
 	DEBUG_ASSERT(!g_ui.state.is_within_frame, "%s() called while in ui frame. Missing call to UI_end()?", __FUNCTION__);
 	g_ui.view = (UIView) { 0 };
 	g_ui.state.is_within_frame = true;
-
-	if (IsKeyPressed(KEY_DOWN)) {
-		g_ui.state.focused_item++;
-	}
-
-	if (IsKeyPressed(KEY_UP)) {
-		g_ui.state.focused_item--;
-	}
 }
 
 void UI_end(void) {
@@ -89,6 +81,16 @@ void UI_end_menu(void) {
 	DEBUG_ASSERT(menu != NULL, "UI_end_menu() called without UI_begin_menu()");
 	DEBUG_ASSERT(menu->is_open, "UI_end_menu() called without UI_begin_menu()");
 	menu->is_open = false;
+
+	if (IsKeyPressed(KEY_DOWN)) {
+		g_ui.state.focused_item = (menu->num_items + g_ui.state.focused_item + 1) % menu->num_items;
+	}
+
+	if (IsKeyPressed(KEY_UP)) {
+		g_ui.state.focused_item = (menu->num_items + g_ui.state.focused_item - 1) % menu->num_items;
+	}
+
+	menu->items[g_ui.state.focused_item].is_focused = true;
 }
 
 bool UI_menu_item(const char* label) {
@@ -99,8 +101,6 @@ bool UI_menu_item(const char* label) {
 	const int current_item_index = menu->num_items++;
 	UIMenuItem* item = &menu->items[current_item_index];
 	strncpy_s(item->label, UIMenu_MaxLabelLength, label, _TRUNCATE);
-
-	item->is_focused = current_item_index == g_ui.state.focused_item;
 
 	bool is_selected = false;
 	return is_selected;
