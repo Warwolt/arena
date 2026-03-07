@@ -35,6 +35,7 @@ typedef struct UIView {
 
 typedef struct UIState {
 	bool is_within_frame;
+	int focused_item;
 } UIState;
 
 // ui.view.menus
@@ -55,11 +56,17 @@ static UIMenu* UI_current_menu() {
 }
 
 void UI_begin(void) {
-	// start UI frame
-	// I guess we'd want to check all inputs here any store some kind of input state if we need?
 	DEBUG_ASSERT(!g_ui.state.is_within_frame, "%s() called while in ui frame. Missing call to UI_end()?", __FUNCTION__);
-	g_ui = (UI) { 0 };
+	g_ui.view = (UIView) { 0 };
 	g_ui.state.is_within_frame = true;
+
+	if (IsKeyPressed(KEY_DOWN)) {
+		g_ui.state.focused_item++;
+	}
+
+	if (IsKeyPressed(KEY_UP)) {
+		g_ui.state.focused_item--;
+	}
 }
 
 void UI_end(void) {
@@ -89,15 +96,11 @@ bool UI_menu_item(const char* label) {
 	DEBUG_ASSERT(menu != NULL, "UI_menu_item() called without UI_begin_menu()");
 	DEBUG_ASSERT(menu->is_open, "UI_menu_item() called without UI_begin_menu()");
 
-	UIMenuItem* item = &menu->items[menu->num_items++];
+	const int current_item_index = menu->num_items++;
+	UIMenuItem* item = &menu->items[current_item_index];
 	strncpy_s(item->label, UIMenu_MaxLabelLength, label, _TRUNCATE);
 
-	// TODO: Store which item is selected in UI state.
-	// Maybe we split the UI struct into user data and state data?
-	// User data is what's been passed to the public API.
-	// State data is our own bookkeeping for which item is selected.
-	// User data is cleared each frame, state data is not.
-	item->is_focused = menu->num_items == 2;
+	item->is_focused = current_item_index == g_ui.state.focused_item;
 
 	bool is_selected = false;
 	return is_selected;
