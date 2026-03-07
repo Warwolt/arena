@@ -89,8 +89,6 @@ void UI_end_menu(void) {
 	if (IsKeyPressed(KEY_UP)) {
 		g_ui.state.focused_item = (menu->num_items + g_ui.state.focused_item - 1) % menu->num_items;
 	}
-
-	menu->items[g_ui.state.focused_item].is_focused = true;
 }
 
 bool UI_menu_item(const char* label) {
@@ -102,7 +100,9 @@ bool UI_menu_item(const char* label) {
 	UIMenuItem* item = &menu->items[current_item_index];
 	strncpy_s(item->label, UIMenu_MaxLabelLength, label, _TRUNCATE);
 
-	bool is_selected = false;
+	item->is_focused = g_ui.state.focused_item == current_item_index;
+
+	const bool is_selected = IsKeyPressed(KEY_ENTER) && item->is_focused;
 	return is_selected;
 }
 
@@ -115,9 +115,17 @@ void DebugScene_update(Game* game) {
 	{
 		UI_begin_menu();
 		{
-			UI_menu_item("Item one");
-			UI_menu_item("Item two");
-			UI_menu_item("Item three");
+			if (UI_menu_item("Item one")) {
+				LOG_DEBUG("Item one pressed");
+			}
+
+			if (UI_menu_item("Item two")) {
+				LOG_DEBUG("Item two pressed");
+			}
+
+			if (UI_menu_item("Item three")) {
+				LOG_DEBUG("Item three pressed");
+			}
 		}
 		UI_end_menu();
 	}
