@@ -23,6 +23,7 @@ typedef struct UIMenuItem {
 
 typedef struct UIMenu {
 	UIMenuItem items[UIMenu_MaxMenuItems];
+	char label[UIMenu_MaxLabelLength];
 	int num_items;
 	int focused_item;
 	bool is_open;
@@ -70,10 +71,11 @@ void UI_end(void) {
 	g_ui.state.is_within_frame = false;
 }
 
-void UI_begin_menu() {
+void UI_begin_menu(const char* label) {
 	DEBUG_ASSERT(g_ui.state.is_within_frame, "%s() called outside ui frame. Missing call to UI_begin()?", __FUNCTION__);
-	g_ui.view.num_menus++;
-	g_ui.view.menus[g_ui.view.num_menus - 1].is_open = true;
+	UIMenu* menu = &g_ui.view.menus[g_ui.view.num_menus++];
+	menu->is_open = true;
+	strncpy_s(menu->label, UIMenu_MaxLabelLength, label, _TRUNCATE);
 }
 
 void UI_end_menu(void) {
@@ -82,12 +84,19 @@ void UI_end_menu(void) {
 	DEBUG_ASSERT(menu->is_open, "UI_end_menu() called without UI_begin_menu()");
 	menu->is_open = false;
 
-	if (IsKeyPressed(KEY_DOWN)) {
-		g_ui.state.focused_item = (menu->num_items + g_ui.state.focused_item + 1) % menu->num_items;
-	}
+	/* Handle item focus*/
+	{
+		int focus_delta = 0;
 
-	if (IsKeyPressed(KEY_UP)) {
-		g_ui.state.focused_item = (menu->num_items + g_ui.state.focused_item - 1) % menu->num_items;
+		if (IsKeyPressed(KEY_DOWN)) {
+			focus_delta = 1;
+		}
+
+		if (IsKeyPressed(KEY_UP)) {
+			focus_delta = -1;
+		}
+
+		g_ui.state.focused_item = (menu->num_items + g_ui.state.focused_item + focus_delta) % menu->num_items;
 	}
 }
 
@@ -113,7 +122,7 @@ void DebugScene_update(Game* game) {
 	// testing
 	UI_begin();
 	{
-		UI_begin_menu();
+		UI_begin_menu("Debug");
 		{
 			if (UI_menu_item("Item one")) {
 				LOG_DEBUG("Item one pressed");
@@ -125,6 +134,10 @@ void DebugScene_update(Game* game) {
 
 			if (UI_menu_item("Item three")) {
 				LOG_DEBUG("Item three pressed");
+			}
+
+			if (UI_menu_item("Item four")) {
+				LOG_DEBUG("Item four pressed");
 			}
 		}
 		UI_end_menu();
@@ -142,19 +155,27 @@ void DebugScene_render(const Game* game) {
 	const int font_size = 32;
 
 	ClearBackground(BLACK);
+
+	/* Draw each menu */
 	for (int i = 0; i < g_ui.view.num_menus; i++) {
 		const UIMenu* menu = &g_ui.view.menus[i];
 
+		/* Menu dimensions */
 		int menu_width = 0;
 		for (int j = 0; j < menu->num_items; j++) {
 			const UIMenuItem* item = &g_ui.view.menus[i].items[j];
 			int item_width = Game_measure_text_width(game, item->label, font_size);
 			menu_width = max(menu_width, item_width);
 		}
+		const int menu_height = menu->num_items * font_size;
 
+		/* Draw menu title */
+		int menu_label_width = Game_measure_text_width(game, menu->label, font_size);
+		Game_draw_text(game, menu->label, (screen_rect.width - menu_label_width) / 2, 2 * font_size, font_size, WHITE);
+
+		/* Draw menu items */
 		for (int j = 0; j < menu->num_items; j++) {
 			const UIMenuItem* item = &g_ui.view.menus[i].items[j];
-			const int menu_height = menu->num_items * font_size;
 			const int margin_left = (screen_rect.width - menu_width) / 2;
 			const int margin_top = (screen_rect.height - menu_height) / 2;
 			const int pos_x = margin_left;
