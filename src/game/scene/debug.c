@@ -5,56 +5,19 @@
 
 #include <raylib.h>
 #include <stdio.h>
-
-// int main(void) {
-// 	UI_begin();
-// 	{
-// 		UI_begin_menu("Main menu", state->current_item == MenuType_MainMenu);
-// 		{
-// 			if (UI_menu_item("First item")) {
-// 				LOGI("First item selected");
-// 				state->current_item = MenuType_SubMenu;
-// 			}
-
-// 			if (UI_menu_item("Second item")) {
-// 				LOGI("Second item selected");
-// 			}
-
-// 			if (UI_menu_item("Third item")) {
-// 				LOGI("Third item selected");
-// 			}
-// 		}
-// 		UI_end_menu();
-
-// 		UI_begin_menu("Sub menu", state->current_item == MenuType_SubMenu);
-// 		{
-// 			if (UI_menu_item("First sub item")) {
-// 				LOGI("First sub item selected");
-// 			}
-
-// 			if (UI_menu_item("Second sub item")) {
-// 				LOGI("Second sub item selected");
-// 			}
-
-// 			if (UI_menu_item("Third sub item")) {
-// 				LOGI("Third sub item selected");
-// 			}
-// 		}
-// 		UI_end_menu();
-// 	}
-// 	UI_end();
-// }
+#include <string.h>
 
 #define max(a, b) ((a) > (b) ? (a) : (b))
 
 #define DEBUG_ASSERT_IS_WITHIN_UI_FRAME()                                                                          \
 	DEBUG_ASSERT(g_ui.is_within_frame, "%s() called outside ui frame. Missing call to UI_begin()?", __FUNCTION__);
 
-#define UIMenu_MaxMenuItems 16
 #define UIMenu_MaxMenus 4
+#define UIMenu_MaxMenuItems 16
+#define UIMenu_MaxLabelLength 256
 
 typedef struct UIMenuItem {
-	const char* label;
+	char label[UIMenu_MaxLabelLength];
 } UIMenuItem;
 
 typedef struct UIMenu {
@@ -72,7 +35,7 @@ typedef struct UI {
 
 UI g_ui;
 
-static UIMenu* current_menu() {
+static UIMenu* UI_current_menu() {
 	if (g_ui.num_menus == 0) {
 		return NULL;
 	}
@@ -96,8 +59,6 @@ void UI_end(void) {
 	g_ui.is_within_frame = false;
 }
 
-// let user pass in focused, since what menu is focused depends on the semantics of the specific
-// menu and how it's interaction handlers are defined in user code.
 void UI_begin_menu() {
 	DEBUG_ASSERT(g_ui.is_within_frame, "%s() called outside ui frame. Missing call to UI_begin()?", __FUNCTION__);
 	g_ui.num_menus++;
@@ -105,20 +66,20 @@ void UI_begin_menu() {
 }
 
 void UI_end_menu(void) {
-	UIMenu* menu = current_menu();
+	UIMenu* menu = UI_current_menu();
 	DEBUG_ASSERT(menu != NULL, "UI_end_menu() called without UI_begin_menu()");
 	DEBUG_ASSERT(menu->is_open, "UI_end_menu() called without UI_begin_menu()");
 	menu->is_open = false;
 }
 
 bool UI_menu_item(const char* label) {
-	UIMenu* menu = current_menu();
+	UIMenu* menu = UI_current_menu();
 	DEBUG_ASSERT(menu != NULL, "UI_menu_item() called without UI_begin_menu()");
 	DEBUG_ASSERT(menu->is_open, "UI_menu_item() called without UI_begin_menu()");
 
-	// FIXME: we should be copying the `label` into the menu to avoid lifetime issues.
 	menu->num_items++;
-	menu->items[menu->num_items - 1].label = label;
+	UIMenuItem* item = &menu->items[menu->num_items - 1];
+	strncpy_s(item->label, UIMenu_MaxLabelLength, label, _TRUNCATE);
 
 	bool is_selected = false;
 	return is_selected;
@@ -135,6 +96,7 @@ void DebugScene_update(Game* game) {
 		{
 			UI_menu_item("Item one");
 			UI_menu_item("Item two");
+			UI_menu_item("Item three");
 		}
 		UI_end_menu();
 	}
@@ -151,11 +113,22 @@ void DebugScene_render(const Game* game) {
 	const int font_size = 32;
 
 	ClearBackground(BLACK);
-
 	for (int i = 0; i < g_ui.num_menus; i++) {
-		for (int j = 0; j < g_ui.menus[i].num_items; j++) {
+		const UIMenu* menu = &g_ui.menus[i];
+
+		int menu_width = 0;
+		for (int j = 0; j < menu->num_items; j++) {
 			const UIMenuItem* item = &g_ui.menus[i].items[j];
-			Game_draw_text(game, item->label, 0, j * font_size, font_size, WHITE);
+			int item_width = Game_measure_text_width(game, item->label, font_size);
+			menu_width = max(menu_width, item_width);
+		}
+
+		for (int j = 0; j < menu->num_items; j++) {
+			const UIMenuItem* item = &g_ui.menus[i].items[j];
+			const int menu_height = menu->num_items * font_size;
+			const int margin_top = (screen_rect.height - menu_height) / 2;
+			const int margin_left = (screen_rect.width - menu_width) / 2;
+			Game_draw_text(game, item->label, margin_left, margin_top + j * font_size, font_size, WHITE);
 		}
 	}
 }
