@@ -4,6 +4,7 @@
 #include "platform/assert.h"
 
 #include <raylib.h>
+#include <stdio.h>
 
 // int main(void) {
 // 	UI_begin();
@@ -79,6 +80,7 @@ void UI_begin(void) {
 	// I guess we'd want to check all inputs here any store some kind of input state if we need?
 	DEBUG_ASSERT(!g_ui.is_within_frame, "%s() called while in ui frame. Missing call to UI_end()?", __FUNCTION__);
 	g_ui.is_within_frame = true;
+	g_ui.num_menus = 0;
 }
 
 void UI_end(void) {
@@ -86,10 +88,6 @@ void UI_end(void) {
 	for (int i = 0; i < g_ui.num_menus; i++) {
 		DEBUG_ASSERT(!g_ui.menus[i].is_open, "Menu %d has missing UI_end_menu() call", i);
 	}
-
-	// not 100% sure we should set this to zero but, we'll do it for now
-	// this lets us push menus from scratch the next UI frame.
-	g_ui.num_menus = 0;
 
 	g_ui.is_within_frame = false;
 }
@@ -150,5 +148,9 @@ void DebugScene_render(const Game* game) {
 	const int font_size = 32;
 
 	ClearBackground(BLACK);
-	// render each menu
+
+	char text[256];
+	snprintf(text, 256, "menus: %d", g_ui.num_menus);
+	int text_width = Game_measure_text_width(game, text, font_size);
+	Game_draw_text(game, text, (screen_rect.width - text_width) / 2, (screen_rect.height - font_size) / 2, font_size, WHITE);
 }
