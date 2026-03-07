@@ -18,6 +18,7 @@
 
 typedef struct UIMenuItem {
 	char label[UIMenu_MaxLabelLength];
+	bool is_focused;
 } UIMenuItem;
 
 typedef struct UIMenu {
@@ -77,9 +78,15 @@ bool UI_menu_item(const char* label) {
 	DEBUG_ASSERT(menu != NULL, "UI_menu_item() called without UI_begin_menu()");
 	DEBUG_ASSERT(menu->is_open, "UI_menu_item() called without UI_begin_menu()");
 
-	menu->num_items++;
-	UIMenuItem* item = &menu->items[menu->num_items - 1];
+	UIMenuItem* item = &menu->items[menu->num_items++];
 	strncpy_s(item->label, UIMenu_MaxLabelLength, label, _TRUNCATE);
+
+	// TODO: Store which item is selected in UI state.
+	// Maybe we split the UI struct into user data and state data?
+	// User data is what's been passed to the public API.
+	// State data is our own bookkeeping for which item is selected.
+	// User data is cleared each frame, state data is not.
+	item->is_focused = menu->num_items == 2;
 
 	bool is_selected = false;
 	return is_selected;
@@ -126,9 +133,16 @@ void DebugScene_render(const Game* game) {
 		for (int j = 0; j < menu->num_items; j++) {
 			const UIMenuItem* item = &g_ui.menus[i].items[j];
 			const int menu_height = menu->num_items * font_size;
-			const int margin_top = (screen_rect.height - menu_height) / 2;
 			const int margin_left = (screen_rect.width - menu_width) / 2;
-			Game_draw_text(game, item->label, margin_left, margin_top + j * font_size, font_size, WHITE);
+			const int margin_top = (screen_rect.height - menu_height) / 2;
+			const int pos_x = margin_left;
+			const int pos_y = margin_top + j * font_size;
+			if (item->is_focused) {
+				DrawRectangle(pos_x, pos_y, menu_width, font_size, WHITE);
+				Game_draw_text(game, item->label, pos_x, pos_y, font_size, BLACK);
+			} else {
+				Game_draw_text(game, item->label, pos_x, pos_y, font_size, WHITE);
+			}
 		}
 	}
 }
