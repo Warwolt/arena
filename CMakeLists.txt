@@ -27,6 +27,7 @@ set(SRC
     src/core/sparse_array.c
     src/engine/entity.c
     src/engine/resource.c
+    src/engine/ui.c
     src/game.c
     src/game/scene.c
     src/game/scene/debug.c
@@ -68,6 +69,7 @@ add_executable(Tests
     test/arena_tests.c
     test/entity_tests.c
     test/sparse_array_tests.c
+    test/ui_tests.c
 )
 target_include_directories(Tests PUBLIC src lib)
 target_link_libraries(Tests Source)

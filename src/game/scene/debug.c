@@ -1,136 +1,13 @@
 #include "game/scene/debug.h"
 
+#include "engine/ui.h"
 #include "game.h"
-#include "platform/assert.h"
 
 #include <raylib.h>
 #include <stdio.h>
 #include <string.h>
 
 #define max(a, b) ((a) > (b) ? (a) : (b))
-
-#define DEBUG_ASSERT_IS_WITHIN_UI_FRAME() \
-	DEBUG_ASSERT(g_ui.state.is_within_frame, "%s() called outside ui frame. Missing call to UI_begin()?", __FUNCTION__);
-
-#define UIMenu_MaxMenus 4
-#define UIMenu_MaxMenuItems 16
-#define UIMenu_MaxLabelLength 256
-
-typedef struct UIMenuItem {
-	char label[UIMenu_MaxLabelLength];
-	bool is_focused;
-} UIMenuItem;
-
-typedef struct UIMenu {
-	UIMenuItem items[UIMenu_MaxMenuItems];
-	char label[UIMenu_MaxLabelLength];
-	int num_items;
-	int focused_item;
-	bool is_open;
-} UIMenu;
-
-typedef struct UIView {
-	UIMenu menus[UIMenu_MaxMenus];
-	int num_menus;
-} UIView;
-
-typedef struct UIState {
-	bool is_within_frame;
-
-	// FIXME:
-	// This needs to be a mapping String -> Number
-	// We want to use the label of the menu to identify it.
-	// Can't be bothered to implement a HashMap, nor to handle the lifetimes of strings.
-	// Easy solution for now is just an array [(String, Number)] and just scan through it.
-	// It's an O(n) solution but we're also not going to have anything but a very small amount of menu items.
-	//
-	// Alternatively, do we _have_ to nuke the UIMenu state every frame?
-	// What's the kind of things we need to compute, and what data do we need? How should we organize that data?
-	//
-	// At this point it would make sense to start writing unit test so we can better track all the
-	// things that the UI is supposed to be able to do. Quite a lot of different cases to cover even
-	// with this simple system.
-	int focused_item;
-
-} UIState;
-
-typedef struct UI {
-	UIView view;
-	UIState state;
-} UI;
-
-UI g_ui;
-
-static UIMenu* UI_current_menu() {
-	if (g_ui.view.num_menus == 0) {
-		return NULL;
-	}
-	return &g_ui.view.menus[g_ui.view.num_menus - 1];
-}
-
-void UI_begin(void) {
-	DEBUG_ASSERT(!g_ui.state.is_within_frame, "%s() called while in ui frame. Missing call to UI_end()?", __FUNCTION__);
-	g_ui.view = (UIView) { 0 };
-	g_ui.state.is_within_frame = true;
-}
-
-void UI_end(void) {
-	/* Check that each menu component is closed */
-	for (int i = 0; i < g_ui.view.num_menus; i++) {
-		DEBUG_ASSERT(!g_ui.view.menus[i].is_open, "Menu %d has missing UI_menu_end() call", i);
-	}
-
-	g_ui.state.is_within_frame = false;
-}
-
-void UI_menu_begin(const char* label) {
-	DEBUG_ASSERT(g_ui.state.is_within_frame, "%s() called outside ui frame. Missing call to UI_begin()?", __FUNCTION__);
-	DEBUG_ASSERT(g_ui.view.num_menus <= 1, "FIXME: Multiple menu support not yet implemented");
-	UIMenu* menu = &g_ui.view.menus[g_ui.view.num_menus++];
-	menu->is_open = true;
-	strncpy_s(menu->label, UIMenu_MaxLabelLength, label, _TRUNCATE);
-}
-
-void UI_menu_end(void) {
-	UIMenu* menu = UI_current_menu();
-	DEBUG_ASSERT(menu != NULL, "UI_menu_end() called without UI_menu_begin()");
-	DEBUG_ASSERT(menu->is_open, "UI_menu_end() called without UI_menu_begin()");
-	menu->is_open = false;
-
-	/* Handle item focus*/
-	{
-		int focus_delta = 0;
-
-		if (IsKeyPressed(KEY_DOWN)) {
-			focus_delta = 1;
-		}
-
-		if (IsKeyPressed(KEY_UP)) {
-			focus_delta = -1;
-		}
-
-		if (menu->num_items == 0) {
-			g_ui.state.focused_item = 0;
-		} else {
-			g_ui.state.focused_item = (menu->num_items + g_ui.state.focused_item + focus_delta) % menu->num_items;
-		}
-	}
-}
-
-bool UI_menu_item(const char* label) {
-	UIMenu* menu = UI_current_menu();
-	DEBUG_ASSERT(menu != NULL, "UI_menu_item() called without UI_menu_begin()");
-	DEBUG_ASSERT(menu->is_open, "UI_menu_item() called without UI_menu_begin()");
-
-	const int current_item_index = menu->num_items++;
-	UIMenuItem* item = &menu->items[current_item_index];
-	strncpy_s(item->label, UIMenu_MaxLabelLength, label, _TRUNCATE);
-
-	item->is_focused = g_ui.state.focused_item == current_item_index;
-
-	const bool is_selected = IsKeyPressed(KEY_ENTER) && item->is_focused;
-	return is_selected;
-}
 
 typedef enum DebugPage {
 	DebugPage_Main,
@@ -198,13 +75,13 @@ void DebugScene_render(const Game* game) {
 	ClearBackground(BLACK);
 
 	/* Draw each menu */
-	for (int i = 0; i < g_ui.view.num_menus; i++) {
-		const UIMenu* menu = &g_ui.view.menus[i];
+	for (int i = 0; i < UI_get()->view.num_menus; i++) {
+		const UIMenu* menu = &UI_get()->view.menus[i];
 
 		/* Menu dimensions */
 		int menu_width = 0;
 		for (int j = 0; j < menu->num_items; j++) {
-			const UIMenuItem* item = &g_ui.view.menus[i].items[j];
+			const UIMenuItem* item = &UI_get()->view.menus[i].items[j];
 			int item_width = Game_measure_text_width(game, item->label, font_size);
 			menu_width = max(menu_width, item_width);
 		}
@@ -216,7 +93,7 @@ void DebugScene_render(const Game* game) {
 
 		/* Draw menu items */
 		for (int j = 0; j < menu->num_items; j++) {
-			const UIMenuItem* item = &g_ui.view.menus[i].items[j];
+			const UIMenuItem* item = &UI_get()->view.menus[i].items[j];
 			const int margin_left = (screen_rect.width - menu_width) / 2;
 			const int margin_top = (screen_rect.height - menu_height) / 2;
 			const int pos_x = margin_left;
