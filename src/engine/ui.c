@@ -8,14 +8,24 @@
 #define DEBUG_ASSERT_IS_WITHIN_UI_FRAME() \
 	DEBUG_ASSERT(g_ui.state.is_within_frame, "%s() called outside ui frame. Missing call to UI_begin()?", __FUNCTION__);
 
-UI g_ui;
+typedef struct UIState {
+	bool is_within_frame;
+	int focused_item;
+} UIState;
+
+typedef struct UIContext {
+	UIView view;
+	UIState state;
+} UIContext;
+
+UIContext g_ui;
 
 void UI_initialize(void) {
-	g_ui = (UI) { 0 };
+	g_ui = (UIContext) { 0 };
 }
 
-UI* UI_get(void) {
-	return &g_ui;
+const UIView* UI_view(void) {
+	return &g_ui.view;
 }
 
 static UIMenu* UI_current_menu() {
@@ -36,14 +46,15 @@ void UI_end(void) {
 
 	/* Check that each menu component is closed */
 	for (int i = 0; i < g_ui.view.num_menus; i++) {
-		DEBUG_ASSERT(!g_ui.view.menus[i].is_open, "Menu %d has missing UI_menu_end() call", i);
+		UIMenu* menu = &g_ui.view.menus[i];
+		DEBUG_ASSERT(!menu->is_open, "Menu \"%s\" has missing UI_menu_end() call", menu->label);
 	}
 
 	g_ui.state.is_within_frame = false;
 }
 
 void UI_menu_begin(const char* label) {
-	DEBUG_ASSERT(g_ui.state.is_within_frame, "%s() called outside ui frame. Missing call to UI_begin()?", __FUNCTION__);
+	DEBUG_ASSERT_IS_WITHIN_UI_FRAME();
 	DEBUG_ASSERT(g_ui.view.num_menus <= 1, "FIXME: Multiple menu support not yet implemented");
 	UIMenu* menu = &g_ui.view.menus[g_ui.view.num_menus++];
 	menu->is_open = true;
@@ -52,8 +63,9 @@ void UI_menu_begin(const char* label) {
 
 void UI_menu_end(void) {
 	UIMenu* menu = UI_current_menu();
-	DEBUG_ASSERT(menu != NULL, "UI_menu_end() called without UI_menu_begin()");
-	DEBUG_ASSERT(menu->is_open, "UI_menu_end() called without UI_menu_begin()");
+	DEBUG_ASSERT_IS_WITHIN_UI_FRAME();
+	DEBUG_ASSERT(menu != NULL, "UI_menu_end() called without corresponding UI_menu_begin()");
+	DEBUG_ASSERT(menu->is_open, "UI_menu_end() called without corresponding UI_menu_begin()");
 	menu->is_open = false;
 
 	/* Handle item focus*/

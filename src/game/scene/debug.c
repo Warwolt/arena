@@ -75,13 +75,13 @@ void DebugScene_render(const Game* game) {
 	ClearBackground(BLACK);
 
 	/* Draw each menu */
-	for (int i = 0; i < UI_get()->view.num_menus; i++) {
-		const UIMenu* menu = &UI_get()->view.menus[i];
+	for (int i = 0; i < UI_view()->num_menus; i++) {
+		const UIMenu* menu = &UI_view()->menus[i];
 
 		/* Menu dimensions */
 		int menu_width = 0;
 		for (int j = 0; j < menu->num_items; j++) {
-			const UIMenuItem* item = &UI_get()->view.menus[i].items[j];
+			const UIMenuItem* item = &UI_view()->menus[i].items[j];
 			int item_width = Game_measure_text_width(game, item->label, font_size);
 			menu_width = max(menu_width, item_width);
 		}
@@ -93,7 +93,7 @@ void DebugScene_render(const Game* game) {
 
 		/* Draw menu items */
 		for (int j = 0; j < menu->num_items; j++) {
-			const UIMenuItem* item = &UI_get()->view.menus[i].items[j];
+			const UIMenuItem* item = &UI_view()->menus[i].items[j];
 			const int margin_left = (screen_rect.width - menu_width) / 2;
 			const int margin_top = (screen_rect.height - menu_height) / 2;
 			const int pos_x = margin_left;
