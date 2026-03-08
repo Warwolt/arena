@@ -1411,8 +1411,6 @@ static void run_command(const char* command, int* exit_code, char* stderr_buf, i
 }
 
 bool rktest_run_death_test(const char* test_file, int test_line, const char* expected_stderr_in) {
-	bool did_pass = true;
-
 	/* Build command */
 	char test_exe[MAX_PATH];
 	GetModuleFileName(NULL, test_exe, MAX_PATH);
@@ -1426,7 +1424,6 @@ bool rktest_run_death_test(const char* test_file, int test_line, const char* exp
 
 	/* Check that process died */
 	if (exit_code == 0) {
-		did_pass = false;
 		rktest_fail_current_test();
 		if (rktest_filenames_enabled()) {
 			printf("%s(%d): ", test_file, test_line);
@@ -1434,6 +1431,7 @@ bool rktest_run_death_test(const char* test_file, int test_line, const char* exp
 		printf("error: death test failed.\n");
 		printf("Expected non-zero exit code, but got 0\n");
 		printf("\n");
+		return false;
 	}
 
 	/* Strip newline characters from both expected and actual */
@@ -1458,20 +1456,20 @@ bool rktest_run_death_test(const char* test_file, int test_line, const char* exp
 
 	/* Check expected stderr */
 	if (!string_wildcard_match(actual_stderr, expected_stderr)) {
-		did_pass = false;
 		rktest_fail_current_test();
 		if (rktest_filenames_enabled()) {
 			printf("%s(%d): ", test_file, test_line);
 		}
 		printf("error: death test failed.\n");
-		printf("Expected stderr output to be:\n");
+		printf("Expected stderr output to match:\n");
 		printf("  %s\n", expected_stderr);
 		printf("But received:\n");
 		printf("  %s\n", actual_stderr);
 		printf("\n");
+		return false;
 	}
 
-	return did_pass;
+	return true;
 }
 #endif // defined(WIN32)
 

@@ -26,12 +26,14 @@ static UIMenu* UI_current_menu() {
 }
 
 void UI_begin(void) {
-	DEBUG_ASSERT(!g_ui.state.is_within_frame, "%s() called while in ui frame. Missing call to UI_end()?", __FUNCTION__);
+	DEBUG_ASSERT(!g_ui.state.is_within_frame, "UI_begin() called while already in ui frame. Missing call to UI_end()?");
 	g_ui.view = (UIView) { 0 };
 	g_ui.state.is_within_frame = true;
 }
 
 void UI_end(void) {
+	DEBUG_ASSERT(g_ui.state.is_within_frame, "UI_end() called while outside ui frame. Missing call to UI_begin()?");
+
 	/* Check that each menu component is closed */
 	for (int i = 0; i < g_ui.view.num_menus; i++) {
 		DEBUG_ASSERT(!g_ui.view.menus[i].is_open, "Menu %d has missing UI_menu_end() call", i);
