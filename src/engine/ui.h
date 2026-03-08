@@ -51,6 +51,8 @@ typedef struct UI {
 
 UI* UI_get(void);
 
+void UI_initialize(void);
+
 void UI_begin(void);
 void UI_end(void);
 

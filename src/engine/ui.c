@@ -10,6 +10,10 @@
 
 UI g_ui;
 
+void UI_initialize(void) {
+	g_ui = (UI) { 0 };
+}
+
 UI* UI_get(void) {
 	return &g_ui;
 }

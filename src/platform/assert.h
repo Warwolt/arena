@@ -13,4 +13,5 @@
 		debug_exit(msg);                                                           \
 	}
 
+void enable_unit_test_debug_exit(void);
 void debug_exit(const char* message);
