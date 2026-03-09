@@ -522,11 +522,11 @@ bool rktest_run_death_test(const char* test_file, int test_line, const char* exp
 			printf("  %s\n", #lhs);                                                                      \
 			const bool lhs_is_literal = (#lhs)[0] == '"';                                                \
 			if (!lhs_is_literal)                                                                         \
-				printf("    Which is: %s\n", lhs_val);                                                   \
+				printf("    Which is: \"%s\"\n", lhs_val);                                               \
 			printf("  %s\n", #rhs);                                                                      \
 			const bool rhs_is_literal = (#rhs)[0] == '"';                                                \
 			if (!rhs_is_literal)                                                                         \
-				printf("    Which is: %s\n", rhs_val);                                                   \
+				printf("    Which is: \"%s\"\n", rhs_val);                                               \
 			if (!match_case)                                                                             \
 				printf("Ignoring case\n");                                                               \
 			printf(__VA_ARGS__);                                                                         \

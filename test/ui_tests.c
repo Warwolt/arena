@@ -26,9 +26,52 @@ TEST(UITests, Menu_Begin_Without_End_Gives_Error) {
 	EXPECT_DEATH(UI_end(), "*Menu \"test menu 2\" has missing UI_menu_end() call");
 }
 
+TEST(UITests, Menu_Nested_Begin_Gives_Error) {
+	UI_begin();
+	{
+		UI_menu_begin("test menu 1");
+		EXPECT_DEATH(UI_menu_begin("test menu 2"), "*UI_menu_begin() called while menu \"test menu 1\" already open. Menus cannot be nested. Missing call to UI_menu_end()?");
+	}
+}
+
 TEST(UITests, Menu_End_Without_Open_Gives_Error) {
 	UI_begin();
 	EXPECT_DEATH(UI_menu_end(), "*UI_menu_end() called without corresponding UI_menu_begin()");
 }
 
-// menu items can be accessed
+TEST(UITests, Menu_Items_Added_To_View) {
+	UI_begin();
+	{
+		UI_menu_begin("test menu");
+		{
+			UI_menu_item("label 1");
+			UI_menu_item("label 2");
+			UI_menu_item("label 3");
+		}
+		UI_menu_end();
+
+		UI_menu_begin("test menu 2");
+		{
+			UI_menu_item("label 4");
+			UI_menu_item("label 5");
+		}
+		UI_menu_end();
+	}
+	UI_end();
+
+	ASSERT_EQ(UI_view()->num_menus, 2);
+	ASSERT_EQ(UI_view()->menus[0].num_items, 3);
+	ASSERT_EQ(UI_view()->menus[1].num_items, 2);
+
+	EXPECT_STREQ(UI_view()->menus[0].label, "test menu");
+	EXPECT_STREQ(UI_view()->menus[0].items[0].label, "label 1");
+	EXPECT_STREQ(UI_view()->menus[0].items[1].label, "label 2");
+	EXPECT_STREQ(UI_view()->menus[0].items[2].label, "label 3");
+
+	EXPECT_STREQ(UI_view()->menus[1].label, "test menu 2");
+	EXPECT_STREQ(UI_view()->menus[1].items[0].label, "label 4");
+	EXPECT_STREQ(UI_view()->menus[1].items[1].label, "label 5");
+}
+
+// menu item interactivity
+// how do we make that testable?

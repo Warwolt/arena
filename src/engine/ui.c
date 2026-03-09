@@ -54,8 +54,14 @@ void UI_end(void) {
 }
 
 void UI_menu_begin(const char* label) {
+	UIMenu* prev_menu = UI_current_menu();
 	DEBUG_ASSERT_IS_WITHIN_UI_FRAME();
-	DEBUG_ASSERT(g_ui.view.num_menus <= 1, "FIXME: Multiple menu support not yet implemented");
+	DEBUG_ASSERT(
+		prev_menu == NULL || !prev_menu->is_open,
+		"UI_menu_begin() called while menu \"%s\" already open. Menus cannot be nested. Missing call to UI_menu_end()?",
+		prev_menu->label
+	);
+
 	UIMenu* menu = &g_ui.view.menus[g_ui.view.num_menus++];
 	menu->is_open = true;
 	strncpy_s(menu->label, UIMenu_MaxLabelLength, label, _TRUNCATE);
