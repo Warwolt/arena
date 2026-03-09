@@ -206,9 +206,11 @@ int rktest_main(int argc, const char* argv[]);
 /* Bool checks */
 #define EXPECT_TRUE(expr) RKTEST_CHECK_BOOL(expr, true, RKTEST_CHECK_EXPECT, " ")
 #define EXPECT_FALSE(lhs) RKTEST_CHECK_BOOL(lhs, false, RKTEST_CHECK_EXPECT, " ")
+#define EXPECT_BOOL_EQ(lhs, rhs) RKTEST_CHECK_BOOL(lhs, rhs, RKTEST_CHECK_EXPECT, " ")
 
 #define ASSERT_TRUE(expr) RKTEST_CHECK_BOOL(expr, true, RKTEST_CHECK_ASSERT, " ")
 #define ASSERT_FALSE(lhs) RKTEST_CHECK_BOOL(lhs, false, RKTEST_CHECK_ASSERT, " ")
+#define ASSERT_BOOL_EQ(lhs, rhs) RKTEST_CHECK_BOOL(lhs, rhs, RKTEST_CHECK_ASSERT, " ")
 
 #define EXPECT_TRUE_INFO(expr, ...) RKTEST_CHECK_BOOL(expr, true, RKTEST_CHECK_EXPECT, __VA_ARGS__)
 #define EXPECT_FALSE_INFO(lhs, ...) RKTEST_CHECK_BOOL(lhs, false, RKTEST_CHECK_EXPECT, __VA_ARGS__)

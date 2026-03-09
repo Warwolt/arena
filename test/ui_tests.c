@@ -87,8 +87,8 @@ TEST(UITests, Menu_FirstItem_InitiallyFocused) {
 
 	ASSERT_EQ(UI_view()->num_menus, 1);
 	ASSERT_EQ(UI_view()->menus[0].num_items, 2);
-	EXPECT_TRUE(UI_view()->menus[0].items[0].is_focused);
-	EXPECT_FALSE(UI_view()->menus[0].items[1].is_focused);
+	EXPECT_BOOL_EQ(UI_view()->menus[0].items[0].is_focused, true);
+	EXPECT_BOOL_EQ(UI_view()->menus[0].items[1].is_focused, false);
 }
 
 // menu item interactivity
