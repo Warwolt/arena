@@ -15,8 +15,12 @@ typedef struct UIMenu {
 	UIMenuItem items[UIMenu_MaxMenuItems];
 	char label[UIMenu_MaxLabelLength];
 	int num_items;
+
+	// FIXME: move this to private struct?
+	// state
 	int focused_item;
 	bool is_open;
+
 } UIMenu;
 
 typedef struct UIView {
