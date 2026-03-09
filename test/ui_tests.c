@@ -114,3 +114,48 @@ TEST(UITests, Menu_KeyDown_SecondItemFocused) {
 	EXPECT_BOOL_EQ(UI_view()->menus[0].items[0].is_focused, false);
 	EXPECT_BOOL_EQ(UI_view()->menus[0].items[1].is_focused, true);
 }
+
+TEST(UITests, Menu_SelectFirstItem) {
+	bool item_was_selected = false;
+	UI_begin((UIInput) { .select_pressed = true });
+	{
+		UI_menu_begin("test menu");
+		{
+			if (UI_menu_item("item 1")) {
+				item_was_selected = true;
+			}
+		}
+		UI_menu_end();
+	}
+	UI_end();
+
+	EXPECT_TRUE(item_was_selected);
+}
+
+TEST(UITests, Menu_SelectSecondItem) {
+	bool item1_was_selected = false;
+	bool item2_was_selected = false;
+	UIInput input[2] = {
+		(UIInput) { .down_pressed = true },
+		(UIInput) { .select_pressed = true },
+	};
+	for (int i = 0; i < sizeof(input) / sizeof(input[0]); i++) {
+		UI_begin(input[i]);
+		{
+			UI_menu_begin("test menu");
+			{
+				if (UI_menu_item("item 1")) {
+					item1_was_selected = true;
+				}
+				if (UI_menu_item("item 2")) {
+					item2_was_selected = true;
+				}
+			}
+			UI_menu_end();
+		}
+		UI_end();
+	}
+
+	EXPECT_FALSE(item1_was_selected);
+	EXPECT_TRUE(item2_was_selected);
+}
