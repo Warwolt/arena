@@ -7,8 +7,8 @@ TEST_SETUP(UITests) {
 }
 
 TEST(UITests, UI_BeginWithoutEnd_GivesError) {
-	UI_begin();
-	EXPECT_DEATH(UI_begin(), "*UI_begin() called while already in ui frame. Missing call to UI_end()?");
+	UI_begin((UIInput) { 0 });
+	EXPECT_DEATH(UI_begin((UIInput) { 0 }), "*UI_begin() called while already in ui frame. Missing call to UI_end()?");
 }
 
 TEST(UITests, UI_EndWithoutBegin_GivesError) {
@@ -16,7 +16,7 @@ TEST(UITests, UI_EndWithoutBegin_GivesError) {
 }
 
 TEST(UITests, Menu_BeginWithoutEnd_GivesError) {
-	UI_begin();
+	UI_begin((UIInput) { 0 });
 	{
 		UI_menu_begin("test menu 1");
 		UI_menu_end();
@@ -27,7 +27,7 @@ TEST(UITests, Menu_BeginWithoutEnd_GivesError) {
 }
 
 TEST(UITests, Menu_NestedBegin_GivesError) {
-	UI_begin();
+	UI_begin((UIInput) { 0 });
 	{
 		UI_menu_begin("test menu 1");
 		EXPECT_DEATH(UI_menu_begin("test menu 2"), "*UI_menu_begin() called while menu \"test menu 1\" already open. Menus cannot be nested. Missing call to UI_menu_end()?");
@@ -35,12 +35,12 @@ TEST(UITests, Menu_NestedBegin_GivesError) {
 }
 
 TEST(UITests, Menu_EndWithoutOpen_GivesError) {
-	UI_begin();
+	UI_begin((UIInput) { 0 });
 	EXPECT_DEATH(UI_menu_end(), "*UI_menu_end() called without corresponding UI_menu_begin()");
 }
 
 TEST(UITests, Menu_ItemsAddedToView) {
-	UI_begin();
+	UI_begin((UIInput) { 0 });
 	{
 		UI_menu_begin("test menu");
 		{
@@ -73,8 +73,8 @@ TEST(UITests, Menu_ItemsAddedToView) {
 	EXPECT_STREQ(UI_view()->menus[1].items[1].label, "label 5");
 }
 
-TEST(UITests, Menu_FirstItem_InitiallyFocused) {
-	UI_begin();
+TEST(UITests, Menu_Initially_FirstItemFocused) {
+	UI_begin((UIInput) { 0 });
 	{
 		UI_menu_begin("test menu");
 		{
@@ -91,5 +91,26 @@ TEST(UITests, Menu_FirstItem_InitiallyFocused) {
 	EXPECT_BOOL_EQ(UI_view()->menus[0].items[1].is_focused, false);
 }
 
-// menu item interactivity
-// how do we make that testable?
+TEST(UITests, Menu_KeyDown_SecondItemFocused) {
+	UIInput input[2] = {
+		(UIInput) { 0 },
+		(UIInput) { .down_pressed = true },
+	};
+	for (int i = 0; i < sizeof(input) / sizeof(input[0]); i++) {
+		UI_begin(input[i]);
+		{
+			UI_menu_begin("test menu");
+			{
+				UI_menu_item("item 1");
+				UI_menu_item("item 2");
+			}
+			UI_menu_end();
+		}
+		UI_end();
+	}
+
+	ASSERT_EQ(UI_view()->num_menus, 1);
+	ASSERT_EQ(UI_view()->menus[0].num_items, 2);
+	EXPECT_BOOL_EQ(UI_view()->menus[0].items[0].is_focused, false);
+	EXPECT_BOOL_EQ(UI_view()->menus[0].items[1].is_focused, true);
+}

@@ -24,10 +24,16 @@ typedef struct UIView {
 	int num_menus;
 } UIView;
 
+typedef struct UIInput {
+	bool down_pressed;
+	bool up_pressed;
+	bool select_pressed;
+} UIInput;
+
 void UI_initialize(void);
 const UIView* UI_view(void);
 
-void UI_begin(void);
+void UI_begin(UIInput input);
 void UI_end(void);
 
 void UI_menu_begin(const char* label);

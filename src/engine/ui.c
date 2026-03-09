@@ -14,8 +14,9 @@ typedef struct UIState {
 } UIState;
 
 typedef struct UIContext {
-	UIView view;
+	UIInput input;
 	UIState state;
+	UIView view;
 } UIContext;
 
 UIContext g_ui;
@@ -35,10 +36,11 @@ static UIMenu* UI_current_menu() {
 	return &g_ui.view.menus[g_ui.view.num_menus - 1];
 }
 
-void UI_begin(void) {
+void UI_begin(UIInput input) {
 	DEBUG_ASSERT(!g_ui.state.is_within_frame, "UI_begin() called while already in ui frame. Missing call to UI_end()?");
-	g_ui.view = (UIView) { 0 };
+	g_ui.input = input;
 	g_ui.state.is_within_frame = true;
+	g_ui.view = (UIView) { 0 };
 }
 
 void UI_end(void) {
@@ -62,9 +64,24 @@ void UI_menu_begin(const char* label) {
 		prev_menu->label
 	);
 
+	/* Add menu */
 	UIMenu* menu = &g_ui.view.menus[g_ui.view.num_menus++];
 	menu->is_open = true;
 	strncpy_s(menu->label, UIMenu_MaxLabelLength, label, _TRUNCATE);
+
+	/* Handle focus */
+	if (g_ui.input.down_pressed) {
+		g_ui.state.focused_item++;
+	}
+
+	if (g_ui.input.up_pressed) {
+		g_ui.state.focused_item--;
+	}
+
+	// FIXME: how do we handle wrapping focus item around? At `UI_menu_begin` we don't know how many
+	// items we have, but we need to know which item is focused when handling each `UI_menu_item`.
+	// Only way out seems to be to store the previous `view` inside UIContext, so that we have
+	// memory of it when doing computations here.
 }
 
 void UI_menu_end(void) {
@@ -73,25 +90,6 @@ void UI_menu_end(void) {
 	DEBUG_ASSERT(menu != NULL, "UI_menu_end() called without corresponding UI_menu_begin()");
 	DEBUG_ASSERT(menu->is_open, "UI_menu_end() called without corresponding UI_menu_begin()");
 	menu->is_open = false;
-
-	/* Handle item focus*/
-	{
-		int focus_delta = 0;
-
-		if (IsKeyPressed(KEY_DOWN)) {
-			focus_delta = 1;
-		}
-
-		if (IsKeyPressed(KEY_UP)) {
-			focus_delta = -1;
-		}
-
-		if (menu->num_items == 0) {
-			g_ui.state.focused_item = 0;
-		} else {
-			g_ui.state.focused_item = (menu->num_items + g_ui.state.focused_item + focus_delta) % menu->num_items;
-		}
-	}
 }
 
 bool UI_menu_item(const char* label) {
@@ -99,12 +97,14 @@ bool UI_menu_item(const char* label) {
 	DEBUG_ASSERT(menu != NULL, "UI_menu_item() called without UI_menu_begin()");
 	DEBUG_ASSERT(menu->is_open, "UI_menu_item() called without UI_menu_begin()");
 
-	const int current_item_index = menu->num_items++;
-	UIMenuItem* item = &menu->items[current_item_index];
+	/* Add item */
+	const int item_index = menu->num_items++;
+	UIMenuItem* item = &menu->items[item_index];
 	strncpy_s(item->label, UIMenu_MaxLabelLength, label, _TRUNCATE);
 
-	item->is_focused = g_ui.state.focused_item == current_item_index;
+	item->is_focused = g_ui.state.focused_item == item_index;
 
-	const bool is_selected = IsKeyPressed(KEY_ENTER) && item->is_focused;
+	/* Handle selection */
+	const bool is_selected = g_ui.input.select_pressed && item->is_focused;
 	return is_selected;
 }

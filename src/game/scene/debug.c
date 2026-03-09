@@ -22,7 +22,11 @@ void DebugScene_update(Game* game) {
 	DebugScene* debug_scene = &game->scene.debug_scene;
 
 	// testing
-	UI_begin();
+	UI_begin((UIInput) {
+		.up_pressed = IsKeyPressed(KEY_UP),
+		.down_pressed = IsKeyPressed(KEY_DOWN),
+		.select_pressed = IsKeyPressed(KEY_ENTER),
+	});
 	{
 		switch (debug_scene->current_page) {
 			case DebugPage_Main:
