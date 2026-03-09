@@ -2,7 +2,7 @@
 //
 // Interface:
 //
-//  struct SparseArray<T,N> {
+//  struct SparseArray<T, N> {
 //  	size_t indices[N]; // key -> index
 //  	size_t keys[N]; // index -> key
 //  	T values[N]; // index -> value

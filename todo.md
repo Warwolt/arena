@@ -6,8 +6,10 @@
 - Integrate ImGui so we can visualize system states
   - The game is low resolution so we probably should use multi viewports (https://github.com/ocornut/imgui/wiki/Multi-Viewports)
 - Settings screen, toggle fullscreen on/off
-- Implement a HashMap data structure (map string to value)
 - When loading already loaded resource, return existing ID (needs HashMap)
+
+# Doing
+- Implement a HashMap data structure (map string to value)
 
 # Done
 - Replace default font Raylib with DOS font
