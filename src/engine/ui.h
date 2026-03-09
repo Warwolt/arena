@@ -16,7 +16,7 @@ typedef struct UIMenu {
 	char label[UIMenu_MaxLabelLength];
 	int num_items;
 
-	// FIXME: move this to private struct?
+	// FIXME: move this to private struct in ui.c?
 	// state
 	int focused_item;
 	bool is_open;

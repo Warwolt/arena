@@ -8,6 +8,12 @@
 #define DEBUG_ASSERT_IS_WITHIN_UI_FRAME()                                                                          \
 	DEBUG_ASSERT(g_ui.is_within_frame, "%s() called outside ui frame. Missing call to UI_begin()?", __FUNCTION__);
 
+// TODO:
+// Add a UIMenuState struct that hold stuff that stays between frames
+// But, we would like a hashmap like data structure to store it.
+// We need to be able to map MenuLabel -> MenuState.
+// Probably we need an `ArrayMap` data structure that maps `String -> T`.
+
 typedef struct UIContext {
 	bool is_within_frame;
 	UIInput input;
