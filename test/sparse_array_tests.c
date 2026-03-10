@@ -2,13 +2,7 @@
 
 #include "core/sparse_array.h"
 
-#define MAX_TEST_ITEMS 64
-typedef struct TestSparseArray {
-	size_t indices[MAX_TEST_ITEMS]; // key -> index
-	size_t keys[MAX_TEST_ITEMS]; // index -> key
-	int values[MAX_TEST_ITEMS]; // index -> value
-	size_t size;
-} TestSparseArray;
+typedef SparseArray(int, 64) TestSparseArray;
 
 bool TestSparseArray_insert(TestSparseArray* array, size_t key, int value) {
 	return SparseArray_insert(array, key, value);
@@ -26,10 +20,6 @@ bool TestSparseArray_get_ptr(TestSparseArray* array, size_t key, int** value) {
 	return SparseArray_get_ptr(array, key, value);
 }
 
-bool TestSparseArray_set(TestSparseArray* array, size_t key, int value) {
-	return SparseArray_set(array, key, value);
-}
-
 bool TestSparseArray_contains(TestSparseArray* array, size_t key) {
 	return SparseArray_contains(array, key);
 }
@@ -39,7 +29,7 @@ int* TestSparseArray_begin(TestSparseArray* array) {
 }
 
 int* TestSparseArray_end(TestSparseArray* array) {
-	return &array->values[array->size];
+	return &array->values[array->num_values];
 }
 
 TEST(SparseArrayTests, InsertElement_GetElement) {
@@ -55,7 +45,7 @@ TEST(SparseArrayTests, InsertElement_GetElement) {
 	EXPECT_TRUE(did_get);
 	EXPECT_TRUE(contains_element);
 	EXPECT_EQ(value, 1234);
-	EXPECT_EQ((int)array.size, 1);
+	EXPECT_EQ((int)array.num_values, 1);
 }
 
 TEST(SparseArrayTests, InsertMultipleElements_GetThoseElements) {
@@ -87,7 +77,7 @@ TEST(SparseArrayTests, InsertMultipleElements_GetThoseElements) {
 	EXPECT_EQ(value1, 11);
 	EXPECT_EQ(value2, 22);
 	EXPECT_EQ(value3, 33);
-	EXPECT_EQ((int)array.size, 3);
+	EXPECT_EQ((int)array.num_values, 3);
 }
 
 TEST(SparseArrayTests, InsertElement_ZeroKey_DoesNothing) {
@@ -103,10 +93,10 @@ TEST(SparseArrayTests, InsertElement_ZeroKey_DoesNothing) {
 	EXPECT_FALSE(did_get);
 	EXPECT_FALSE(contains_zero);
 	EXPECT_EQ(value, 0);
-	EXPECT_EQ((int)array.size, 0);
+	EXPECT_EQ((int)array.num_values, 0);
 }
 
-TEST(SparseArrayTests, InsertElement_ExistingKey_DoesNothing) {
+TEST(SparseArrayTests, InsertElement_ExistingKey_UpdatesValue) {
 	TestSparseArray array = { 0 };
 	size_t key = 11;
 
@@ -115,37 +105,10 @@ TEST(SparseArrayTests, InsertElement_ExistingKey_DoesNothing) {
 	int value = 0;
 	bool did_get = TestSparseArray_get(&array, key, &value);
 
-	EXPECT_FALSE(did_insert);
+	EXPECT_TRUE(did_insert);
 	EXPECT_TRUE(did_get);
-	EXPECT_EQ(value, 12);
-	EXPECT_EQ((int)array.size, 1);
-}
-
-TEST(SparseArrayTests, SetElement_MissingKey_DoesNotUpdate) {
-	TestSparseArray array = { 0 };
-	size_t key = 1;
-
-	bool did_set = TestSparseArray_set(&array, key, 1234);
-	int value = 0;
-	bool did_get = TestSparseArray_get(&array, key, &value);
-
-	EXPECT_FALSE(did_set);
-	EXPECT_FALSE(did_get);
-	EXPECT_EQ(value, 0);
-}
-
-TEST(SparseArrayTests, SetElement_ExistingKey_UpdatesValue) {
-	TestSparseArray array = { 0 };
-	size_t key = 1;
-
-	TestSparseArray_insert(&array, key, 1234);
-	bool did_set = TestSparseArray_set(&array, key, 5678);
-	int value = 0;
-	bool did_get = TestSparseArray_get(&array, key, &value);
-
-	EXPECT_TRUE(did_set);
-	EXPECT_TRUE(did_get);
-	EXPECT_EQ(value, 5678);
+	EXPECT_EQ(value, 34);
+	EXPECT_EQ((int)array.num_values, 1);
 }
 
 TEST(SparseArrayTests, InsertElements_RemoveElement) {
@@ -162,7 +125,7 @@ TEST(SparseArrayTests, InsertElements_RemoveElement) {
 	EXPECT_FALSE(did_get);
 	EXPECT_FALSE(contains_element);
 	EXPECT_EQ(value, 0);
-	EXPECT_EQ((int)array.size, 0);
+	EXPECT_EQ((int)array.num_values, 0);
 }
 
 TEST(SparseArrayTests, InsertMultipleElements_RemoveOneElement_GetRemaining) {
@@ -195,7 +158,7 @@ TEST(SparseArrayTests, InsertMultipleElements_RemoveOneElement_GetRemaining) {
 	EXPECT_EQ(value1, 10);
 	EXPECT_EQ(value2, 0);
 	EXPECT_EQ(value3, 30);
-	EXPECT_EQ((int)array.size, 2);
+	EXPECT_EQ((int)array.num_values, 2);
 }
 
 TEST(SparseArrayTests, InsertElement_GetElementPointer) {
