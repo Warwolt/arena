@@ -8,10 +8,8 @@
 - Settings screen, toggle fullscreen on/off
 - When loading already loaded resource, return existing ID (needs HashMap)
 
-# Doing
-- Implement a HashMap data structure (map string to value)
-
 # Done
+- Implement a HashMap data structure (map string to value)
 - Replace default font Raylib with DOS font
 - Add debug screen for doing writing physics code
 - DLL based hot reloading
