@@ -2,7 +2,7 @@
 
 #include <string.h>
 
-bool SparseArray_insert_impl(size_t elem_size, size_t* array_indices, size_t* array_keys, char* array_values, size_t* array_size, size_t key, char* value) {
+bool SparseArray_insert_impl(size_t elem_size, size_t* array_indices, size_t* array_keys, char* array_values, size_t* array_num_values, size_t key, char* value) {
 	/* Skip the zero-key */
 	if (key == 0) {
 		return false;
@@ -17,15 +17,15 @@ bool SparseArray_insert_impl(size_t elem_size, size_t* array_indices, size_t* ar
 	}
 
 	/* Else, insert new key-value pair */
-	const size_t index = *array_size;
+	const size_t index = *array_num_values;
 	array_indices[key - 1] = index;
 	array_keys[index] = key;
 	memcpy(array_values + index * elem_size, value, elem_size); // array->values[index] = value;
-	*array_size += 1;
+	*array_num_values += 1;
 	return true;
 }
 
-bool SparseArray_remove_impl(size_t elem_size, size_t* array_indices, size_t* array_keys, char* array_values, size_t* array_size, size_t key) {
+bool SparseArray_remove_impl(size_t elem_size, size_t* array_indices, size_t* array_keys, char* array_values, size_t* array_num_values, size_t key) {
 	/* Skip the zero-key */
 	if (key == 0) {
 		return false;
@@ -39,7 +39,7 @@ bool SparseArray_remove_impl(size_t elem_size, size_t* array_indices, size_t* ar
 	}
 
 	/* Replace element to remove with last element */
-	const size_t last_index = *array_size - 1;
+	const size_t last_index = *array_num_values - 1;
 	const size_t last_key = array_keys[last_index];
 	array_indices[key - 1] = 0;
 	array_indices[last_key - 1] = index;
@@ -49,7 +49,7 @@ bool SparseArray_remove_impl(size_t elem_size, size_t* array_indices, size_t* ar
 	/* Remove last element */
 	array_keys[last_index] = 0;
 	memset(array_values + last_index * elem_size, 0, elem_size); // array->values[last_index] = 0;
-	*array_size -= 1;
+	*array_num_values -= 1;
 	return true;
 }
 

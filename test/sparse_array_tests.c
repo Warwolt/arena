@@ -2,13 +2,7 @@
 
 #include "core/sparse_array.h"
 
-#define MAX_TEST_ITEMS 64
-typedef struct TestSparseArray {
-	size_t indices[MAX_TEST_ITEMS]; // key -> index
-	size_t keys[MAX_TEST_ITEMS]; // index -> key
-	int values[MAX_TEST_ITEMS]; // index -> value
-	size_t num_values;
-} TestSparseArray;
+typedef SparseArray(int, 64) TestSparseArray;
 
 bool TestSparseArray_insert(TestSparseArray* array, size_t key, int value) {
 	return SparseArray_insert(array, key, value);

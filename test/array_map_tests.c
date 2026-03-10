@@ -1,36 +1,39 @@
 #include <rktest/rktest.h>
 
-// Write an ArrayMap implementation in the same style as the SparseArray
-// We let the user store the data, and operate on it with functions that only deal with bytes, with
-// type-aware macro wrappers.
-// The ArrayMap is a Map<String, T> implementation with a fixed N capacity of items (i.e. an array).
-//
-// Interface
-//
-//   struct ArrayMap<T, N> {
-//       const char keys[KEY_MAX][N];
-//       T values[N];
-//       size_t num_items;
-//   }
-//
-// Methods
-//
-// - ArrayMap_insert
-// - ArrayMap_remove
-// - ArrayMap_get
-// - ArrayMap_get_ptr
-// - ArrayMap_set
-// - ArrayMap_contains
+#include "core/array_map.h"
 
-#define ARRAY_MAP_KEY_LENGTH 128
 #define ARRAY_MAP_MISSING_KEY -1
 
-#define MAX_TEST_ITEMS 64
-typedef struct TestArrayMap {
-	char keys[ARRAY_MAP_KEY_LENGTH][MAX_TEST_ITEMS];
-	int values[MAX_TEST_ITEMS];
-	size_t num_values;
-} TestArrayMap;
+typedef ArrayMap(int, 64) TestArrayMap;
+
+int ArrayMap_key_index(char (*map_keys)[ARRAY_MAP_KEY_LENGTH], size_t map_num_values, const char* key) {
+	for (size_t i = 0; i < map_num_values; i++) {
+		if (strcmp(map_keys[i], key) == 0) {
+			return (int)i;
+		}
+	}
+	return ARRAY_MAP_MISSING_KEY;
+}
+
+bool ArrayMap_insert_impl(size_t elem_size, char (*map_keys)[ARRAY_MAP_KEY_LENGTH], char* map_values, size_t* map_num_values, const char* key, char* value) {
+	/* Skip empty key */
+	if (key[0] == '\0') {
+		return false;
+	}
+
+	/* Update value if key already exists */
+	const int maybe_index = ArrayMap_key_index(map_keys, *map_num_values, key);
+	if (maybe_index != ARRAY_MAP_MISSING_KEY) {
+		memcpy(map_values + maybe_index * elem_size, value, elem_size); // map->values[maybe_index] = value;
+		return true;
+	}
+
+	/* Else, push new key-value pair */
+	const size_t index = (*map_num_values)++;
+	strncpy_s(map_keys[index], ARRAY_MAP_KEY_LENGTH, key, _TRUNCATE);
+	memcpy(map_values + index * elem_size, value, elem_size); // map->values[index] = value;
+	return true;
+}
 
 int TestArrayMap_key_index(TestArrayMap* map, const char* key) {
 	for (size_t i = 0; i < map->num_values; i++) {
@@ -42,23 +45,7 @@ int TestArrayMap_key_index(TestArrayMap* map, const char* key) {
 }
 
 bool TestArrayMap_insert(TestArrayMap* map, const char* key, int value) {
-	/* Skip empty key */
-	if (key[0] == '\0') {
-		return false;
-	}
-
-	/* Update value if key already exists */
-	const int maybe_index = TestArrayMap_key_index(map, key);
-	if (maybe_index != ARRAY_MAP_MISSING_KEY) {
-		map->values[maybe_index] = value;
-		return true;
-	}
-
-	/* Else, push new key-value pair */
-	const size_t index = map->num_values++;
-	strncpy_s(map->keys[index], ARRAY_MAP_KEY_LENGTH, key, _TRUNCATE);
-	map->values[index] = value;
-	return true;
+    return ArrayMap_insert_impl(sizeof(int), (char (*)[ARRAY_MAP_KEY_LENGTH])map->keys, (char*)map->values, &map->num_values, key, (char*)&value);
 }
 
 void TestArrayMap_remove(TestArrayMap* map, const char* key) {
