@@ -121,3 +121,19 @@ TEST(ArrayMapTests, InsertMultipleElements_GetThoseElements) {
 	EXPECT_EQ(value3, 33);
 	EXPECT_EQ((int)map.num_values, 3);
 }
+
+TEST(ArrayMapTests, InsertElement_EmptyKey_DoesNothing) {
+	TestArrayMap map = { 0 };
+	const char* empty_key = "";
+
+	bool did_insert = TestArrayMap_insert(&map, empty_key, 1234);
+	int value = 0;
+	bool did_get = TestArrayMap_get(&map, empty_key, &value);
+	bool contains_zero = TestArrayMap_contains(&map, empty_key);
+
+	EXPECT_FALSE(did_insert);
+	EXPECT_FALSE(did_get);
+	EXPECT_FALSE(contains_zero);
+	EXPECT_EQ(value, 0);
+	EXPECT_EQ((int)map.num_values, 0);
+}
