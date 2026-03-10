@@ -23,3 +23,15 @@
 		Type values[Capacity];                     \
 		size_t num_values;                         \
 	}
+
+#define ArrayMap_insert(map, key, value)             \
+	ArrayMap_insert_impl(                            \
+		sizeof((map)->values[0]),                    \
+		(char (*)[ARRAY_MAP_KEY_LENGTH])(map)->keys, \
+		(char*)(map)->values,                        \
+		&(map)->num_values,                          \
+		key,                                         \
+		(char*)&value                                \
+	)
+
+bool ArrayMap_insert_impl(size_t elem_size, char (*map_keys)[ARRAY_MAP_KEY_LENGTH], char* map_values, size_t* map_num_values, const char* key, char* value);
