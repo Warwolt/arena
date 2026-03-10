@@ -2,18 +2,7 @@
 
 #include "core/array_map.h"
 
-#define ARRAY_MAP_MISSING_KEY -1
-
 typedef ArrayMap(int, 64) TestArrayMap;
-
-int TestArrayMap_key_index(TestArrayMap* map, const char* key) {
-	for (size_t i = 0; i < map->num_values; i++) {
-		if (strcmp(map->keys[i], key) == 0) {
-			return (int)i;
-		}
-	}
-	return ARRAY_MAP_MISSING_KEY;
-}
 
 bool TestArrayMap_insert(TestArrayMap* map, const char* key, int value) {
 	return ArrayMap_insert(map, key, value);
@@ -32,7 +21,7 @@ bool TestArrayMap_get_ptr(TestArrayMap* map, const char* key, int** value_ptr) {
 }
 
 bool TestArrayMap_contains(TestArrayMap* map, const char* key) {
-	return TestArrayMap_key_index(map, key) != ARRAY_MAP_MISSING_KEY;
+	return ArrayMap_contains(map, key);
 }
 
 TEST(ArrayMapTests, InsertElement_GetElement) {

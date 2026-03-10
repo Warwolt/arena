@@ -62,3 +62,7 @@ bool ArrayMap_get_ptr_impl(size_t elem_size, char (*map_keys)[ARRAY_MAP_KEY_LENG
 	*value_out = map_values + (maybe_index * elem_size);
 	return true;
 }
+
+bool ArrayMap_contains_impl(char (*map_keys)[ARRAY_MAP_KEY_LENGTH], size_t map_num_values, const char* key) {
+	return ArrayMap_key_index(map_keys, map_num_values, key) != ARRAY_MAP_MISSING_KEY;
+}
