@@ -23,6 +23,7 @@
 // - ArrayMap_contains
 
 #define ARRAY_MAP_KEY_LENGTH 128
+#define ARRAY_MAP_MISSING_KEY -1
 
 #define MAX_TEST_ITEMS 64
 typedef struct TestArrayMap {
@@ -31,22 +32,46 @@ typedef struct TestArrayMap {
 	size_t num_values;
 } TestArrayMap;
 
-bool TestArrayMap_insert(TestArrayMap* map, const char* key, int value) {
-	// FIXME: skip the empty key
+int TestArrayMap_key_index(TestArrayMap* map, const char* key) {
+	for (size_t i = 0; i < map->num_values; i++) {
+		if (strcmp(map->keys[i], key) == 0) {
+			return (int)i;
+		}
+	}
+	return ARRAY_MAP_MISSING_KEY;
+}
 
-	strncpy_s(map->keys[0], ARRAY_MAP_KEY_LENGTH, key, _TRUNCATE);
-	map->values[0] = value;
-	map->num_values++;
+bool TestArrayMap_insert(TestArrayMap* map, const char* key, int value) {
+	/* Skip empty key */
+	if (key[0] == '\0') {
+		return false;
+	}
+
+	/* If key exists, update value*/
+	const int maybe_index = TestArrayMap_key_index(map, key);
+	if (maybe_index != ARRAY_MAP_MISSING_KEY) {
+		map->values[maybe_index] = value;
+		return true;
+	}
+
+	/* Push new value */
+	const size_t index = map->num_values++;
+	strncpy_s(map->keys[index], ARRAY_MAP_KEY_LENGTH, key, _TRUNCATE);
+	map->values[index] = value;
 	return true;
 }
 
 bool TestArrayMap_get(TestArrayMap* map, const char* key, int* value) {
-	*value = map->values[0];
+	const int maybe_index = TestArrayMap_key_index(map, key);
+	if (maybe_index == ARRAY_MAP_MISSING_KEY) {
+		return false;
+	}
+	*value = map->values[maybe_index];
 	return true;
 }
 
 bool TestArrayMap_contains(TestArrayMap* map, const char* key) {
-	return true;
+	return TestArrayMap_key_index(map, key) != ARRAY_MAP_MISSING_KEY;
 }
 
 TEST(ArrayMapTests, InsertElement_GetElement) {
@@ -63,4 +88,36 @@ TEST(ArrayMapTests, InsertElement_GetElement) {
 	EXPECT_TRUE(contains_element);
 	EXPECT_EQ(value, 1234);
 	EXPECT_EQ((int)map.num_values, 1);
+}
+
+TEST(ArrayMapTests, InsertMultipleElements_GetThoseElements) {
+	TestArrayMap map = { 0 };
+	const char* key1 = "aa";
+	const char* key2 = "bb";
+	const char* key3 = "cc";
+
+	TestArrayMap_insert(&map, key1, 11);
+	TestArrayMap_insert(&map, key2, 22);
+	TestArrayMap_insert(&map, key3, 33);
+
+	int value1 = 0;
+	int value2 = 0;
+	int value3 = 0;
+	bool did_get1 = TestArrayMap_get(&map, key1, &value1);
+	bool did_get2 = TestArrayMap_get(&map, key2, &value2);
+	bool did_get3 = TestArrayMap_get(&map, key3, &value3);
+	bool contains_element1 = TestArrayMap_contains(&map, key1);
+	bool contains_element2 = TestArrayMap_contains(&map, key2);
+	bool contains_element3 = TestArrayMap_contains(&map, key3);
+
+	EXPECT_TRUE(did_get1);
+	EXPECT_TRUE(did_get2);
+	EXPECT_TRUE(did_get3);
+	EXPECT_TRUE(contains_element1);
+	EXPECT_TRUE(contains_element2);
+	EXPECT_TRUE(contains_element3);
+	EXPECT_EQ(value1, 11);
+	EXPECT_EQ(value2, 22);
+	EXPECT_EQ(value3, 33);
+	EXPECT_EQ((int)map.num_values, 3);
 }
