@@ -6,6 +6,16 @@
 
 typedef ArrayMap(int, 64) TestArrayMap;
 
+#define ArrayMap_insert(map, key, value)             \
+	ArrayMap_insert_impl(                            \
+		sizeof((map)->values[0]),                    \
+		(char (*)[ARRAY_MAP_KEY_LENGTH])(map)->keys, \
+		(char*)(map)->values,                        \
+		&(map)->num_values,                          \
+		key,                                         \
+		(char*)&value                                \
+	)
+
 int ArrayMap_key_index(char (*map_keys)[ARRAY_MAP_KEY_LENGTH], size_t map_num_values, const char* key) {
 	for (size_t i = 0; i < map_num_values; i++) {
 		if (strcmp(map_keys[i], key) == 0) {
@@ -45,7 +55,7 @@ int TestArrayMap_key_index(TestArrayMap* map, const char* key) {
 }
 
 bool TestArrayMap_insert(TestArrayMap* map, const char* key, int value) {
-    return ArrayMap_insert_impl(sizeof(int), (char (*)[ARRAY_MAP_KEY_LENGTH])map->keys, (char*)map->values, &map->num_values, key, (char*)&value);
+	return ArrayMap_insert(map, key, value);
 }
 
 void TestArrayMap_remove(TestArrayMap* map, const char* key) {
