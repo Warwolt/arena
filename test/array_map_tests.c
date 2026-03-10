@@ -28,12 +28,7 @@ bool TestArrayMap_get(TestArrayMap* map, const char* key, int* value) {
 }
 
 bool TestArrayMap_get_ptr(TestArrayMap* map, const char* key, int** value_ptr) {
-	const int maybe_index = TestArrayMap_key_index(map, key);
-	if (maybe_index == ARRAY_MAP_MISSING_KEY) {
-		return false;
-	}
-	*value_ptr = &map->values[maybe_index];
-	return true;
+	return ArrayMap_get_ptr(map, key, value_ptr);
 }
 
 bool TestArrayMap_contains(TestArrayMap* map, const char* key) {
