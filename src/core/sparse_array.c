@@ -8,11 +8,12 @@ bool SparseArray_insert_impl(size_t elem_size, size_t* array_indices, size_t* ar
 		return false;
 	}
 
-	/* Check if key already exists */
+	/* Just update value if key already exists */
 	const size_t maybe_index = array_indices[key - 1];
 	const bool key_exists = array_keys[maybe_index] == key;
 	if (key_exists) {
-		return false;
+		memcpy(array_values + maybe_index * elem_size, value, elem_size); // array->values[index] = value;
+		return true;
 	}
 
 	/* Insert new key */

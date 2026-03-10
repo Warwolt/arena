@@ -106,7 +106,7 @@ TEST(SparseArrayTests, InsertElement_ZeroKey_DoesNothing) {
 	EXPECT_EQ((int)array.num_values, 0);
 }
 
-TEST(SparseArrayTests, InsertElement_ExistingKey_DoesNothing) {
+TEST(SparseArrayTests, InsertElement_ExistingKey_UpdatesValue) {
 	TestSparseArray array = { 0 };
 	size_t key = 11;
 
@@ -115,9 +115,9 @@ TEST(SparseArrayTests, InsertElement_ExistingKey_DoesNothing) {
 	int value = 0;
 	bool did_get = TestSparseArray_get(&array, key, &value);
 
-	EXPECT_FALSE(did_insert);
+	EXPECT_TRUE(did_insert);
 	EXPECT_TRUE(did_get);
-	EXPECT_EQ(value, 12);
+	EXPECT_EQ(value, 34);
 	EXPECT_EQ((int)array.num_values, 1);
 }
 
