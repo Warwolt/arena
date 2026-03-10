@@ -26,10 +26,6 @@ bool TestSparseArray_get_ptr(TestSparseArray* array, size_t key, int** value) {
 	return SparseArray_get_ptr(array, key, value);
 }
 
-bool TestSparseArray_set(TestSparseArray* array, size_t key, int value) {
-	return SparseArray_set(array, key, value);
-}
-
 bool TestSparseArray_contains(TestSparseArray* array, size_t key) {
 	return SparseArray_contains(array, key);
 }
@@ -119,33 +115,6 @@ TEST(SparseArrayTests, InsertElement_ExistingKey_UpdatesValue) {
 	EXPECT_TRUE(did_get);
 	EXPECT_EQ(value, 34);
 	EXPECT_EQ((int)array.num_values, 1);
-}
-
-TEST(SparseArrayTests, SetElement_MissingKey_DoesNotUpdate) {
-	TestSparseArray array = { 0 };
-	size_t key = 1;
-
-	bool did_set = TestSparseArray_set(&array, key, 1234);
-	int value = 0;
-	bool did_get = TestSparseArray_get(&array, key, &value);
-
-	EXPECT_FALSE(did_set);
-	EXPECT_FALSE(did_get);
-	EXPECT_EQ(value, 0);
-}
-
-TEST(SparseArrayTests, SetElement_ExistingKey_UpdatesValue) {
-	TestSparseArray array = { 0 };
-	size_t key = 1;
-
-	TestSparseArray_insert(&array, key, 1234);
-	bool did_set = TestSparseArray_set(&array, key, 5678);
-	int value = 0;
-	bool did_get = TestSparseArray_get(&array, key, &value);
-
-	EXPECT_TRUE(did_set);
-	EXPECT_TRUE(did_get);
-	EXPECT_EQ(value, 5678);
 }
 
 TEST(SparseArrayTests, InsertElements_RemoveElement) {

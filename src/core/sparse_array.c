@@ -8,7 +8,7 @@ bool SparseArray_insert_impl(size_t elem_size, size_t* array_indices, size_t* ar
 		return false;
 	}
 
-	/* Just update value if key already exists */
+	/* Update value if key already exists */
 	const size_t maybe_index = array_indices[key - 1];
 	const bool key_exists = array_keys[maybe_index] == key;
 	if (key_exists) {
@@ -16,7 +16,7 @@ bool SparseArray_insert_impl(size_t elem_size, size_t* array_indices, size_t* ar
 		return true;
 	}
 
-	/* Insert new key */
+	/* Else, insert new key-value pair */
 	const size_t index = *array_size;
 	array_indices[key - 1] = index;
 	array_keys[index] = key;
@@ -86,23 +86,6 @@ bool SparseArray_get_ptr_impl(size_t elem_size, const size_t* array_indices, con
 
 	/* Return value */
 	*value_ptr_out = array_values + index * elem_size;
-	return true;
-}
-
-bool SparseArray_set_impl(size_t elem_size, size_t* array_indices, size_t* array_keys, char* array_values, size_t key, char* value) {
-	/* Skip the zero-key */
-	if (key == 0) {
-		return false;
-	}
-
-	/* Update value if key exists */
-	const size_t index = array_indices[key - 1];
-	const bool key_exists = array_keys[index] == key;
-	if (!key_exists) {
-		return false;
-	}
-
-	memcpy(array_values + index * elem_size, value, elem_size); // array->values[index] = value;
 	return true;
 }
 
