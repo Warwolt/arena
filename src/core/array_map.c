@@ -42,3 +42,12 @@ void ArrayMap_remove_impl(size_t elem_size, char (*map_keys)[ARRAY_MAP_KEY_LENGT
 		(*map_num_values)--;
 	}
 }
+
+bool ArrayMap_get_impl(size_t elem_size, char (*map_keys)[ARRAY_MAP_KEY_LENGTH], char* map_values, size_t* map_num_values, const char* key, char* value_out) {
+	const int maybe_index = ArrayMap_key_index(map_keys, *map_num_values, key);
+	if (maybe_index == ARRAY_MAP_MISSING_KEY) {
+		return false;
+	}
+	memcpy(value_out, map_values + maybe_index * elem_size, elem_size); // *value_out = map->values[maybe_index];
+	return true;
+}

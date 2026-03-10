@@ -24,12 +24,7 @@ void TestArrayMap_remove(TestArrayMap* map, const char* key) {
 }
 
 bool TestArrayMap_get(TestArrayMap* map, const char* key, int* value) {
-	const int maybe_index = TestArrayMap_key_index(map, key);
-	if (maybe_index == ARRAY_MAP_MISSING_KEY) {
-		return false;
-	}
-	*value = map->values[maybe_index];
-	return true;
+	return ArrayMap_get(map, key, value);
 }
 
 bool TestArrayMap_get_ptr(TestArrayMap* map, const char* key, int** value_ptr) {

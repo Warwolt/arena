@@ -30,8 +30,8 @@
 		(char (*)[ARRAY_MAP_KEY_LENGTH])(map)->keys, \
 		(char*)(map)->values,                        \
 		&(map)->num_values,                          \
-		key,                                         \
-		(char*)&value                                \
+		(key),                                       \
+		(char*)&(value)                              \
 	)
 
 #define ArrayMap_remove(map, key)                    \
@@ -40,8 +40,19 @@
 		(char (*)[ARRAY_MAP_KEY_LENGTH])(map)->keys, \
 		(char*)(map)->values,                        \
 		&(map)->num_values,                          \
-		key                                          \
+		(key)                                        \
+	)
+
+#define ArrayMap_get(map, key, value_out)            \
+	ArrayMap_get_impl(                               \
+		sizeof((map)->values[0]),                    \
+		(char (*)[ARRAY_MAP_KEY_LENGTH])(map)->keys, \
+		(char*)(map)->values,                        \
+		&(map)->num_values,                          \
+		(key),                                       \
+		(char*)(value_out)                           \
 	)
 
 bool ArrayMap_insert_impl(size_t elem_size, char (*map_keys)[ARRAY_MAP_KEY_LENGTH], char* map_values, size_t* map_num_values, const char* key, char* value);
 void ArrayMap_remove_impl(size_t elem_size, char (*map_keys)[ARRAY_MAP_KEY_LENGTH], char* map_values, size_t* map_num_values, const char* key);
+bool ArrayMap_get_impl(size_t elem_size, char (*map_keys)[ARRAY_MAP_KEY_LENGTH], char* map_values, size_t* map_num_values, const char* key, char* value_out);
