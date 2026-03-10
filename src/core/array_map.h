@@ -34,4 +34,14 @@
 		(char*)&value                                \
 	)
 
+#define ArrayMap_remove(map, key)                    \
+	ArrayMap_remove_impl(                            \
+		sizeof((map)->values[0]),                    \
+		(char (*)[ARRAY_MAP_KEY_LENGTH])(map)->keys, \
+		(char*)(map)->values,                        \
+		&(map)->num_values,                          \
+		key                                          \
+	)
+
 bool ArrayMap_insert_impl(size_t elem_size, char (*map_keys)[ARRAY_MAP_KEY_LENGTH], char* map_values, size_t* map_num_values, const char* key, char* value);
+void ArrayMap_remove_impl(size_t elem_size, char (*map_keys)[ARRAY_MAP_KEY_LENGTH], char* map_values, size_t* map_num_values, const char* key);

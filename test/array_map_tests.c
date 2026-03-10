@@ -20,13 +20,7 @@ bool TestArrayMap_insert(TestArrayMap* map, const char* key, int value) {
 }
 
 void TestArrayMap_remove(TestArrayMap* map, const char* key) {
-	const int maybe_index = TestArrayMap_key_index(map, key);
-	if (maybe_index != ARRAY_MAP_MISSING_KEY) {
-		// Replace item to remove with last
-		map->values[maybe_index] = map->values[map->num_values - 1];
-		strncpy_s(map->keys[maybe_index], ARRAY_MAP_KEY_LENGTH, map->keys[map->num_values - 1], _TRUNCATE);
-		map->num_values--;
-	}
+	ArrayMap_remove(map, key);
 }
 
 bool TestArrayMap_get(TestArrayMap* map, const char* key, int* value) {
