@@ -8,7 +8,7 @@ EntityID EntityManager_add_entity(EntityManager* entities, Vector2 position) {
 		id = entities->discarded_ids[entities->num_discarded_ids - 1];
 		entities->num_discarded_ids--;
 	} else {
-		id = (EntityID) { entities->entities.size + 1 };
+		id = (EntityID) { entities->entities.num_values + 1 };
 	}
 
 	Entity entity = {
@@ -88,7 +88,7 @@ bool EntityManager_get_sprite(const EntityManager* entities, EntityID id, Sprite
 }
 
 void EntityManager_set_sprite(EntityManager* entities, EntityID id, Sprite sprite) {
-	SparseArray_set(&entities->components.sprites, id.value, sprite);
+	SparseArray_insert(&entities->components.sprites, id.value, sprite);
 }
 
 void EntityManager_add_collision_shape(EntityManager* entities, EntityID id, Shape shape) {
@@ -104,5 +104,5 @@ bool EntityManager_get_collision_shape(const EntityManager* entities, EntityID i
 }
 
 void EntityManager_set_collision_shape(EntityManager* entities, EntityID id, Shape shape) {
-	SparseArray_set(&entities->components.collision_shapes, id.value, shape);
+	SparseArray_insert(&entities->components.collision_shapes, id.value, shape);
 }
