@@ -86,7 +86,7 @@ void Game_render(const Game* game) {
 			snprintf(text, sizeof(text), "FPS: %d", GetFPS());
 			Game_draw_text(game, text, 1, row++ * font_size, font_size, WHITE);
 
-			snprintf(text, sizeof(text), "Entities: %zu", game->entities.entities.size);
+			snprintf(text, sizeof(text), "Entities: %zu", game->entities.entities.num_values);
 			Game_draw_text(game, text, 1, row++ * font_size, font_size, WHITE);
 		}
 	}

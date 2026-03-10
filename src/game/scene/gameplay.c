@@ -185,7 +185,7 @@ void Gameplay_update(Game* game) {
 			Shape player_collision_shape = { 0 };
 			EntityManager_get_position(&game->entities, gameplay->player_id, &player_position);
 			EntityManager_get_collision_shape(&game->entities, gameplay->player_id, &player_collision_shape);
-			for (size_t i = 0; i < game->entities.components.collision_shapes.size; i++) {
+			for (size_t i = 0; i < game->entities.components.collision_shapes.num_values; i++) {
 				EntityID id = { game->entities.components.collision_shapes.keys[i] };
 				if (id.value == gameplay->player_id.value) {
 					continue;
@@ -246,7 +246,7 @@ void Gameplay_render(const Game* game) {
 
 		// y-sort the entities
 		EntityID y_sorted_entities[MAX_NUM_ENTITES] = { 0 };
-		size_t num_y_sorted_entities = game->entities.entities.size;
+		size_t num_y_sorted_entities = game->entities.entities.num_values;
 		memcpy(y_sorted_entities, game->entities.entities.keys, MAX_NUM_ENTITES * sizeof(EntityID));
 		qsort_s(
 			y_sorted_entities,
@@ -275,7 +275,7 @@ void Gameplay_render(const Game* game) {
 
 		/* Draw collision shapes */
 		if (game->show_debug_overlay) {
-			for_each(entity, game->entities.entities.values, game->entities.entities.size) {
+			for_each(entity, game->entities.entities.values, game->entities.entities.num_values) {
 				if (EntityManager_has_component(&game->entities, entity->id, ComponentType_CollisionShape)) {
 					Vector2 position = { 0 };
 					Shape collision_shape = { 0 };

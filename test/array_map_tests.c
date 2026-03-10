@@ -16,9 +16,33 @@
 // Methods
 //
 // - ArrayMap_insert
+// - ArrayMap_remove
 // - ArrayMap_get
-// - ArrayMap_erase
+// - ArrayMap_get_ptr
+// - ArrayMap_set
+// - ArrayMap_contains
 
-TEST(ArrayMapTests, Hello) {
-	FAIL_INFO("Write this test!\n");
-}
+// #define ARRAY_MAP_KEY_LENGTH 128
+
+// #define MAX_TEST_ITEMS 64
+// typedef struct TestArrayMap {
+// 	const char keys[ARRAY_MAP_KEY_LENGTH][MAX_TEST_ITEMS];
+// 	int values[MAX_TEST_ITEMS];
+// 	size_t num_items;
+// } TestArrayMap;
+
+// TEST(ArrayMapTests, InsertElement_GetElement) {
+// 	TestArrayMap array = { 0 };
+// 	char* key = "foo";
+
+// 	bool did_insert = TestArrayMap_insert(&array, key, 1234);
+// 	int value = 0;
+// 	bool did_get = TestArrayMap_get(&array, key, &value);
+// 	bool contains_element = TestArrayMap_contains(&array, key);
+
+// 	EXPECT_TRUE(did_insert);
+// 	EXPECT_TRUE(did_get);
+// 	EXPECT_TRUE(contains_element);
+// 	EXPECT_EQ(value, 1234);
+// 	EXPECT_EQ((int)array.size, 1);
+// }

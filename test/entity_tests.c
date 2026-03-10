@@ -14,7 +14,7 @@ TEST(EntityTests, AddEntity_ReturnsID) {
 	EXPECT_EQ((int)id1.value, 1);
 	EXPECT_EQ((int)id2.value, 2);
 	EXPECT_EQ((int)id3.value, 3);
-	EXPECT_EQ((int)entities.entities.size, 3);
+	EXPECT_EQ((int)entities.entities.num_values, 3);
 }
 
 TEST(EntityTests, AddEntity_AddComponent_AttachesComponentToEntity) {
@@ -25,11 +25,11 @@ TEST(EntityTests, AddEntity_AddComponent_AttachesComponentToEntity) {
 	bool has_sprite = EntityManager_has_component(&entities, id, ComponentType_Sprite);
 	bool has_collision = EntityManager_has_component(&entities, id, ComponentType_CollisionShape);
 
-	EXPECT_EQ((int)entities.entities.size, 1);
+	EXPECT_EQ((int)entities.entities.num_values, 1);
 	EXPECT_EQ((int)entities.entities.values[0].num_components, 1);
 	EXPECT_EQ(entities.entities.values[0].components[0], ComponentType_Sprite);
-	EXPECT_EQ((int)entities.components.collision_shapes.size, 0);
-	EXPECT_EQ((int)entities.components.sprites.size, 1);
+	EXPECT_EQ((int)entities.components.collision_shapes.num_values, 0);
+	EXPECT_EQ((int)entities.components.sprites.num_values, 1);
 	EXPECT_TRUE(has_sprite);
 	EXPECT_FALSE(has_collision);
 }
@@ -41,8 +41,8 @@ TEST(EntityTests, AddEntity_RemoveEntity_ComponentsAlsoRemoved) {
 	EntityManager_add_collision_shape(&entities, id, Shape_circle((Circle) { 0 }));
 	EntityManager_remove_entity(&entities, id);
 
-	EXPECT_EQ((int)entities.entities.size, 0);
-	EXPECT_EQ((int)entities.components.collision_shapes.size, 0);
+	EXPECT_EQ((int)entities.entities.num_values, 0);
+	EXPECT_EQ((int)entities.components.collision_shapes.num_values, 0);
 }
 
 TEST(EntityTests, AddEntity_RemoveEntity_AddEntity_ReusesID) {

@@ -6,7 +6,7 @@
 //  	size_t indices[N]; // key -> index
 //  	size_t keys[N]; // index -> key
 //  	T values[N]; // index -> value
-//  	size_t size;
+//  	size_t num_values;
 //  };
 //
 // Supports keys in range 1 to N.
@@ -27,7 +27,7 @@
 		size_t indices[Capacity];   \
 		size_t keys[Capacity];      \
 		Type values[Capacity];      \
-		size_t size;                \
+		size_t num_values;          \
 	}
 
 // Insert a new element into the array
@@ -37,7 +37,7 @@
 		(array)->indices,                     \
 		(array)->keys,                        \
 		(char*)(array)->values,               \
-		&(array)->size,                       \
+		&(array)->num_values,                 \
 		(key),                                \
 		(char*)&(value)                       \
 	)
@@ -49,7 +49,7 @@
 		(array)->indices,              \
 		(array)->keys,                 \
 		(char*)(array)->values,        \
-		&(array)->size,                \
+		&(array)->num_values,          \
 		(key)                          \
 	)
 

@@ -5,7 +5,7 @@
 #define DEBUG_RESOURCE_MANAGER false
 
 TextureID ResourceManager_load_texture(ResourceManager* resources, const char* filename) {
-	if (resources->textures.size == MAX_TEXTURE_RESOURCES) {
+	if (resources->textures.num_values == MAX_TEXTURE_RESOURCES) {
 		LOG_ERROR("Can't load texture \"%s\", too many already loaded (%d)", filename, MAX_TEXTURE_RESOURCES);
 		return (TextureID) { 0 };
 	}
@@ -37,7 +37,7 @@ bool ResourceManager_get_texture(const ResourceManager* resources, TextureID id,
 void ResourceManager_unload_resources(ResourceManager* resources) {
 	/* Unload textures */
 	resources->prev_texture_id = 0;
-	for (size_t i = 0; i < resources->textures.size; i++) {
+	for (size_t i = 0; i < resources->textures.num_values; i++) {
 		UnloadTexture(resources->textures.values[i]);
 		SparseArray_remove(&resources->textures, resources->textures.keys[i]);
 	}

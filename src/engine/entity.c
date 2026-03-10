@@ -8,7 +8,7 @@ EntityID EntityManager_add_entity(EntityManager* entities, Vector2 position) {
 		id = entities->discarded_ids[entities->num_discarded_ids - 1];
 		entities->num_discarded_ids--;
 	} else {
-		id = (EntityID) { entities->entities.size + 1 };
+		id = (EntityID) { entities->entities.num_values + 1 };
 	}
 
 	Entity entity = {
