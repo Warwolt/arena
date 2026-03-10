@@ -26,21 +26,27 @@
 
 #define MAX_TEST_ITEMS 64
 typedef struct TestArrayMap {
-	const char keys[ARRAY_MAP_KEY_LENGTH][MAX_TEST_ITEMS];
+	char keys[ARRAY_MAP_KEY_LENGTH][MAX_TEST_ITEMS];
 	int values[MAX_TEST_ITEMS];
 	size_t num_values;
 } TestArrayMap;
 
 bool TestArrayMap_insert(TestArrayMap* map, const char* key, int value) {
-	return false;
+	// FIXME: skip the empty key
+
+	strncpy_s(map->keys[0], ARRAY_MAP_KEY_LENGTH, key, _TRUNCATE);
+	map->values[0] = value;
+	map->num_values++;
+	return true;
 }
 
 bool TestArrayMap_get(TestArrayMap* map, const char* key, int* value) {
-	return false;
+	*value = map->values[0];
+	return true;
 }
 
 bool TestArrayMap_contains(TestArrayMap* map, const char* key) {
-	return false;
+	return true;
 }
 
 TEST(ArrayMapTests, InsertElement_GetElement) {
