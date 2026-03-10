@@ -1,5 +1,6 @@
 #include "engine/ui.h"
 
+#include "core/array_map.h"
 #include "platform/assert.h"
 
 #include <raylib.h>
@@ -8,11 +9,22 @@
 #define DEBUG_ASSERT_IS_WITHIN_UI_FRAME()                                                                          \
 	DEBUG_ASSERT(g_ui.is_within_frame, "%s() called outside ui frame. Missing call to UI_begin()?", __FUNCTION__);
 
+typedef struct UIMenuState {
+	int focused_item;
+	bool is_open;
+} UIMenuState;
+
 // TODO:
-// Add a UIMenuState struct that hold stuff that stays between frames
-// But, we would like a hashmap like data structure to store it.
-// We need to be able to map MenuLabel -> MenuState.
-// Probably we need an `ArrayMap` data structure that maps `String -> T`.
+// Use "UIMenuState" to keep track of focused item
+// We have a fixed amount of memory inside the ArrayMap.
+// When do we toss stuff out? First In First Out maybe?
+// Shouldn't that be part of the ArrayMap?
+// How likely are we to even to expend all the memory?
+// Probably we can just set the number of state to some high value and not think of it.
+
+typedef struct UIState {
+	ArrayMap(UIMenuState, 64) menu;
+} UIState;
 
 typedef struct UIContext {
 	bool is_within_frame;

@@ -184,3 +184,10 @@ TEST(UITests, Menu_SelectSecondItem) {
 	EXPECT_FALSE(item1_was_selected);
 	EXPECT_TRUE(item2_was_selected);
 }
+
+TEST(UITests, Foo) {
+	// Write some kind of test for item focus.
+	// What should happen if we render "menu 1", then "menu 2", then "menu 1", should the state persist for menu 1?
+	// If we render two menus in the same frame, how do we know which should receive keyboard input?
+	FAIL();
+}
