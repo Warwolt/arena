@@ -238,3 +238,26 @@ TEST(UITests, Menu_ItemsKeepsFocus_BetweenRenders) {
 	EXPECT_BOOL_EQ(UI_view()->menus[0].items[0].is_focused, false);
 	EXPECT_BOOL_EQ(UI_view()->menus[0].items[1].is_focused, true);
 }
+
+// FIXME:
+// God damnit.
+// Focused item state should probably be stored in user code.
+//
+// Scenario:
+// - Navigate menu items inside Menu 1
+// - Navigate Menu 1 -> Menu 2
+// - Navigate back
+// => expect focused item in Menu 1 to be unchanged
+//
+// - Navigate to Menu 1
+// - Navigate Menu 1 -> Menu 2
+// => expected first menu item focused in Menu 2 (should reset)
+//
+// We want a natural way to reset the state of Menu 2 when entering
+// Navigating forward: reset state of menu visited
+// Navigating backward: keep the state of the menu re-visited
+//
+// Seems like only meaningful way to do this is to keep focused state in user code
+//
+// Need to change signature to include `is_focused`:
+// 		bool UI_menu_item(const char* label, bool is_focused);
