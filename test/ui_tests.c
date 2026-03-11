@@ -185,9 +185,56 @@ TEST(UITests, Menu_SelectSecondItem) {
 	EXPECT_TRUE(item2_was_selected);
 }
 
-TEST(UITests, Foo) {
-	// Write some kind of test for item focus.
-	// What should happen if we render "menu 1", then "menu 2", then "menu 1", should the state persist for menu 1?
-	// If we render two menus in the same frame, how do we know which should receive keyboard input?
-	FAIL();
+TEST(UITests, Menu_ItemsKeepsFocus_BetweenRenders) {
+	/* Render first menu and focus second item */
+	UI_begin((UIInput) { .down_pressed = true });
+	{
+		UI_menu_begin("menu 1");
+		{
+			UI_menu_item("item 1");
+			UI_menu_item("item 2");
+		}
+		UI_menu_end();
+	}
+	UI_end();
+
+	ASSERT_EQ(UI_view()->num_menus, 1);
+	ASSERT_EQ(UI_view()->menus[0].num_items, 2);
+	EXPECT_BOOL_EQ(UI_view()->menus[0].items[0].is_focused, false);
+	EXPECT_BOOL_EQ(UI_view()->menus[0].items[1].is_focused, true);
+
+	/* Render second menu */
+	UI_begin((UIInput) { 0 });
+	{
+		UI_menu_begin("menu 2");
+		{
+			UI_menu_item("item 1");
+			UI_menu_item("item 2");
+			UI_menu_item("item 3");
+		}
+		UI_menu_end();
+	}
+	UI_end();
+
+	ASSERT_EQ(UI_view()->num_menus, 1);
+	ASSERT_EQ(UI_view()->menus[0].num_items, 3);
+	EXPECT_BOOL_EQ(UI_view()->menus[0].items[0].is_focused, true);
+	EXPECT_BOOL_EQ(UI_view()->menus[0].items[1].is_focused, false);
+
+	/* Render first menu again, expect focus to be kept */
+	UI_begin((UIInput) { 0 });
+	{
+		UI_menu_begin("menu 1");
+		{
+			UI_menu_item("item 1");
+			UI_menu_item("item 2");
+		}
+		UI_menu_end();
+	}
+	UI_end();
+
+	ASSERT_EQ(UI_view()->num_menus, 1);
+	ASSERT_EQ(UI_view()->menus[0].num_items, 2);
+	EXPECT_BOOL_EQ(UI_view()->menus[0].items[0].is_focused, false);
+	EXPECT_BOOL_EQ(UI_view()->menus[0].items[1].is_focused, true);
 }
