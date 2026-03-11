@@ -22,7 +22,6 @@ typedef struct UIContext {
 	bool is_within_frame;
 	UIInput input;
 	UIView view;
-	UIView prev_view;
 	UIState state;
 } UIContext;
 
@@ -53,7 +52,6 @@ void UI_begin(UIInput input) {
 	DEBUG_ASSERT(!g_ui.is_within_frame, "UI_begin() called while already in ui frame. Missing call to UI_end()?");
 	g_ui.input = input;
 	g_ui.is_within_frame = true;
-	g_ui.prev_view = g_ui.view;
 	g_ui.view = (UIView) { 0 };
 }
 
@@ -87,18 +85,6 @@ void UI_menu_begin(const char* label) {
 		ArrayMap_insert(&g_ui.state.menu, label, initial_state);
 	}
 	UIMenuState* menu_state = UI_menu_state(menu->label);
-
-	/* Copy previous menu state */
-	// Try to find this menu in prev view
-	// If it exists, copy over the state
-	UIMenu* prev_menu = NULL;
-	for (int i = 0; i < g_ui.prev_view.num_menus; i++) {
-		if (strcmp(label, g_ui.prev_view.menus[i].label) == 0) {
-			prev_menu = &g_ui.prev_view.menus[i];
-			break;
-		}
-	}
-
 	menu_state->element_closed = false;
 
 	/* Handle focus */
