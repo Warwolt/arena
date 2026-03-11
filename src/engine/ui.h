@@ -15,10 +15,6 @@ typedef struct UIMenu {
 	UIMenuItem items[UIMenu_MaxMenuItems];
 	char label[UIMenu_MaxLabelLength];
 	int num_items;
-
-	// FIXME: move this to private struct in ui.c?
-	// state
-	int focused_item;
 } UIMenu;
 
 typedef struct UIView {

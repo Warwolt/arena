@@ -86,6 +86,7 @@ void UI_menu_begin(const char* label) {
 		UIMenuState initial_state = { 0 };
 		ArrayMap_insert(&g_ui.state.menu, label, initial_state);
 	}
+	UIMenuState* menu_state = UI_menu_state(menu->label);
 
 	/* Copy previous menu state */
 	// Try to find this menu in prev view
@@ -97,25 +98,16 @@ void UI_menu_begin(const char* label) {
 			break;
 		}
 	}
-	if (prev_menu) {
-		menu->focused_item = prev_menu->focused_item;
-	}
 
-	UIMenuState* menu_state = UI_menu_state(menu->label);
 	menu_state->element_closed = false;
 
 	/* Handle focus */
 	if (g_ui.input.down_pressed) {
-		menu->focused_item++;
+		menu_state->focused_item++;
 	}
 
 	if (g_ui.input.up_pressed) {
-		menu->focused_item--;
-	}
-
-	if (prev_menu) {
-		// wrap focus around previous number of menu items
-		menu->focused_item = (prev_menu->num_items + menu->focused_item) % prev_menu->num_items;
+		menu_state->focused_item--;
 	}
 }
 
@@ -125,6 +117,9 @@ void UI_menu_end(void) {
 	DEBUG_ASSERT_IS_WITHIN_UI_FRAME();
 	DEBUG_ASSERT(menu != NULL, "UI_menu_end() called without corresponding UI_menu_begin()");
 	DEBUG_ASSERT(!menu_state->element_closed, "UI_menu_end() called without corresponding UI_menu_begin()");
+	if (menu->num_items > 0) {
+		menu_state->focused_item = (menu->num_items + menu_state->focused_item) % menu->num_items;
+	}
 	menu_state->element_closed = true;
 }
 
@@ -139,7 +134,7 @@ bool UI_menu_item(const char* label) {
 	UIMenuItem* item = &menu->items[item_index];
 	strncpy_s(item->label, UIMenu_MaxLabelLength, label, _TRUNCATE);
 
-	item->is_focused = menu->focused_item == item_index;
+	item->is_focused = menu_state->focused_item == item_index;
 
 	/* Handle selection */
 	const bool is_selected = g_ui.input.select_pressed && item->is_focused;
