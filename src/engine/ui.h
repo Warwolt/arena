@@ -19,8 +19,6 @@ typedef struct UIMenu {
 	// FIXME: move this to private struct in ui.c?
 	// state
 	int focused_item;
-	bool is_open;
-
 } UIMenu;
 
 typedef struct UIView {

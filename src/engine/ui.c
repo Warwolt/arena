@@ -11,16 +11,8 @@
 
 typedef struct UIMenuState {
 	int focused_item;
-	bool is_open;
+	bool element_closed;
 } UIMenuState;
-
-// TODO:
-// Use "UIMenuState" to keep track of focused item
-// We have a fixed amount of memory inside the ArrayMap.
-// When do we toss stuff out? First In First Out maybe?
-// Shouldn't that be part of the ArrayMap?
-// How likely are we to even to expend all the memory?
-// Probably we can just set the number of state to some high value and not think of it.
 
 typedef struct UIState {
 	ArrayMap(UIMenuState, 64) menu;
@@ -31,6 +23,7 @@ typedef struct UIContext {
 	UIInput input;
 	UIView view;
 	UIView prev_view;
+	UIState state;
 } UIContext;
 
 UIContext g_ui;
@@ -41,6 +34,12 @@ void UI_initialize(void) {
 
 const UIView* UI_view(void) {
 	return &g_ui.view;
+}
+
+UIMenuState* UI_menu_state(const char* menu_label) {
+	UIMenuState* state = NULL;
+	ArrayMap_get_ptr(&g_ui.state.menu, menu_label, &state);
+	return state; // might be null
 }
 
 static UIMenu* UI_current_menu() {
@@ -64,7 +63,8 @@ void UI_end(void) {
 	/* Check that each menu component is closed */
 	for (int i = 0; i < g_ui.view.num_menus; i++) {
 		UIMenu* menu = &g_ui.view.menus[i];
-		DEBUG_ASSERT(!menu->is_open, "Menu \"%s\" has missing UI_menu_end() call", menu->label);
+		UIMenuState* menu_state = UI_menu_state(menu->label);
+		DEBUG_ASSERT(menu_state->element_closed, "Menu \"%s\" has missing UI_menu_end() call", menu->label);
 	}
 
 	g_ui.is_within_frame = false;
@@ -75,13 +75,17 @@ void UI_menu_begin(const char* label) {
 	{
 		UIMenu* menu = UI_current_menu();
 		DEBUG_ASSERT_IS_WITHIN_UI_FRAME();
-		DEBUG_ASSERT(menu == NULL || !menu->is_open, "UI_menu_begin() called while menu \"%s\" already open. Menus cannot be nested. Missing call to UI_menu_end()?", menu->label);
+		DEBUG_ASSERT(menu == NULL || UI_menu_state(menu->label)->element_closed, "UI_menu_begin() called while menu \"%s\" already open. Menus cannot be nested. Missing call to UI_menu_end()?", menu->label);
 	}
 
 	/* Add menu */
 	const int menu_index = g_ui.view.num_menus++;
 	UIMenu* menu = &g_ui.view.menus[menu_index];
 	strncpy_s(menu->label, UIMenu_MaxLabelLength, label, _TRUNCATE);
+	if (!ArrayMap_contains(&g_ui.state.menu, label)) {
+		UIMenuState initial_state = { 0 };
+		ArrayMap_insert(&g_ui.state.menu, label, initial_state);
+	}
 
 	/* Copy previous menu state */
 	// Try to find this menu in prev view
@@ -97,7 +101,8 @@ void UI_menu_begin(const char* label) {
 		menu->focused_item = prev_menu->focused_item;
 	}
 
-	menu->is_open = true;
+	UIMenuState* menu_state = UI_menu_state(menu->label);
+	menu_state->element_closed = false;
 
 	/* Handle focus */
 	if (g_ui.input.down_pressed) {
@@ -116,16 +121,18 @@ void UI_menu_begin(const char* label) {
 
 void UI_menu_end(void) {
 	UIMenu* menu = UI_current_menu();
+	UIMenuState* menu_state = UI_menu_state(menu->label);
 	DEBUG_ASSERT_IS_WITHIN_UI_FRAME();
 	DEBUG_ASSERT(menu != NULL, "UI_menu_end() called without corresponding UI_menu_begin()");
-	DEBUG_ASSERT(menu->is_open, "UI_menu_end() called without corresponding UI_menu_begin()");
-	menu->is_open = false;
+	DEBUG_ASSERT(!menu_state->element_closed, "UI_menu_end() called without corresponding UI_menu_begin()");
+	menu_state->element_closed = true;
 }
 
 bool UI_menu_item(const char* label) {
 	UIMenu* menu = UI_current_menu();
+	UIMenuState* menu_state = UI_menu_state(menu->label);
 	DEBUG_ASSERT(menu != NULL, "UI_menu_item() called without UI_menu_begin()");
-	DEBUG_ASSERT(menu->is_open, "UI_menu_item() called without UI_menu_begin()");
+	DEBUG_ASSERT(!menu_state->element_closed, "UI_menu_item() called without UI_menu_begin()");
 
 	/* Add item */
 	const int item_index = menu->num_items++;
