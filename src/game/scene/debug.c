@@ -53,6 +53,10 @@ void DebugScene_update(Game* game) {
 					if (IsKeyPressed(KEY_ESCAPE)) {
 						debug_scene->current_page = DebugPage_Main;
 					}
+
+					UI_menu_item("Item 1");
+					UI_menu_item("Item 2");
+					UI_menu_item("Item 3");
 				}
 				UI_menu_end();
 				break;
@@ -63,6 +67,10 @@ void DebugScene_update(Game* game) {
 					if (IsKeyPressed(KEY_ESCAPE)) {
 						debug_scene->current_page = DebugPage_Main;
 					}
+
+					UI_menu_item("Item 1");
+					UI_menu_item("Item 2");
+					UI_menu_item("Item 3");
 				}
 				UI_menu_end();
 				break;
