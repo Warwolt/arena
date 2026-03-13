@@ -28,6 +28,8 @@
 #define BACKGROUND_CYAN "\033[46m"
 #define BACKGROUND_WHITE "\033[47m"
 
+static bool g_unit_test_mode = false;
+
 static const char* log_level_to_str(LogLevel level) {
 	switch (level) {
 		case LogLevel_Debug:
@@ -85,27 +87,35 @@ void initialize_logging(void) {
 	SetConsoleMode(hOut, dwMode);
 }
 
+void initialize_unit_test_logging(void) {
+	g_unit_test_mode = true;
+	initialize_logging();
+}
+
 void debug_log(LogLevel log_level, const char* filename, int line, const char* fmt, ...) {
 	const bool debugger_is_present = IsDebuggerPresent();
+	const bool should_add_formatting = !g_unit_test_mode;
 	char buffer[1024] = { 0 };
 	int offset = 0;
 
-	/* Add color */
-	if (!debugger_is_present) {
-		offset += snprintf(buffer + offset, 1024 - offset, log_level_color(log_level));
+	if (should_add_formatting) {
+		/* Add color */
+		if (!debugger_is_present) {
+			offset += snprintf(buffer + offset, 1024 - offset, log_level_color(log_level));
+		}
+
+		/* Add timestamp */
+		time_t t = time(0); // get time now
+		struct tm* now = localtime(&t);
+		offset += snprintf(buffer + offset, 1024 - offset, "%02d-%02d-%02d ", now->tm_year + 1900, now->tm_mon + 1, now->tm_mday); // year
+		offset += snprintf(buffer + offset, 1024 - offset, "%02d:%02d ", now->tm_hour, now->tm_min); // hour
+
+		/* File and line */
+		offset += snprintf(buffer + offset, 1024 - offset, "%s:%d ", filename_from_path(filename), line);
+
+		/* Log level */
+		offset += snprintf(buffer + offset, 1024 - offset, "%s ", log_level_to_str(log_level));
 	}
-
-	/* Add timestamp */
-	time_t t = time(0); // get time now
-	struct tm* now = localtime(&t);
-	offset += snprintf(buffer + offset, 1024 - offset, "%02d-%02d-%02d ", now->tm_year + 1900, now->tm_mon + 1, now->tm_mday); // year
-	offset += snprintf(buffer + offset, 1024 - offset, "%02d:%02d ", now->tm_hour, now->tm_min); // hour
-
-	/* File and line */
-	offset += snprintf(buffer + offset, 1024 - offset, "%s:%d ", filename_from_path(filename), line);
-
-	/* Log level */
-	offset += snprintf(buffer + offset, 1024 - offset, "%s ", log_level_to_str(log_level));
 
 	/* Add message */
 	va_list args;
@@ -122,7 +132,10 @@ void debug_log(LogLevel log_level, const char* filename, int line, const char* f
 		// log to console
 		bool is_error = log_level == LogLevel_Error || log_level == LogLevel_Fatal;
 		FILE* stream = is_error ? stderr : stdout;
-		fprintf(stream, "%s%s", buffer, COLOR_RESET);
+		fprintf(stream, buffer);
+		if (should_add_formatting) {
+			fprintf(stream, COLOR_RESET);
+		}
 		fflush(stream);
 	}
 }

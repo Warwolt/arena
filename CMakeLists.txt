@@ -32,6 +32,7 @@ set(SRC
     src/game/scene/debug_physics.c
     src/game/scene/gameplay.c
     src/game/scene/main_menu.c
+    src/platform/assert.c
     src/platform/logging.c
     src/platform/win32.c
 )

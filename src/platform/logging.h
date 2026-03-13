@@ -9,6 +9,7 @@ typedef enum LogLevel {
 } LogLevel;
 
 void initialize_logging(void);
+void initialize_unit_test_logging(void);
 void debug_log(LogLevel level, const char* filename, int line, const char* fmt, ...);
 
 #define LOG_DEBUG(...) debug_log(LogLevel_Debug, __FILE__, __LINE__, __VA_ARGS__)
