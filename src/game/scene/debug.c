@@ -30,6 +30,7 @@ void DebugScene_update(Game* game) {
 	{
 		switch (debug_scene->current_page) {
 			case DebugPage_Main:
+				debug_scene->just_pushed_page = false;
 				UI_menu_begin("Debug");
 				{
 					if (IsKeyPressed(KEY_ESCAPE)) {
@@ -38,10 +39,12 @@ void DebugScene_update(Game* game) {
 
 					if (UI_menu_item("Page one")) {
 						debug_scene->current_page = DebugPage_PageOne;
+						debug_scene->just_pushed_page = true;
 					}
 
 					if (UI_menu_item("Page two")) {
 						debug_scene->current_page = DebugPage_PageTwo;
+						debug_scene->just_pushed_page = true;
 					}
 				}
 				UI_menu_end();
@@ -50,6 +53,11 @@ void DebugScene_update(Game* game) {
 			case DebugPage_PageOne:
 				UI_menu_begin("Page One");
 				{
+					if (debug_scene->just_pushed_page) {
+						UI_menu_reset_keyboard_focus();
+					}
+					debug_scene->just_pushed_page = false;
+
 					if (IsKeyPressed(KEY_ESCAPE)) {
 						debug_scene->current_page = DebugPage_Main;
 					}
@@ -64,8 +72,14 @@ void DebugScene_update(Game* game) {
 			case DebugPage_PageTwo:
 				UI_menu_begin("Page Two");
 				{
+					if (debug_scene->just_pushed_page) {
+						UI_menu_reset_keyboard_focus();
+					}
+					debug_scene->just_pushed_page = false;
+
 					if (IsKeyPressed(KEY_ESCAPE)) {
 						debug_scene->current_page = DebugPage_Main;
+						debug_scene->just_pushed_page = true;
 					}
 
 					UI_menu_item("Item 1");

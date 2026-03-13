@@ -1,9 +1,12 @@
 #pragma once
 
+#include <stdbool.h>
+
 typedef struct Game Game;
 
 typedef struct DebugScene {
 	int current_page;
+	bool just_pushed_page;
 } DebugScene;
 
 void DebugScene_initialize(Game* game);
