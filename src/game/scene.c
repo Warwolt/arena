@@ -8,32 +8,18 @@ typedef struct SceneVTable {
 	void (*render)(const Game*);
 } SceneVTable;
 
+#define MatchSceneVTable(SceneName)                                                                           \
+	case SceneID_##SceneName:                                                                                 \
+		return (SceneVTable) {                                                                                \
+			.initialize = SceneName##_initialize, .update = SceneName##_update, .render = SceneName##_render, \
+		}
+
 static SceneVTable scene_vtable(SceneID scene_id) {
 	switch (scene_id) {
-		case SceneID_MainMenu:
-			return (SceneVTable) {
-				.initialize = MainMenu_initialize,
-				.update = MainMenu_update,
-				.render = MainMenu_render,
-			};
-		case SceneID_Gameplay:
-			return (SceneVTable) {
-				.initialize = Gameplay_initialize,
-				.update = Gameplay_update,
-				.render = Gameplay_render,
-			};
-		case SceneID_DebugScene:
-			return (SceneVTable) {
-				.initialize = DebugScene_initialize,
-				.update = DebugScene_update,
-				.render = DebugScene_render,
-			};
-		case SceneID_CollisionDebugScene:
-			return (SceneVTable) {
-				.initialize = CollisionDebugScene_initialize,
-				.update = CollisionDebugScene_update,
-				.render = CollisionDebugScene_render,
-			};
+		MatchSceneVTable(MainMenu);
+		MatchSceneVTable(Gameplay);
+		MatchSceneVTable(DebugScene);
+		MatchSceneVTable(CollisionDebugScene);
 	}
 	return (SceneVTable) { 0 };
 }
