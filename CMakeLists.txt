@@ -23,10 +23,11 @@ add_compile_options(
 # Source
 set(SRC
     src/core/arena.c
-    src/core/sparse_array.c
     src/core/array_map.c
+    src/core/sparse_array.c
     src/engine/entity.c
     src/engine/resource.c
+    src/engine/ui.c
     src/game.c
     src/game/scene.c
     src/game/scene/debug_physics.c
@@ -69,6 +70,7 @@ add_executable(Tests
     test/entity_tests.c
     test/main.c
     test/sparse_array_tests.c
+    test/ui_tests.c
 )
 target_include_directories(Tests PUBLIC src lib)
 target_link_libraries(Tests Source)
