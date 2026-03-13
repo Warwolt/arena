@@ -14,10 +14,8 @@ Goal:
 - Add bounds checking to ArrayMap and SparseArray by adding a `capacity` parameter to the methods
 - Bug: Fix hot reloading requiring 2 reloads before change takes effect? (Note: not sure how to repro this yet)
 
-# Doing
-- Bug: Win32_toggle_fullscreen breaks on hot reload due to static variables
-
 # Done
+- Bug: Win32_toggle_fullscreen breaks on hot reload due to static variables
 - DebugScene, add place to run very simple debug scenarios for various systems
 - Basic UI system
 - Implement a HashMap data structure (map string to value)
