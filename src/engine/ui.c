@@ -112,6 +112,7 @@ void UI_menu_end(void) {
 bool UI_menu_item(const char* label) {
 	UIMenu* menu = UI_current_menu();
 	UIMenuState* menu_state = UI_menu_state(menu->label);
+	DEBUG_ASSERT_IS_WITHIN_UI_FRAME();
 	DEBUG_ASSERT(menu != NULL, "UI_menu_item() called without UI_menu_begin()");
 	DEBUG_ASSERT(!menu_state->element_closed, "UI_menu_item() called without UI_menu_begin()");
 
@@ -129,10 +130,8 @@ bool UI_menu_item(const char* label) {
 
 void UI_menu_reset_keyboard_focus(void) {
 	UIMenu* menu = UI_current_menu();
-	if (menu) {
-		UIMenuState* menu_state = UI_menu_state(menu->label);
-		if (menu_state) {
-			menu_state->focused_item = 0;
-		}
-	}
+	DEBUG_ASSERT_IS_WITHIN_UI_FRAME();
+	DEBUG_ASSERT(menu != NULL, "UI_menu_reset_keyboard_focus() called without UI_menu_begin()");
+	UIMenuState* menu_state = UI_menu_state(menu->label);
+	menu_state->focused_item = 0;
 }
