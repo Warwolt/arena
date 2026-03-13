@@ -6,8 +6,8 @@
 #include <raylib.h>
 #include <string.h>
 
-#define DEBUG_ASSERT_IS_WITHIN_UI_FRAME()                                                                          \
-	DEBUG_ASSERT(g_ui.is_within_frame, "%s() called outside ui frame. Missing call to UI_begin()?", __FUNCTION__);
+#define ASSERT_IS_WITHIN_UI_FRAME()                                                                          \
+	ASSERT(g_ui.is_within_frame, "%s() called outside ui frame. Missing call to UI_begin()?", __FUNCTION__);
 
 typedef struct UIMenuState {
 	int focused_item;
@@ -49,20 +49,20 @@ static UIMenu* UI_current_menu() {
 }
 
 void UI_begin(UIInput input) {
-	DEBUG_ASSERT(!g_ui.is_within_frame, "UI_begin() called while already in ui frame. Missing call to UI_end()?");
+	ASSERT(!g_ui.is_within_frame, "UI_begin() called while already in ui frame. Missing call to UI_end()?");
 	g_ui.input = input;
 	g_ui.is_within_frame = true;
 	g_ui.view = (UIView) { 0 };
 }
 
 void UI_end(void) {
-	DEBUG_ASSERT(g_ui.is_within_frame, "UI_end() called while outside ui frame. Missing call to UI_begin()?");
+	ASSERT(g_ui.is_within_frame, "UI_end() called while outside ui frame. Missing call to UI_begin()?");
 
 	/* Check that each menu component is closed */
 	for (int i = 0; i < g_ui.view.num_menus; i++) {
 		UIMenu* menu = &g_ui.view.menus[i];
 		UIMenuState* menu_state = UI_menu_state(menu->label);
-		DEBUG_ASSERT(menu_state->element_closed, "Menu \"%s\" has missing UI_menu_end() call", menu->label);
+		ASSERT(menu_state->element_closed, "Menu \"%s\" has missing UI_menu_end() call", menu->label);
 	}
 
 	g_ui.is_within_frame = false;
@@ -72,8 +72,8 @@ void UI_menu_begin(const char* label) {
 	/* Check that we're not nesting menus */
 	{
 		UIMenu* menu = UI_current_menu();
-		DEBUG_ASSERT_IS_WITHIN_UI_FRAME();
-		DEBUG_ASSERT(menu == NULL || UI_menu_state(menu->label)->element_closed, "UI_menu_begin() called while menu \"%s\" already open. Menus cannot be nested. Missing call to UI_menu_end()?", menu->label);
+		ASSERT_IS_WITHIN_UI_FRAME();
+		ASSERT(menu == NULL || UI_menu_state(menu->label)->element_closed, "UI_menu_begin() called while menu \"%s\" already open. Menus cannot be nested. Missing call to UI_menu_end()?", menu->label);
 	}
 
 	/* Add menu */
@@ -100,9 +100,9 @@ void UI_menu_begin(const char* label) {
 void UI_menu_end(void) {
 	UIMenu* menu = UI_current_menu();
 	UIMenuState* menu_state = UI_menu_state(menu->label);
-	DEBUG_ASSERT_IS_WITHIN_UI_FRAME();
-	DEBUG_ASSERT(menu != NULL, "UI_menu_end() called without corresponding UI_menu_begin()");
-	DEBUG_ASSERT(!menu_state->element_closed, "UI_menu_end() called without corresponding UI_menu_begin()");
+	ASSERT_IS_WITHIN_UI_FRAME();
+	ASSERT(menu != NULL, "UI_menu_end() called without corresponding UI_menu_begin()");
+	ASSERT(!menu_state->element_closed, "UI_menu_end() called without corresponding UI_menu_begin()");
 	if (menu->num_items > 0) {
 		menu_state->focused_item = (menu->num_items + menu_state->focused_item) % menu->num_items;
 	}
@@ -112,9 +112,9 @@ void UI_menu_end(void) {
 bool UI_menu_item(const char* label) {
 	UIMenu* menu = UI_current_menu();
 	UIMenuState* menu_state = UI_menu_state(menu->label);
-	DEBUG_ASSERT_IS_WITHIN_UI_FRAME();
-	DEBUG_ASSERT(menu != NULL, "UI_menu_item() called without UI_menu_begin()");
-	DEBUG_ASSERT(!menu_state->element_closed, "UI_menu_item() called without UI_menu_begin()");
+	ASSERT_IS_WITHIN_UI_FRAME();
+	ASSERT(menu != NULL, "UI_menu_item() called without UI_menu_begin()");
+	ASSERT(!menu_state->element_closed, "UI_menu_item() called without UI_menu_begin()");
 
 	/* Add item */
 	const int item_index = menu->num_items++;
@@ -130,8 +130,8 @@ bool UI_menu_item(const char* label) {
 
 void UI_menu_reset_keyboard_focus(void) {
 	UIMenu* menu = UI_current_menu();
-	DEBUG_ASSERT_IS_WITHIN_UI_FRAME();
-	DEBUG_ASSERT(menu != NULL, "UI_menu_reset_keyboard_focus() called without UI_menu_begin()");
+	ASSERT_IS_WITHIN_UI_FRAME();
+	ASSERT(menu != NULL, "UI_menu_reset_keyboard_focus() called without UI_menu_begin()");
 	UIMenuState* menu_state = UI_menu_state(menu->label);
 	menu_state->focused_item = 0;
 }
