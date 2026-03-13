@@ -90,6 +90,15 @@ void UI_menu_begin(const char* label) {
 	}
 	UIMenuState* menu_state = UI_menu_state(menu->label);
 	menu_state->element_closed = false;
+}
+
+void UI_menu_end(void) {
+	UIMenu* menu = UI_current_menu();
+	UIMenuState* menu_state = UI_menu_state(menu->label);
+	ASSERT_IS_WITHIN_UI_FRAME();
+	ASSERT(menu != NULL, "UI_menu_end() called without corresponding UI_menu_begin()");
+	ASSERT(!menu_state->element_closed, "UI_menu_end() called without corresponding UI_menu_begin()");
+	menu_state->element_closed = true;
 
 	/* Handle focus */
 	if (g_ui.state.reset_next_keyboard_focus) {
@@ -104,18 +113,14 @@ void UI_menu_begin(const char* label) {
 	if (g_ui.input.up_pressed) {
 		menu_state->focused_item--;
 	}
-}
 
-void UI_menu_end(void) {
-	UIMenu* menu = UI_current_menu();
-	UIMenuState* menu_state = UI_menu_state(menu->label);
-	ASSERT_IS_WITHIN_UI_FRAME();
-	ASSERT(menu != NULL, "UI_menu_end() called without corresponding UI_menu_begin()");
-	ASSERT(!menu_state->element_closed, "UI_menu_end() called without corresponding UI_menu_begin()");
 	if (menu->num_items > 0) {
 		menu_state->focused_item = (menu->num_items + menu_state->focused_item) % menu->num_items;
 	}
-	menu_state->element_closed = true;
+
+	for (int i = 0; i < menu->num_items; i++) {
+		menu->items[i].is_focused = i == menu_state->focused_item;
+	}
 }
 
 bool UI_menu_item(const char* label) {
