@@ -126,3 +126,13 @@ bool UI_menu_item(const char* label) {
 	const bool is_selected = g_ui.input.select_pressed && item->is_focused;
 	return is_selected;
 }
+
+void UI_menu_reset_keyboard_focus(void) {
+	UIMenu* menu = UI_current_menu();
+	if (menu) {
+		UIMenuState* menu_state = UI_menu_state(menu->label);
+		if (menu_state) {
+			menu_state->focused_item = 0;
+		}
+	}
+}

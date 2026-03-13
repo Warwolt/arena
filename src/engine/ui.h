@@ -38,3 +38,4 @@ void UI_menu_begin(const char* label);
 void UI_menu_end(void);
 
 bool UI_menu_item(const char* label);
+void UI_menu_reset_keyboard_focus(void);
