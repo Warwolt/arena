@@ -32,7 +32,7 @@ set(SRC
     src/game.c
     src/game/scene.c
     src/game/scene/debug.c
-    src/game/scene/debug/collision.c
+    src/game/scene/debug/collision_debug.c
     src/game/scene/gameplay.c
     src/game/scene/main_menu.c
     src/platform/assert.c

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "game/scene/debug.h"
-#include "game/scene/debug/collision.h"
+#include "game/scene/debug/collision_debug.h"
 #include "game/scene/gameplay.h"
 #include "game/scene/main_menu.h"
 

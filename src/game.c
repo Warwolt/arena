@@ -27,7 +27,7 @@ void Game_initialize(Game* game, int argc, char** argv) {
 	SceneID start_scene = SceneID_MainMenu;
 	for (int i = 1; i < argc; i++) {
 		if (strcmp(argv[i], "--debug") == 0) {
-			start_scene = SceneID_DebugScene;
+			start_scene = SceneID_CollisionDebugScene;
 		} else {
 			LOG_ERROR("Unrecognized command: %s", argv[i]);
 		}
