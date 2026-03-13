@@ -12,8 +12,8 @@
 
 typedef enum DebugMenu {
 	DebugMenu_Main,
-	DebugMenu_MenuOne,
-	DebugMenu_MenuTwo,
+	DebugMenu_Input,
+	DebugMenu_Physics,
 } DebugMenu;
 
 void MenuStack_push_menu(MenuStack* stack, int menu) {
@@ -66,19 +66,19 @@ void DebugScene_update(Game* game) {
 						Game_quit(game);
 					}
 
-					if (UI_menu_item("Menu one")) {
-						MenuStack_push_menu(&debug_scene->menu_stack, DebugMenu_MenuOne);
+					if (UI_menu_item("Input")) {
+						MenuStack_push_menu(&debug_scene->menu_stack, DebugMenu_Input);
 					}
 
-					if (UI_menu_item("Menu two")) {
-						MenuStack_push_menu(&debug_scene->menu_stack, DebugMenu_MenuTwo);
+					if (UI_menu_item("Physics")) {
+						MenuStack_push_menu(&debug_scene->menu_stack, DebugMenu_Physics);
 					}
 				}
 				UI_menu_end();
 				break;
 
-			case DebugMenu_MenuOne:
-				UI_menu_begin("Menu One");
+			case DebugMenu_Input:
+				UI_menu_begin("Input Debug");
 				{
 					if (IsKeyPressed(KEY_ESCAPE)) {
 						MenuStack_pop_menu(&debug_scene->menu_stack);
@@ -91,8 +91,8 @@ void DebugScene_update(Game* game) {
 				UI_menu_end();
 				break;
 
-			case DebugMenu_MenuTwo:
-				UI_menu_begin("Menu Two");
+			case DebugMenu_Physics:
+				UI_menu_begin("Physics Debug");
 				{
 					if (IsKeyPressed(KEY_ESCAPE)) {
 						MenuStack_pop_menu(&debug_scene->menu_stack);

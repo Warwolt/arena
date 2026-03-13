@@ -14,9 +14,9 @@
 
 # Doing
 - DebugScene, add place to run very simple debug scenarios for various systems
-- Basic UI system
 
 # Done
+- Basic UI system
 - Implement a HashMap data structure (map string to value)
 - Add death test support to rktest so we can test stuff using DEBUG_ASSERT
 - Replace default Raylib font with DOS font
