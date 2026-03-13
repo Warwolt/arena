@@ -38,5 +38,4 @@ void UI_reset_next_keyboard_focus(void);
 
 void UI_menu_begin(const char* label);
 void UI_menu_end(void);
-
 bool UI_menu_item(const char* label);
