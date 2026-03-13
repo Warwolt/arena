@@ -37,6 +37,7 @@ set(SRC
     src/platform/assert.c
     src/platform/logging.c
     src/platform/win32.c
+    src/platform/window.c
 )
 set(LIB
     raylib

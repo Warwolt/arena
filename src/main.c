@@ -3,8 +3,6 @@
 #include "platform/logging.h"
 #include "platform/win32.h"
 
-#define _AMD64_ 1
-#define _M_X64 100
 #include <libloaderapi.h>
 #include <stdio.h>
 #include <stdlib.h>

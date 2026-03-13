@@ -8,8 +8,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#define max(a, b) ((a) > (b) ? (a) : (b))
-
 typedef enum DebugMenu {
 	DebugMenu_Main,
 	DebugMenu_Input,
