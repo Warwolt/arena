@@ -1,5 +1,4 @@
 # TODO
-- Bug: Fix hot reloading requiring 2 reloads before change takes effect?
 - Bug: Win32_toggle_fullscreen breaks on hot reload due to static variables
 - Add semantic key bindings and use those instead of raw keys
 - Fork Raylib and disable F12 screenshot (and maybe build as DLL by default?)
@@ -11,11 +10,10 @@
 - Settings screen, toggle fullscreen on/off
 - When loading already loaded resource, return existing ID (needs HashMap)
 - Add bounds checking to ArrayMap and SparseArray by adding a `capacity` parameter to the methods
-
-# Doing
-- DebugScene, add place to run very simple debug scenarios for various systems
+- Bug: Fix hot reloading requiring 2 reloads before change takes effect? (Note: not sure how to repro this yet)
 
 # Done
+- DebugScene, add place to run very simple debug scenarios for various systems
 - Basic UI system
 - Implement a HashMap data structure (map string to value)
 - Add death test support to rktest so we can test stuff using DEBUG_ASSERT
