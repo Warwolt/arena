@@ -22,11 +22,11 @@ static SceneVTable scene_vtable(SceneID scene_id) {
 				.update = Gameplay_update,
 				.render = Gameplay_render,
 			};
-		case SceneID_DebugPhysics:
+		case SceneID_DebugScene:
 			return (SceneVTable) {
-				.initialize = DebugPhysics_initialize,
-				.update = DebugPhysics_update,
-				.render = DebugPhysics_render,
+				.initialize = DebugScene_initialize,
+				.update = DebugScene_update,
+				.render = DebugScene_render,
 			};
 	}
 	return (SceneVTable) { 0 };

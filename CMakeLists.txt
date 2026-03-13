@@ -12,12 +12,13 @@ add_compile_options(
     /std:clatest # use C23
     /W4     # warning level 4
     /WX     # warnings as errors
-    /wd4244 # allow implicit conversion int and float
-    /wd4100 # allow function parameters to be declared but not used
-    /wd4101 # allow unreferenced local variable
-    /wd4189 # allow local variable is initialized but not referenced
-    /wd4028 # formal parameter different from declaration (allow forward declare typedef struct)
-    /w44062 # warn about missing cases in switch-case
+    /wd4244 # disable: implicit conversion int and float
+    /wd4100 # disable: function parameters to be declared but not used
+    /wd4101 # disable: unreferenced local variable
+    /wd4189 # disable: local variable is initialized but not referenced
+    /wd4028 # disable: formal parameter different from declaration (allow forward declare typedef struct)
+    /wd4127 # disable: conditional expression is constant
+    /w44062 # enable: warn about missing cases in switch-case
 )
 
 # Source
@@ -30,7 +31,7 @@ set(SRC
     src/engine/ui.c
     src/game.c
     src/game/scene.c
-    src/game/scene/debug_physics.c
+    src/game/scene/debug.c
     src/game/scene/gameplay.c
     src/game/scene/main_menu.c
     src/platform/assert.c

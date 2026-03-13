@@ -1,16 +1,23 @@
 # TODO
 - Bug: Win32_toggle_fullscreen breaks on hot reload due to static variables
+- Add semantic key bindings and use those instead of raw keys
 - Fork Raylib and disable F12 screenshot (and maybe build as DLL by default?)
-- DebugPhysics: add static collision detection test screen
-- DebugPhysics: add static collision resolution test screen
+  - Overkill: Prefix all Raylib functions with "Raylib", e.g. Raylib_IsKeyPressed instead of just IsKeyPressed
+- DebugScene: add static collision detection test screen
+- DebugScene: add static collision resolution test screen
 - Integrate ImGui so we can visualize system states
   - The game is low resolution so we probably should use multi viewports (https://github.com/ocornut/imgui/wiki/Multi-Viewports)
 - Settings screen, toggle fullscreen on/off
 - When loading already loaded resource, return existing ID (needs HashMap)
+- Add bounds checking to ArrayMap and SparseArray by adding a `capacity` parameter to the methods
+- Bug: Fix hot reloading requiring 2 reloads before change takes effect? (Note: not sure how to repro this yet)
 
 # Done
+- DebugScene, add place to run very simple debug scenarios for various systems
+- Basic UI system
 - Implement a HashMap data structure (map string to value)
-- Replace default font Raylib with DOS font
+- Add death test support to rktest so we can test stuff using DEBUG_ASSERT
+- Replace default Raylib font with DOS font
 - Add debug screen for doing writing physics code
 - DLL based hot reloading
 - Pause menu (render as overlay, stop updating game while paused)
