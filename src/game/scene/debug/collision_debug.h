@@ -1,11 +1,15 @@
 #pragma once
 
+#include "core/geometry.h"
+
 #include <stdbool.h>
 
 typedef struct Game Game;
 
 typedef struct CollisionDebugScene {
-	int x;
+	float time_now;
+	Circle circles[2];
+	bool is_overlapping;
 } CollisionDebugScene;
 
 void CollisionDebugScene_initialize(Game* game);

@@ -18,6 +18,7 @@ typedef struct Scene {
 		MainMenu main_menu;
 		Gameplay gameplay;
 		DebugScene debug_scene;
+		CollisionDebugScene collision_debug_scene;
 	};
 } Scene;
 
