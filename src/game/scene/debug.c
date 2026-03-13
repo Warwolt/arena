@@ -19,7 +19,6 @@ typedef enum DebugMenu {
 void MenuStack_push_menu(MenuStack* stack, int menu) {
 	ASSERT(stack->num_menus != MenuStack_MaxDepth, "%s called with max num menus pushed", __FUNCTION__);
 	stack->menus[stack->num_menus++] = menu;
-	stack->just_pushed_page = true;
 }
 
 void MenuStack_pop_menu(MenuStack* stack) {
@@ -33,9 +32,9 @@ int MenuStack_current_menu(MenuStack* stack) {
 	return 0;
 }
 
-// uhhhh when should this be called exactly?
 void MenuStack_update(MenuStack* stack) {
-	stack->just_pushed_page = false;
+	stack->has_pushed_menu = stack->prev_num_menus < stack->num_menus;
+	stack->prev_num_menus = stack->num_menus;
 }
 
 void DebugScene_initialize(Game* game) {
@@ -45,6 +44,7 @@ void DebugScene_initialize(Game* game) {
 
 void DebugScene_update(Game* game) {
 	DebugScene* debug_scene = &game->scene.debug_scene;
+	MenuStack_update(&debug_scene->menu_stack);
 
 	// testing
 	UIInput input = {
@@ -54,16 +54,9 @@ void DebugScene_update(Game* game) {
 	};
 	UI_begin(input);
 	{
-		// FIXME:
-		// How do we know if we've just pushed a menu?
-		// We need some kind of memory frame-to-frame about which menu we're on.
-		// But, where should that be stored? Do we just add a tick method to MenuStack?
-		// How would a push interact
-
-		// const bool just_popped_menu = false;
-		// if (just_popped_menu) {
-		// 	UI_reset_next_menu_focus();
-		// }
+		if (debug_scene->menu_stack.has_pushed_menu) {
+			UI_reset_next_keyboard_focus();
+		}
 
 		switch (MenuStack_current_menu(&debug_scene->menu_stack)) {
 			case DebugMenu_Main:

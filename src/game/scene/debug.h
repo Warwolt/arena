@@ -8,7 +8,8 @@ typedef struct Game Game;
 typedef struct MenuStack {
 	int menus[MenuStack_MaxDepth];
 	int num_menus;
-	bool just_pushed_page;
+	int prev_num_menus;
+	bool has_pushed_menu;
 } MenuStack;
 
 typedef struct DebugScene {

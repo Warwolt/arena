@@ -15,6 +15,7 @@ typedef struct UIMenuState {
 } UIMenuState;
 
 typedef struct UIState {
+	bool reset_next_keyboard_focus;
 	ArrayMap(UIMenuState, 64) menu;
 } UIState;
 
@@ -68,6 +69,10 @@ void UI_end(void) {
 	g_ui.is_within_frame = false;
 }
 
+void UI_reset_next_keyboard_focus(void) {
+	g_ui.state.reset_next_keyboard_focus = true;
+}
+
 void UI_menu_begin(const char* label) {
 	/* Check that we're not nesting menus */
 	{
@@ -88,6 +93,11 @@ void UI_menu_begin(const char* label) {
 	menu_state->element_closed = false;
 
 	/* Handle focus */
+	if (g_ui.state.reset_next_keyboard_focus) {
+		g_ui.state.reset_next_keyboard_focus = false;
+		menu_state->focused_item = 0;
+	}
+
 	if (g_ui.input.down_pressed) {
 		menu_state->focused_item++;
 	}
@@ -126,12 +136,4 @@ bool UI_menu_item(const char* label) {
 	/* Handle selection */
 	const bool is_selected = g_ui.input.select_pressed && item->is_focused;
 	return is_selected;
-}
-
-void UI_menu_reset_keyboard_focus(void) {
-	UIMenu* menu = UI_current_menu();
-	ASSERT_IS_WITHIN_UI_FRAME();
-	ASSERT(menu != NULL, "UI_menu_reset_keyboard_focus() called without UI_menu_begin()");
-	UIMenuState* menu_state = UI_menu_state(menu->label);
-	menu_state->focused_item = 0;
 }

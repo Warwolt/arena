@@ -260,9 +260,9 @@ TEST(UITests, Menu_ResetKeyboardFocus) {
 	/* Render menu, reset focus */
 	UI_begin((UIInput) { 0 });
 	{
+		UI_reset_next_keyboard_focus();
 		UI_menu_begin("menu");
 		{
-			UI_menu_reset_keyboard_focus();
 			UI_menu_item("item 1");
 			UI_menu_item("item 2");
 		}

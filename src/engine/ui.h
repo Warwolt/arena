@@ -34,8 +34,9 @@ const UIView* UI_view(void);
 void UI_begin(UIInput input);
 void UI_end(void);
 
+void UI_reset_next_keyboard_focus(void);
+
 void UI_menu_begin(const char* label);
 void UI_menu_end(void);
 
 bool UI_menu_item(const char* label);
-void UI_menu_reset_keyboard_focus(void);
