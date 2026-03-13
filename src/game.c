@@ -61,7 +61,7 @@ void Game_update(Game* game) {
 	game->should_quit = WindowShouldClose();
 
 	if (IsKeyPressed(KEY_F11)) {
-		Win32_toggle_fullscreen();
+		Window_toggle_fullscreen(&game->window);
 	}
 
 	if (IsKeyPressed(KEY_F3)) {

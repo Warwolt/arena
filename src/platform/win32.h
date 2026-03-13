@@ -1,14 +1,13 @@
 #pragma once
 
-#define _AMD64_ 1
-#define _M_X64 100
+#include "platform/lean_mean_windows.h"
+
 #include <processthreadsapi.h>
 #include <stdbool.h>
 #include <stdint.h>
 
 // window
 void Win32_set_process_dpi_aware(void);
-void Win32_toggle_fullscreen(void);
 void Win32_show_error_message_box(const char* text);
 
 // file

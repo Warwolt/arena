@@ -3,6 +3,7 @@
 #include "engine/entity.h"
 #include "engine/resource.h"
 #include "game/scene.h"
+#include "platform/window.h"
 
 #include <raylib.h>
 
@@ -12,6 +13,7 @@ typedef struct Game {
 	bool should_quit;
 	bool show_debug_overlay;
 	Font system_font;
+	Window window;
 	RenderTexture screen;
 	ResourceManager resources;
 	EntityManager entities;
