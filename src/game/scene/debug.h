@@ -4,9 +4,15 @@
 
 typedef struct Game Game;
 
+#define MenuStack_MaxDepth 4
+typedef struct MenuStack {
+	int menus[MenuStack_MaxDepth];
+	int num_menus;
+	bool just_pushed_page;
+} MenuStack;
+
 typedef struct DebugScene {
-	int current_page;
-	bool just_pushed_page; // this seems really clumsy, can't se store this inside UIContext?
+	MenuStack menu_stack;
 } DebugScene;
 
 void DebugScene_initialize(Game* game);

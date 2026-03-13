@@ -2,6 +2,7 @@
 
 #include "engine/ui.h"
 #include "game.h"
+#include "platform/assert.h"
 
 #include <raylib.h>
 #include <stdio.h>
@@ -9,57 +10,85 @@
 
 #define max(a, b) ((a) > (b) ? (a) : (b))
 
-typedef enum DebugPage {
-	DebugPage_Main,
-	DebugPage_PageOne,
-	DebugPage_PageTwo,
-} DebugPage;
+typedef enum DebugMenu {
+	DebugMenu_Main,
+	DebugMenu_MenuOne,
+	DebugMenu_MenuTwo,
+} DebugMenu;
+
+void MenuStack_push_menu(MenuStack* stack, int menu) {
+	ASSERT(stack->num_menus != MenuStack_MaxDepth, "%s called with max num menus pushed", __FUNCTION__);
+	stack->menus[stack->num_menus++] = menu;
+	stack->just_pushed_page = true;
+}
+
+void MenuStack_pop_menu(MenuStack* stack) {
+	stack->num_menus = max(stack->num_menus - 1, 0);
+}
+
+int MenuStack_current_menu(MenuStack* stack) {
+	if (stack->num_menus > 0) {
+		return stack->menus[stack->num_menus - 1];
+	}
+	return 0;
+}
+
+// uhhhh when should this be called exactly?
+void MenuStack_update(MenuStack* stack) {
+	stack->just_pushed_page = false;
+}
 
 void DebugScene_initialize(Game* game) {
+	DebugScene* debug_scene = &game->scene.debug_scene;
+	MenuStack_push_menu(&debug_scene->menu_stack, DebugMenu_Main);
 }
 
 void DebugScene_update(Game* game) {
 	DebugScene* debug_scene = &game->scene.debug_scene;
 
 	// testing
-	UI_begin((UIInput) {
+	UIInput input = {
 		.up_pressed = IsKeyPressed(KEY_UP),
 		.down_pressed = IsKeyPressed(KEY_DOWN),
 		.select_pressed = IsKeyPressed(KEY_ENTER),
-	});
+	};
+	UI_begin(input);
 	{
-		switch (debug_scene->current_page) {
-			case DebugPage_Main:
-				debug_scene->just_pushed_page = false;
+		// FIXME:
+		// How do we know if we've just pushed a menu?
+		// We need some kind of memory frame-to-frame about which menu we're on.
+		// But, where should that be stored? Do we just add a tick method to MenuStack?
+		// How would a push interact
+
+		// const bool just_popped_menu = false;
+		// if (just_popped_menu) {
+		// 	UI_reset_next_menu_focus();
+		// }
+
+		switch (MenuStack_current_menu(&debug_scene->menu_stack)) {
+			case DebugMenu_Main:
 				UI_menu_begin("Debug");
 				{
 					if (IsKeyPressed(KEY_ESCAPE)) {
 						Game_quit(game);
 					}
 
-					if (UI_menu_item("Page one")) {
-						debug_scene->current_page = DebugPage_PageOne;
-						debug_scene->just_pushed_page = true;
+					if (UI_menu_item("Menu one")) {
+						MenuStack_push_menu(&debug_scene->menu_stack, DebugMenu_MenuOne);
 					}
 
-					if (UI_menu_item("Page two")) {
-						debug_scene->current_page = DebugPage_PageTwo;
-						debug_scene->just_pushed_page = true;
+					if (UI_menu_item("Menu two")) {
+						MenuStack_push_menu(&debug_scene->menu_stack, DebugMenu_MenuTwo);
 					}
 				}
 				UI_menu_end();
 				break;
 
-			case DebugPage_PageOne:
-				UI_menu_begin("Page One");
+			case DebugMenu_MenuOne:
+				UI_menu_begin("Menu One");
 				{
-					if (debug_scene->just_pushed_page) {
-						UI_menu_reset_keyboard_focus();
-					}
-					debug_scene->just_pushed_page = false;
-
 					if (IsKeyPressed(KEY_ESCAPE)) {
-						debug_scene->current_page = DebugPage_Main;
+						MenuStack_pop_menu(&debug_scene->menu_stack);
 					}
 
 					UI_menu_item("Item 1");
@@ -69,17 +98,11 @@ void DebugScene_update(Game* game) {
 				UI_menu_end();
 				break;
 
-			case DebugPage_PageTwo:
-				UI_menu_begin("Page Two");
+			case DebugMenu_MenuTwo:
+				UI_menu_begin("Menu Two");
 				{
-					if (debug_scene->just_pushed_page) {
-						UI_menu_reset_keyboard_focus();
-					}
-					debug_scene->just_pushed_page = false;
-
 					if (IsKeyPressed(KEY_ESCAPE)) {
-						debug_scene->current_page = DebugPage_Main;
-						debug_scene->just_pushed_page = true;
+						MenuStack_pop_menu(&debug_scene->menu_stack);
 					}
 
 					UI_menu_item("Item 1");
