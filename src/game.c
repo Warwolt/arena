@@ -1,5 +1,6 @@
 #include "game.h"
 
+#include "engine/ui.h"
 #include "platform/logging.h"
 #include "platform/win32.h"
 
@@ -68,7 +69,14 @@ void Game_update(Game* game) {
 		game->show_debug_overlay = !game->show_debug_overlay;
 	}
 
+	UIInput input = {
+		.up_pressed = IsKeyPressed(KEY_UP),
+		.down_pressed = IsKeyPressed(KEY_DOWN),
+		.select_pressed = IsKeyPressed(KEY_ENTER),
+	};
+	UI_begin(input);
 	Scene_update(game);
+	UI_end();
 }
 
 void Game_render(const Game* game) {

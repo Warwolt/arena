@@ -28,6 +28,12 @@ static SceneVTable scene_vtable(SceneID scene_id) {
 				.update = DebugScene_update,
 				.render = DebugScene_render,
 			};
+		case SceneID_CollisionDebugScene:
+			return (SceneVTable) {
+				.initialize = CollisionDebugScene_initialize,
+				.update = CollisionDebugScene_update,
+				.render = CollisionDebugScene_render,
+			};
 	}
 	return (SceneVTable) { 0 };
 }

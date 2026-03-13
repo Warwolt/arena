@@ -10,7 +10,6 @@
 
 typedef enum DebugMenu {
 	DebugMenu_Main,
-	DebugMenu_Input,
 	DebugMenu_Physics,
 } DebugMenu;
 
@@ -44,67 +43,39 @@ void DebugScene_update(Game* game) {
 	DebugScene* debug_scene = &game->scene.debug_scene;
 	MenuStack_update(&debug_scene->menu_stack);
 
-	// testing
-	UIInput input = {
-		.up_pressed = Raylib_IsKeyPressed(KEY_UP),
-		.down_pressed = Raylib_IsKeyPressed(KEY_DOWN),
-		.select_pressed = Raylib_IsKeyPressed(KEY_ENTER),
-	};
-	UI_begin(input);
-	{
-		if (debug_scene->menu_stack.has_pushed_menu) {
-			UI_reset_next_keyboard_focus();
-		}
-
-		switch (MenuStack_current_menu(&debug_scene->menu_stack)) {
-			case DebugMenu_Main:
-				UI_menu_begin("Debug");
-				{
-					if (Raylib_IsKeyPressed(KEY_ESCAPE)) {
-						Game_quit(game);
-					}
-
-					if (UI_menu_item("Input")) {
-						MenuStack_push_menu(&debug_scene->menu_stack, DebugMenu_Input);
-					}
-
-					if (UI_menu_item("Physics")) {
-						MenuStack_push_menu(&debug_scene->menu_stack, DebugMenu_Physics);
-					}
-				}
-				UI_menu_end();
-				break;
-
-			case DebugMenu_Input:
-				UI_menu_begin("Input Debug");
-				{
-					if (Raylib_IsKeyPressed(KEY_ESCAPE)) {
-						MenuStack_pop_menu(&debug_scene->menu_stack);
-					}
-
-					UI_menu_item("Item 1");
-					UI_menu_item("Item 2");
-					UI_menu_item("Item 3");
-				}
-				UI_menu_end();
-				break;
-
-			case DebugMenu_Physics:
-				UI_menu_begin("Physics Debug");
-				{
-					if (Raylib_IsKeyPressed(KEY_ESCAPE)) {
-						MenuStack_pop_menu(&debug_scene->menu_stack);
-					}
-
-					UI_menu_item("Item 1");
-					UI_menu_item("Item 2");
-					UI_menu_item("Item 3");
-				}
-				UI_menu_end();
-				break;
-		}
+	if (debug_scene->menu_stack.has_pushed_menu) {
+		UI_reset_next_keyboard_focus();
 	}
-	UI_end();
+
+	switch (MenuStack_current_menu(&debug_scene->menu_stack)) {
+		case DebugMenu_Main:
+			UI_menu_begin("Debug");
+			{
+				if (Raylib_IsKeyPressed(KEY_ESCAPE)) {
+					Game_quit(game);
+				}
+
+				if (UI_menu_item("Physics")) {
+					MenuStack_push_menu(&debug_scene->menu_stack, DebugMenu_Physics);
+				}
+			}
+			UI_menu_end();
+			break;
+
+		case DebugMenu_Physics:
+			UI_menu_begin("Physics Debug");
+			{
+				if (Raylib_IsKeyPressed(KEY_ESCAPE)) {
+					MenuStack_pop_menu(&debug_scene->menu_stack);
+				}
+
+				if (UI_menu_item("Collisions")) {
+					Game_switch_scene(game, SceneID_CollisionDebugScene);
+				}
+			}
+			UI_menu_end();
+			break;
+	}
 }
 
 void DebugScene_render(const Game* game) {

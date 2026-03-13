@@ -1,6 +1,7 @@
 #pragma once
 
 #include "game/scene/debug.h"
+#include "game/scene/debug/collision.h"
 #include "game/scene/gameplay.h"
 #include "game/scene/main_menu.h"
 
@@ -8,6 +9,7 @@ typedef enum SceneID {
 	SceneID_MainMenu,
 	SceneID_Gameplay,
 	SceneID_DebugScene,
+	SceneID_CollisionDebugScene,
 } SceneID;
 
 typedef struct Scene {

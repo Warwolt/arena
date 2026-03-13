@@ -2,7 +2,7 @@ Goal:
 - Get a basic game up and running (Main menu, level, victory, game over)
 
 # TODO
-- DebugScene: add static collision detection test screen
+- Merge "Window" and "Screen" structs together, they represent the same thing
 - DebugScene: add static collision resolution test screen
 - Add semantic key bindings and use those instead of raw keys
 - Fork Raylib and disable F12 screenshot (and maybe build as DLL by default?)
@@ -13,6 +13,9 @@ Goal:
 - When loading already loaded resource, return existing ID (needs HashMap)
 - Add bounds checking to ArrayMap and SparseArray by adding a `capacity` parameter to the methods
 - Bug: Fix hot reloading requiring 2 reloads before change takes effect? (Note: not sure how to repro this yet)
+
+# Doing
+- DebugScene: add static collision detection test screen
 
 # Done
 - Bug: Win32_toggle_fullscreen breaks on hot reload due to static variables
