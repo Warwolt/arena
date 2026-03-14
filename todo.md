@@ -5,8 +5,7 @@ Goal:
 - Merge "Window" and "Screen" structs together, they represent the same thing
 - DebugScene: add static collision resolution test screen
 - Add semantic key bindings and use those instead of raw keys
-- Fork Raylib and disable F12 screenshot (and maybe build as DLL by default?)
-  - Overkill: Prefix all Raylib functions with "Raylib", e.g. Raylib_IsKeyPressed instead of just IsKeyPressed
+- Disable F12 screenshot in Raylib fork
 - Integrate ImGui so we can visualize system states
   - The game is low resolution so we probably should use multi viewports (https://github.com/ocornut/imgui/wiki/Multi-Viewports)
 - Settings screen, toggle fullscreen on/off
