@@ -13,7 +13,6 @@ typedef struct Circle {
 
 typedef struct Shape {
 	ShapeType type;
-	Vector2 position; // relative to entity
 	union {
 		Circle circle;
 	};

@@ -8,7 +8,7 @@ typedef struct Game Game;
 
 typedef struct CollisionDebugScene {
 	float time_now;
-	Circle circles[2];
+	Shape shapes[2];
 	bool is_overlapping;
 	int page;
 } CollisionDebugScene;
