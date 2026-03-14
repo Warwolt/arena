@@ -10,6 +10,7 @@ typedef struct CollisionDebugScene {
 	float time_now;
 	Circle circles[2];
 	bool is_overlapping;
+	int page;
 } CollisionDebugScene;
 
 void CollisionDebugScene_initialize(Game* game);
