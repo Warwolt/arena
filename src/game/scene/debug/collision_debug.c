@@ -1,6 +1,7 @@
 #include "game/scene/debug/collision_debug.h"
 
 #include "game.h"
+#include "platform/assert.h"
 
 #include <math.h>
 #include <raylib.h>
@@ -23,8 +24,8 @@ void CollisionDebugScene_initialize(Game* game) {
 	const float radius = 100;
 	*scene = (CollisionDebugScene){
 		.shapes = {
-			Shape_circle((Circle) { .center = { .x = 0, .y = 0 }, .radius = radius }),
-			Shape_circle((Circle) { .center = { .x = 0, .y = 0 }, .radius = radius }),
+			Shape_from_circle((Circle) { .center = { .x = 0, .y = 0 }, .radius = radius }),
+			Shape_from_circle((Circle) { .center = { .x = 0, .y = 0 }, .radius = radius }),
 		},
 	};
 }
@@ -48,19 +49,14 @@ void CollisionDebugScene_update(Game* game) {
 	Shape* shape1 = &scene->shapes[0];
 	Shape* shape2 = &scene->shapes[1];
 
-	if (shape1->type == ShapeType_Circle && shape2->type == ShapeType_Circle) {
-		Circle* circle1 = &shape1->circle;
-		Circle* circle2 = &shape2->circle;
+	/* Oscillate first shape */
+	const float period = 6.0f; // seconds
+	const float freq = 1 / period;
+	const float amplitude = 3 * Shape_width(shape1);
+	Shape_set_position(shape1, (Vector2) { roundf(sinf(scene->time_now * freq * 2 * PI) * amplitude), 0 });
 
-		// oscillate first circle
-		float period = 6.0f; // seconds
-		float freq = 1 / period;
-		float amplitude = 3 * circle1->radius;
-		circle1->center.x = roundf(sinf(scene->time_now * freq * 2 * PI) * amplitude);
-
-		// check overlap
-		scene->is_overlapping = Raylib_CheckCollisionCircles(circle1->center, circle1->radius, circle2->center, circle2->radius);
-	}
+	/* Check collisions */
+	scene->is_overlapping = Shape_check_collision(shape1, shape2);
 }
 
 void CollisionDebugScene_render(const Game* game) {

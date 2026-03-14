@@ -38,7 +38,7 @@ TEST(EntityTests, AddEntity_RemoveEntity_ComponentsAlsoRemoved) {
 	EntityManager entities = { 0 };
 
 	EntityID id = EntityManager_add_entity(&entities, Vector2Zero());
-	EntityManager_add_collision_shape(&entities, id, Shape_circle((Circle) { 0 }));
+	EntityManager_add_collision_shape(&entities, id, Shape_from_circle((Circle) { 0 }));
 	EntityManager_remove_entity(&entities, id);
 
 	EXPECT_EQ((int)entities.entities.num_values, 0);
