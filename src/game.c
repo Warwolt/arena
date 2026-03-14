@@ -24,10 +24,13 @@ void Game_initialize(Game* game, int argc, char** argv) {
 	Raylib_SetTargetFPS(120);
 
 	/* Parse command line */
+	bool start_fullscreen = false;
 	SceneID start_scene = SceneID_MainMenu;
 	for (int i = 1; i < argc; i++) {
 		if (strcmp(argv[i], "--debug") == 0) {
 			start_scene = SceneID_CollisionDebugScene;
+		} else if (strcmp(argv[i], "--fullscreen") == 0) {
+			start_fullscreen = true;
 		} else {
 			LOG_ERROR("Unrecognized command: %s", argv[i]);
 		}
@@ -39,6 +42,9 @@ void Game_initialize(Game* game, int argc, char** argv) {
 		.screen = Raylib_LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT),
 		.system_font = Raylib_LoadFont(system_font_path),
 	};
+	if (start_fullscreen) {
+		Window_toggle_fullscreen(&game->window);
+	}
 
 	/* Load start scene */
 	Game_switch_scene(game, start_scene);
