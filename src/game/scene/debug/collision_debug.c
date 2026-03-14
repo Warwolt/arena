@@ -12,22 +12,34 @@ typedef enum DebugPage {
 	DebugPage_CircleCircle,
 	DebugPage_CircleRectangle,
 	DebugPage_Count,
-} CollisionDebug_Page;
+} DebugPage;
 
 const char* debug_page_title[] = {
 	[DebugPage_CircleCircle] = "Circle Circle",
 	[DebugPage_CircleRectangle] = "Circle Rectangle",
 };
 
+static void change_scene_page(CollisionDebugScene* scene, DebugPage page) {
+	const float shape_width = 100;
+	*scene = (CollisionDebugScene) { 0 };
+	scene->page = page;
+	switch (page) {
+		case DebugPage_CircleCircle:
+			scene->shapes[scene->num_shapes++] = Shape_from_circle((Circle) { .center = { .x = 0, .y = 0 }, .radius = shape_width });
+			scene->shapes[scene->num_shapes++] = Shape_from_circle((Circle) { .center = { .x = 0, .y = 0 }, .radius = shape_width });
+			break;
+
+		case DebugPage_CircleRectangle:
+			break;
+
+		case DebugPage_Count:
+			break;
+	}
+}
+
 void CollisionDebugScene_initialize(Game* game) {
 	CollisionDebugScene* scene = &game->scene.collision_debug_scene;
-	const float radius = 100;
-	*scene = (CollisionDebugScene){
-		.shapes = {
-			Shape_from_circle((Circle) { .center = { .x = 0, .y = 0 }, .radius = radius }),
-			Shape_from_circle((Circle) { .center = { .x = 0, .y = 0 }, .radius = radius }),
-		},
-	};
+	change_scene_page(scene, DebugPage_CircleCircle);
 }
 
 void CollisionDebugScene_update(Game* game) {
@@ -39,24 +51,28 @@ void CollisionDebugScene_update(Game* game) {
 	}
 
 	if (Raylib_IsKeyPressed(KEY_RIGHT)) {
-		scene->page = (DebugPage_Count + scene->page + 1) % DebugPage_Count;
+		change_scene_page(scene, (DebugPage_Count + scene->page + 1) % DebugPage_Count);
+		return;
 	}
 
 	if (Raylib_IsKeyPressed(KEY_LEFT)) {
-		scene->page = (DebugPage_Count + scene->page - 1) % DebugPage_Count;
+		change_scene_page(scene, (DebugPage_Count + scene->page - 1) % DebugPage_Count);
+		return;
 	}
 
-	Shape* shape1 = &scene->shapes[0];
-	Shape* shape2 = &scene->shapes[1];
+	if (scene->num_shapes >= 2) {
+		Shape* shape1 = &scene->shapes[0];
+		Shape* shape2 = &scene->shapes[1];
 
-	/* Oscillate first shape */
-	const float period = 6.0f; // seconds
-	const float freq = 1 / period;
-	const float amplitude = 3 * Shape_width(shape1);
-	Shape_set_position(shape1, (Vector2) { roundf(sinf(scene->time_now * freq * 2 * PI) * amplitude), 0 });
+		/* Oscillate first shape */
+		const float period = 6.0f; // seconds
+		const float freq = 1 / period;
+		const float amplitude = 3 * Shape_width(shape1);
+		Shape_set_position(shape1, (Vector2) { roundf(sinf(scene->time_now * freq * 2 * PI) * amplitude), 0 });
 
-	/* Check collisions */
-	scene->is_overlapping = Shape_check_collision(shape1, shape2);
+		/* Check collisions */
+		scene->is_overlapping = Shape_check_collision(shape1, shape2);
+	}
 }
 
 void CollisionDebugScene_render(const Game* game) {
