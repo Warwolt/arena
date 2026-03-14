@@ -31,17 +31,17 @@ void CollisionDebugScene_initialize(Game* game) {
 
 void CollisionDebugScene_update(Game* game) {
 	CollisionDebugScene* scene = &game->scene.collision_debug_scene;
-	scene->time_now += GetFrameTime();
+	scene->time_now += Raylib_GetFrameTime();
 
-	if (IsKeyPressed(KEY_ESCAPE)) {
+	if (Raylib_IsKeyPressed(KEY_ESCAPE)) {
 		Game_quit(game);
 	}
 
-	if (IsKeyPressed(KEY_RIGHT)) {
+	if (Raylib_IsKeyPressed(KEY_RIGHT)) {
 		scene->page = (DebugPage_Count + scene->page + 1) % DebugPage_Count;
 	}
 
-	if (IsKeyPressed(KEY_LEFT)) {
+	if (Raylib_IsKeyPressed(KEY_LEFT)) {
 		scene->page = (DebugPage_Count + scene->page - 1) % DebugPage_Count;
 	}
 
@@ -61,7 +61,7 @@ void CollisionDebugScene_update(Game* game) {
 	scene->circles[0].center.x = roundf(sinf(scene->time_now * freq * 2 * PI) * amplitude);
 
 	// check overlap
-	scene->is_overlapping = CheckCollisionCircles(circle1->center, circle1->radius, circle2->center, circle2->radius);
+	scene->is_overlapping = Raylib_CheckCollisionCircles(circle1->center, circle1->radius, circle2->center, circle2->radius);
 }
 
 void CollisionDebugScene_render(const Game* game) {
@@ -71,7 +71,7 @@ void CollisionDebugScene_render(const Game* game) {
 		.y = game->screen.texture.height / 2,
 	};
 
-	ClearBackground(BLACK);
+	Raylib_ClearBackground(BLACK);
 	Game_draw_text(game, "Collision Debug", 1, 1, 16, WHITE);
 	char text[128];
 	snprintf(text, 128, "Page %d/%d: %s", scene->page + 1, DebugPage_Count, debug_page_title[scene->page]);
@@ -80,7 +80,7 @@ void CollisionDebugScene_render(const Game* game) {
 		const Circle* circle = &scene->circles[i];
 		const Vector2 center = Vector2Add(circle->center, screen_middle);
 		const Color color = scene->is_overlapping ? RED : GREEN;
-		DrawCircleV(center, circle->radius, ColorAlpha(color, 0.5f));
-		DrawCircleLinesV(center, circle->radius, color);
+		Raylib_DrawCircleV(center, circle->radius, Raylib_ColorAlpha(color, 0.5f));
+		Raylib_DrawCircleLinesV(center, circle->radius, color);
 	}
 }
