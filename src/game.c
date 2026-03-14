@@ -17,10 +17,10 @@
 void Game_initialize(Game* game, int argc, char** argv) {
 	/* Initialize systems */
 	initialize_logging();
-	SetTraceLogLevel(LOG_WARNING); // disable verbose raylib output
-	InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE);
-	SetExitKey(KEY_NULL);
-	SetTargetFPS(120);
+	Raylib_SetTraceLogLevel(LOG_WARNING); // disable verbose raylib output
+	Raylib_InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE);
+	Raylib_SetExitKey(KEY_NULL);
+	Raylib_SetTargetFPS(120);
 
 	/* Parse command line */
 	SceneID start_scene = SceneID_MainMenu;
@@ -35,8 +35,8 @@ void Game_initialize(Game* game, int argc, char** argv) {
 	/* Initialize game */
 	const char* system_font_path = "resource/font/ModernDOS8x16.ttf";
 	*game = (Game) {
-		.screen = LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT),
-		.system_font = LoadFont(system_font_path),
+		.screen = Raylib_LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT),
+		.system_font = Raylib_LoadFont(system_font_path),
 	};
 
 	/* Load start scene */
@@ -51,20 +51,20 @@ void Game_initialize(Game* game, int argc, char** argv) {
 }
 
 void Game_shutdown(Game* game) {
-	UnloadFont(game->system_font);
+	Raylib_UnloadFont(game->system_font);
 	ResourceManager_unload_resources(&game->resources);
-	CloseWindow();
+	Raylib_CloseWindow();
 	LOG_INFO("Game shutdown");
 }
 
 void Game_update(Game* game) {
-	game->should_quit = WindowShouldClose();
+	game->should_quit = Raylib_WindowShouldClose();
 
-	if (IsKeyPressed(KEY_F11)) {
+	if (Raylib_IsKeyPressed(KEY_F11)) {
 		Window_toggle_fullscreen(&game->window);
 	}
 
-	if (IsKeyPressed(KEY_F3)) {
+	if (Raylib_IsKeyPressed(KEY_F3)) {
 		game->show_debug_overlay = !game->show_debug_overlay;
 	}
 
@@ -73,7 +73,7 @@ void Game_update(Game* game) {
 
 void Game_render(const Game* game) {
 	/* Render onto screen texture */
-	BeginTextureMode(game->screen);
+	Raylib_BeginTextureMode(game->screen);
 	{
 		Scene_render(game);
 
@@ -90,18 +90,18 @@ void Game_render(const Game* game) {
 			Game_draw_text(game, text, 1, row++ * font_size, font_size, WHITE);
 		}
 	}
-	EndTextureMode();
+	Raylib_EndTextureMode();
 
 	/* Render window */
-	BeginDrawing();
+	Raylib_BeginDrawing();
 	{
 		// Draw background
-		ClearBackground(BLACK);
+		Raylib_ClearBackground(BLACK);
 
 		// Draw stretched screen texture
 		Rectangle screen = Game_screen_rect(game);
-		int window_width = GetScreenWidth();
-		int window_height = GetScreenHeight();
+		int window_width = Raylib_GetScreenWidth();
+		int window_height = Raylib_GetScreenHeight();
 		int scale = min(window_width / screen.width, window_height / screen.height);
 		int scaled_width = scale * screen.width;
 		int scaled_height = scale * screen.height;
@@ -111,9 +111,9 @@ void Game_render(const Game* game) {
 			.width = scaled_width,
 			.height = scaled_height,
 		};
-		DrawTexturePro(game->screen.texture, (Rectangle) { 0, 0, screen.width, -screen.height }, scaled_screen_rect, Vector2Zero(), 0, WHITE);
+		Raylib_DrawTexturePro(game->screen.texture, (Rectangle) { 0, 0, screen.width, -screen.height }, scaled_screen_rect, Vector2Zero(), 0, WHITE);
 	}
-	EndDrawing();
+	Raylib_EndDrawing();
 }
 
 void Game_quit(Game* game) {
@@ -130,11 +130,11 @@ void Game_switch_scene(Game* game, SceneID scene_id) {
 }
 
 void Game_draw_text(const Game* game, const char* text, int x, int y, int font_size, Color color) {
-	DrawTextEx(game->system_font, text, (Vector2) { x, y }, font_size, 0, color);
+	Raylib_DrawTextEx(game->system_font, text, (Vector2) { x, y }, font_size, 0, color);
 }
 
 int Game_measure_text_width(const Game* game, const char* text, int font_size) {
-	return MeasureTextEx(game->system_font, text, font_size, 0).x;
+	return Raylib_MeasureTextEx(game->system_font, text, font_size, 0).x;
 }
 
 Rectangle Game_screen_rect(const Game* game) {

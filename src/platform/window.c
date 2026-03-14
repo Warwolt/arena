@@ -5,7 +5,7 @@
 // Based on Raymond Chen's "How do I switch a window between normal and fullscreen?"
 // https://devblogs.microsoft.com/oldnewthing/20100412-00/?p=14353
 void Window_toggle_fullscreen(Window* window) {
-	HWND handle = GetWindowHandle();
+	HWND handle = Raylib_GetWindowHandle();
 
 	DWORD style = GetWindowLong(handle, GWL_STYLE);
 	if (style & WS_OVERLAPPEDWINDOW) {

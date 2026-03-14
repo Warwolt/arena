@@ -93,7 +93,7 @@ void Win32_set_process_dpi_aware(void) {
 }
 
 void Win32_show_error_message_box(const char* text) {
-	HWND handle = GetWindowHandle();
+	HWND handle = Raylib_GetWindowHandle();
 	MessageBoxA(handle, text, "Error", MB_OK | MB_ICONERROR);
 }
 

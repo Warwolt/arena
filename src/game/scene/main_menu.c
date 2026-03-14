@@ -28,7 +28,7 @@ void MainMenu_initialize(Game* game) {
 void MainMenu_update(Game* game) {
 	MainMenu* main_menu = &game->scene.main_menu;
 
-	if (IsKeyPressed(KEY_ENTER)) {
+	if (Raylib_IsKeyPressed(KEY_ENTER)) {
 		switch (main_menu->focused_menu_item) {
 			case MenuItem_Play:
 				Game_switch_scene(game, SceneID_Gameplay);
@@ -40,21 +40,21 @@ void MainMenu_update(Game* game) {
 		}
 	}
 
-	if (IsKeyPressed(KEY_ESCAPE)) {
+	if (Raylib_IsKeyPressed(KEY_ESCAPE)) {
 		game->should_quit = true;
 	}
 
-	if (IsKeyPressed(KEY_DOWN) || IsKeyPressed('S')) {
+	if (Raylib_IsKeyPressed(KEY_DOWN) || Raylib_IsKeyPressed('S')) {
 		main_menu->focused_menu_item = (MenuItem_Count + main_menu->focused_menu_item + 1) % MenuItem_Count;
 	}
 
-	if (IsKeyPressed(KEY_UP) || IsKeyPressed('W')) {
+	if (Raylib_IsKeyPressed(KEY_UP) || Raylib_IsKeyPressed('W')) {
 		main_menu->focused_menu_item = (MenuItem_Count + main_menu->focused_menu_item - 1) % MenuItem_Count;
 	}
 }
 
 void MainMenu_render(const Game* game) {
-	ClearBackground(BLACK);
+	Raylib_ClearBackground(BLACK);
 	const MainMenu* main_menu = &game->scene.main_menu;
 	const int big_font_size = 64;
 	const int small_font_size = 48;
