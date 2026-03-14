@@ -85,21 +85,21 @@ void Gameplay_update(Game* game) {
 		.y = room_height / 2,
 	};
 
-	if (IsKeyPressed(KEY_ESCAPE)) {
+	if (Raylib_IsKeyPressed(KEY_ESCAPE)) {
 		gameplay->is_paused = !gameplay->is_paused;
 	}
 
 	/* Show pause menu */
 	if (gameplay->is_paused) {
-		if (IsKeyPressed(KEY_DOWN) || IsKeyPressed('S')) {
+		if (Raylib_IsKeyPressed(KEY_DOWN) || Raylib_IsKeyPressed('S')) {
 			gameplay->focused_pause_menu_item = (PauseMenuItem_Count + gameplay->focused_pause_menu_item + 1) % PauseMenuItem_Count;
 		}
 
-		if (IsKeyPressed(KEY_UP) || IsKeyPressed('W')) {
+		if (Raylib_IsKeyPressed(KEY_UP) || Raylib_IsKeyPressed('W')) {
 			gameplay->focused_pause_menu_item = (PauseMenuItem_Count + gameplay->focused_pause_menu_item - 1) % PauseMenuItem_Count;
 		}
 
-		if (IsKeyPressed(KEY_ENTER)) {
+		if (Raylib_IsKeyPressed(KEY_ENTER)) {
 			switch (gameplay->focused_pause_menu_item) {
 				case PauseMenuItem_Continue:
 					gameplay->is_paused = false;
@@ -113,27 +113,27 @@ void Gameplay_update(Game* game) {
 	/* Update scene */
 	else {
 		/* Increment time */
-		gameplay->time_now += GetFrameTime();
+		gameplay->time_now += Raylib_GetFrameTime();
 
 		/* Move player */
 		{
 			Vector2 input_vec = Vector2Zero();
-			if (IsKeyDown('A')) {
+			if (Raylib_IsKeyDown('A')) {
 				input_vec = Vector2Add(input_vec, (Vector2) { -1, 0 });
 			}
-			if (IsKeyDown('D')) {
+			if (Raylib_IsKeyDown('D')) {
 				input_vec = Vector2Add(input_vec, (Vector2) { 1, 0 });
 			}
-			if (IsKeyDown('W')) {
+			if (Raylib_IsKeyDown('W')) {
 				input_vec = Vector2Add(input_vec, (Vector2) { 0, -1 });
 			}
-			if (IsKeyDown('S')) {
+			if (Raylib_IsKeyDown('S')) {
 				input_vec = Vector2Add(input_vec, (Vector2) { 0, 1 });
 			}
 			input_vec = Vector2Normalize(input_vec);
 
 			Vector2 player_pos = Vector2Zero();
-			const float delta_time = GetFrameTime();
+			const float delta_time = Raylib_GetFrameTime();
 			const float player_speed = 300; // px / second
 			EntityManager_get_position(&game->entities, gameplay->player_id, &player_pos);
 
@@ -203,7 +203,7 @@ void Gameplay_update(Game* game) {
 						.center = Vector2Add(other_collision_shape.circle.center, other_position),
 						.radius = other_collision_shape.circle.radius,
 					};
-					const bool is_colliding = CheckCollisionCircles(
+					const bool is_colliding = Raylib_CheckCollisionCircles(
 						player_circle.center,
 						player_circle.radius,
 						other_circle.center,
@@ -236,13 +236,13 @@ void Gameplay_render(const Game* game) {
 	};
 
 	/* Render in camera */
-	BeginMode2D(gameplay->camera);
+	Raylib_BeginMode2D(gameplay->camera);
 	{
 		/* Draw background */
-		ClearBackground(BLACK);
+		Raylib_ClearBackground(BLACK);
 		Texture2D bg_texture = { 0 };
 		ResourceManager_get_texture(&game->resources, gameplay->bg_texture_id, &bg_texture);
-		DrawTextureRec(bg_texture, (Rectangle) { .width = gameplay->room_width, .height = gameplay->room_height }, room_top_left, WHITE);
+		Raylib_DrawTextureRec(bg_texture, (Rectangle) { .width = gameplay->room_width, .height = gameplay->room_height }, room_top_left, WHITE);
 
 		// y-sort the entities
 		EntityID y_sorted_entities[MAX_NUM_ENTITES] = { 0 };
@@ -270,7 +270,7 @@ void Gameplay_render(const Game* game) {
 			};
 
 			/* Draw current sprite */
-			DrawTextureRec(texture, sprite.clip_rect, sprite_top_left, WHITE);
+			Raylib_DrawTextureRec(texture, sprite.clip_rect, sprite_top_left, WHITE);
 		}
 
 		/* Draw collision shapes */
@@ -291,7 +291,7 @@ void Gameplay_render(const Game* game) {
 			}
 		}
 	}
-	EndMode2D();
+	Raylib_EndMode2D();
 
 	/* Draw pause menu */
 	if (gameplay->is_paused) {
@@ -313,8 +313,8 @@ void Gameplay_render(const Game* game) {
 		const int title_padding = 12;
 		const int top_margin = (screen_rect.height - font_size_big - title_padding - 2 * font_size_small) / 2;
 
-		DrawRectangleRec(screen_rect, ColorAlpha(BLACK, 0.25f));
-		DrawRectangleRec(menu_rect, BLACK);
+		Raylib_DrawRectangleRec(screen_rect, ColorAlpha(BLACK, 0.25f));
+		Raylib_DrawRectangleRec(menu_rect, BLACK);
 		{
 			const char* text = "Paused";
 			int text_width = Game_measure_text_width(game, text, font_size_big);

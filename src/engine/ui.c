@@ -3,7 +3,6 @@
 #include "core/array_map.h"
 #include "platform/assert.h"
 
-#include <raylib.h>
 #include <string.h>
 
 #define ASSERT_IS_WITHIN_UI_FRAME()                                                                          \

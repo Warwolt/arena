@@ -46,9 +46,9 @@ void DebugScene_update(Game* game) {
 
 	// testing
 	UIInput input = {
-		.up_pressed = IsKeyPressed(KEY_UP),
-		.down_pressed = IsKeyPressed(KEY_DOWN),
-		.select_pressed = IsKeyPressed(KEY_ENTER),
+		.up_pressed = Raylib_IsKeyPressed(KEY_UP),
+		.down_pressed = Raylib_IsKeyPressed(KEY_DOWN),
+		.select_pressed = Raylib_IsKeyPressed(KEY_ENTER),
 	};
 	UI_begin(input);
 	{
@@ -60,7 +60,7 @@ void DebugScene_update(Game* game) {
 			case DebugMenu_Main:
 				UI_menu_begin("Debug");
 				{
-					if (IsKeyPressed(KEY_ESCAPE)) {
+					if (Raylib_IsKeyPressed(KEY_ESCAPE)) {
 						Game_quit(game);
 					}
 
@@ -78,7 +78,7 @@ void DebugScene_update(Game* game) {
 			case DebugMenu_Input:
 				UI_menu_begin("Input Debug");
 				{
-					if (IsKeyPressed(KEY_ESCAPE)) {
+					if (Raylib_IsKeyPressed(KEY_ESCAPE)) {
 						MenuStack_pop_menu(&debug_scene->menu_stack);
 					}
 
@@ -92,7 +92,7 @@ void DebugScene_update(Game* game) {
 			case DebugMenu_Physics:
 				UI_menu_begin("Physics Debug");
 				{
-					if (IsKeyPressed(KEY_ESCAPE)) {
+					if (Raylib_IsKeyPressed(KEY_ESCAPE)) {
 						MenuStack_pop_menu(&debug_scene->menu_stack);
 					}
 
@@ -112,7 +112,7 @@ void DebugScene_render(const Game* game) {
 	const Rectangle screen_rect = Game_screen_rect(game);
 	const int font_size = 32;
 
-	ClearBackground(BLACK);
+	Raylib_ClearBackground(BLACK);
 
 	/* Draw each menu */
 	for (int i = 0; i < UI_view()->num_menus; i++) {
@@ -139,7 +139,7 @@ void DebugScene_render(const Game* game) {
 			const int pos_x = margin_left;
 			const int pos_y = margin_top + j * font_size;
 			if (item->is_focused) {
-				DrawRectangle(pos_x, pos_y, menu_width, font_size, WHITE);
+				Raylib_DrawRectangle(pos_x, pos_y, menu_width, font_size, WHITE);
 				Game_draw_text(game, item->label, pos_x, pos_y, font_size, BLACK);
 			} else {
 				Game_draw_text(game, item->label, pos_x, pos_y, font_size, WHITE);
