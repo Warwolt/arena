@@ -18,6 +18,9 @@ typedef enum InputAction {
 	InputAction_Right,
 	InputAction_Select,
 	InputAction_Back,
+	InputAction_ToggleFullscreen,
+	InputAction_ShowDebugOverlay,
+
 	InputAction_Count,
 } InputAction;
 
@@ -26,6 +29,7 @@ const char* InputAction_to_string(InputAction action);
 typedef struct Input {
 	Mouse mouse; // relative to viewport
 	bool action_is_pressed[InputAction_Count];
+	bool action_is_down[InputAction_Count];
 } Input;
 
 void Input_update(Input* input, const Window* window);

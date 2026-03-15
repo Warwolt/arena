@@ -60,7 +60,7 @@ void DebugScene_update(Game* game) {
 			case DebugMenu_Main:
 				UI_menu_begin("Debug");
 				{
-					if (Raylib_IsKeyPressed(KEY_ESCAPE)) {
+					if (game->input.action_is_pressed[InputAction_Back]) {
 						Game_quit(game);
 					}
 

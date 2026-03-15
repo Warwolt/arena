@@ -63,11 +63,11 @@ void Game_update(Game* game) {
 	Window_update(&game->window);
 	Input_update(&game->input, &game->window);
 
-	if (Raylib_IsKeyPressed(KEY_F11)) {
+	if (game->input.action_is_pressed[InputAction_ToggleFullscreen]) {
 		Window_toggle_fullscreen(&game->window);
 	}
 
-	if (Raylib_IsKeyPressed(KEY_F3)) {
+	if (game->input.action_is_pressed[InputAction_ShowDebugOverlay]) {
 		game->show_debug_overlay = !game->show_debug_overlay;
 	}
 
@@ -84,7 +84,7 @@ void Game_render(const Game* game) {
 		if (game->show_debug_overlay) {
 			int font_size = 16;
 			int row = 0;
-			char text[128] = { 0 };
+			char text[128] = {0};
 
 			snprintf(text, sizeof(text), "FPS: %d", GetFPS());
 			Game_draw_text(game, text, 1, row++ * font_size, font_size, WHITE);
@@ -118,7 +118,7 @@ void Game_quit(Game* game) {
 
 void Game_switch_scene(Game* game, SceneID scene_id) {
 	/* Unload resources used by current scene */
-	game->entities = (EntityManager) { 0 };
+	game->entities = (EntityManager) {0};
 	ResourceManager_unload_resources(&game->resources);
 
 	/* Initialize scene */
@@ -126,7 +126,7 @@ void Game_switch_scene(Game* game, SceneID scene_id) {
 }
 
 void Game_draw_text(const Game* game, const char* text, int x, int y, int font_size, Color color) {
-	Raylib_DrawTextEx(game->system_font, text, (Vector2) { x, y }, font_size, 0, color);
+	Raylib_DrawTextEx(game->system_font, text, (Vector2) {x, y}, font_size, 0, color);
 }
 
 int Game_measure_text_width(const Game* game, const char* text, int font_size) {
