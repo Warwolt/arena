@@ -47,11 +47,13 @@ set(LIB
     shlwapi
 )
 
-add_library(Source STATIC ${SRC})
+# Source object library (shared between DLL and test exe)
+add_library(Source OBJECT ${SRC})
 target_include_directories(Source PUBLIC src lib)
-target_link_libraries(Source ${LIB})
+target_link_libraries(Source PUBLIC ${LIB})
 
-add_library(Library SHARED ${SRC})
+# Source DLL (to support hot reloading)
+add_library(Library SHARED $<TARGET_OBJECTS:Source>)
 target_include_directories(Library PUBLIC src lib)
 target_link_libraries(Library ${LIB})
 set_target_properties(Library PROPERTIES OUTPUT_NAME "Game")
@@ -70,6 +72,7 @@ set_target_properties(Executable PROPERTIES OUTPUT_NAME "Game")
 
 # Tests
 add_executable(Tests
+    $<TARGET_OBJECTS:Source>
     test/arena_tests.c
     test/array_map_tests.c
     test/entity_tests.c
@@ -78,7 +81,7 @@ add_executable(Tests
     test/ui_tests.c
 )
 target_include_directories(Tests PUBLIC src lib)
-target_link_libraries(Tests Source)
+target_link_libraries(Tests PUBLIC ${LIB})
 
 # Copy raylib DLL to executable directory
 add_custom_command(TARGET Executable POST_BUILD
