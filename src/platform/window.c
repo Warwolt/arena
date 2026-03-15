@@ -23,9 +23,9 @@ void Window_update(Window* window) {
 	// viewport is being rendered. The viewport is upscaled as much as possible
 	// to fit the window size with maintained aspect ratio, with black matte to
 	// the sides if needed.
-	int scale = min(screen_width / viewport_width, screen_height / viewport_height);
-	int scaled_width = scale * viewport_width;
-	int scaled_height = scale * viewport_height;
+	window->scale = min(screen_width / viewport_width, screen_height / viewport_height);
+	int scaled_width = window->scale * viewport_width;
+	int scaled_height = window->scale * viewport_height;
 	window->letterbox = (Rectangle) {
 		.x = (screen_width - scaled_width) / 2,
 		.y = (screen_height - scaled_height) / 2,

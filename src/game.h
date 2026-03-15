@@ -3,6 +3,7 @@
 #include "engine/entity.h"
 #include "engine/resource.h"
 #include "game/scene.h"
+#include "platform/input.h"
 #include "platform/window.h"
 
 #include <raylib.h>
@@ -12,11 +13,12 @@
 typedef struct Game {
 	bool should_quit;
 	bool show_debug_overlay;
-	Font system_font;
+	Font system_font; // FIXME: move into ResourceManager?
 	Window window;
+	Input input;
 	ResourceManager resources;
 	EntityManager entities;
-	Scene scene;
+	Scene scene; // FIXME: turn into a "SceneManager" that can push multiple scenes
 } Game;
 
 __declspec(dllexport) void Game_initialize(Game* game, int argc, char** argv);

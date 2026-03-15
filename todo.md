@@ -14,6 +14,7 @@ Goal:
 - Bug: Fix hot reloading requiring 2 reloads before change takes effect? (Note: not sure how to repro this yet)
 
 # Done
+- Add viewport relative mouse input
 - Move fixed resolution viewport handling into Window struct
 - Bug: Win32_toggle_fullscreen breaks on hot reload due to static variables
 - DebugScene, add place to run very simple debug scenarios for various systems

@@ -23,7 +23,7 @@ void MenuStack_pop_menu(MenuStack* stack) {
 	stack->num_menus = max(stack->num_menus - 1, 0);
 }
 
-int MenuStack_current_menu(MenuStack* stack) {
+int MenuStack_current_menu(const MenuStack* stack) {
 	if (stack->num_menus > 0) {
 		return stack->menus[stack->num_menus - 1];
 	}
@@ -36,13 +36,13 @@ void MenuStack_update(MenuStack* stack) {
 }
 
 void DebugScene_initialize(Game* game) {
-	DebugScene* debug_scene = &game->scene.debug_scene;
-	MenuStack_push_menu(&debug_scene->menu_stack, DebugMenu_Main);
+	DebugScene* scene = &game->scene.debug_scene;
+	MenuStack_push_menu(&scene->menu_stack, DebugMenu_Main);
 }
 
 void DebugScene_update(Game* game) {
-	DebugScene* debug_scene = &game->scene.debug_scene;
-	MenuStack_update(&debug_scene->menu_stack);
+	DebugScene* scene = &game->scene.debug_scene;
+	MenuStack_update(&scene->menu_stack);
 
 	// testing
 	UIInput input = {
@@ -52,11 +52,11 @@ void DebugScene_update(Game* game) {
 	};
 	UI_begin(input);
 	{
-		if (debug_scene->menu_stack.has_pushed_menu) {
+		if (scene->menu_stack.has_pushed_menu) {
 			UI_reset_next_keyboard_focus();
 		}
 
-		switch (MenuStack_current_menu(&debug_scene->menu_stack)) {
+		switch (MenuStack_current_menu(&scene->menu_stack)) {
 			case DebugMenu_Main:
 				UI_menu_begin("Debug");
 				{
@@ -65,35 +65,28 @@ void DebugScene_update(Game* game) {
 					}
 
 					if (UI_menu_item("Input")) {
-						MenuStack_push_menu(&debug_scene->menu_stack, DebugMenu_Input);
+						MenuStack_push_menu(&scene->menu_stack, DebugMenu_Input);
 					}
 
 					if (UI_menu_item("Physics")) {
-						MenuStack_push_menu(&debug_scene->menu_stack, DebugMenu_Physics);
+						MenuStack_push_menu(&scene->menu_stack, DebugMenu_Physics);
 					}
 				}
 				UI_menu_end();
 				break;
 
 			case DebugMenu_Input:
-				UI_menu_begin("Input Debug");
-				{
-					if (Raylib_IsKeyPressed(KEY_ESCAPE)) {
-						MenuStack_pop_menu(&debug_scene->menu_stack);
-					}
-
-					UI_menu_item("Item 1");
-					UI_menu_item("Item 2");
-					UI_menu_item("Item 3");
+				if (Raylib_IsKeyPressed(KEY_ESCAPE)) {
+					MenuStack_pop_menu(&scene->menu_stack);
 				}
-				UI_menu_end();
+
 				break;
 
 			case DebugMenu_Physics:
 				UI_menu_begin("Physics Debug");
 				{
 					if (Raylib_IsKeyPressed(KEY_ESCAPE)) {
-						MenuStack_pop_menu(&debug_scene->menu_stack);
+						MenuStack_pop_menu(&scene->menu_stack);
 					}
 
 					UI_menu_item("Item 1");
@@ -108,7 +101,7 @@ void DebugScene_update(Game* game) {
 }
 
 void DebugScene_render(const Game* game) {
-	const DebugScene* debug_scene = &game->scene.debug_scene;
+	const DebugScene* scene = &game->scene.debug_scene;
 	const Rectangle window = Window_rectangle(&game->window);
 	const int font_size = 32;
 
@@ -145,5 +138,17 @@ void DebugScene_render(const Game* game) {
 				Game_draw_text(game, item->label, pos_x, pos_y, font_size, WHITE);
 			}
 		}
+	}
+
+	switch (MenuStack_current_menu(&scene->menu_stack)) {
+		case DebugMenu_Main:
+			break;
+		case DebugMenu_Input: {
+			char text[256] = { 0 };
+			snprintf(text, 256, "Mouse position: (%d,%d)", game->input.mouse.x, game->input.mouse.y);
+			Game_draw_text(game, text, 1, 1, font_size, WHITE);
+		} break;
+		case DebugMenu_Physics:
+			break;
 	}
 }
