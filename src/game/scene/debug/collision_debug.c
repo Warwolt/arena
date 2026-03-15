@@ -111,7 +111,7 @@ void CollisionDebugScene_update(Game* game) {
 		}
 
 		/* Check collisions */
-		scene->is_overlapping = Shape_check_collision(shape1, shape2);
+		scene->is_overlapping = Shape_is_overlapping_shape(shape1, shape2);
 	}
 }
 

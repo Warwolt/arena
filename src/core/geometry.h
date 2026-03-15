@@ -27,4 +27,4 @@ Shape Shape_from_rectangle(Rectangle rectangle);
 void Shape_set_position(Shape* shape, Vector2 pos);
 
 float Shape_width(const Shape* shape);
-bool Shape_check_collision(const Shape* lhs, const Shape* rhs);
+bool Shape_is_overlapping_shape(const Shape* lhs, const Shape* rhs);

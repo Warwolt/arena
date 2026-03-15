@@ -41,7 +41,7 @@ void Shape_set_position(Shape* shape, Vector2 pos) {
 	}
 }
 
-bool Shape_check_collision(const Shape* lhs, const Shape* rhs) {
+bool Shape_is_overlapping_shape(const Shape* lhs, const Shape* rhs) {
 	switch (lhs->type) {
 		case ShapeType_Circle: {
 			const Circle* lhs_circle = &lhs->circle;
