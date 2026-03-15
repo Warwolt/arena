@@ -79,9 +79,9 @@ void Game_update(Game* game) {
 	}
 
 	UIInput input = {
-		.up_pressed = IsKeyPressed(KEY_UP),
-		.down_pressed = IsKeyPressed(KEY_DOWN),
-		.select_pressed = IsKeyPressed(KEY_ENTER),
+		.up_pressed = game->input.action_is_pressed[InputAction_Up],
+		.down_pressed = game->input.action_is_pressed[InputAction_Down],
+		.select_pressed = game->input.action_is_pressed[InputAction_Select],
 	};
 	UI_begin(input);
 	Scene_update(game);
