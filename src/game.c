@@ -1,5 +1,6 @@
 #include "game.h"
 
+#include "engine/ui.h"
 #include "platform/logging.h"
 #include "platform/win32.h"
 
@@ -23,10 +24,13 @@ void Game_initialize(Game* game, int argc, char** argv) {
 	Raylib_SetTargetFPS(120);
 
 	/* Parse command line */
+	bool start_fullscreen = false;
 	SceneID start_scene = SceneID_MainMenu;
 	for (int i = 1; i < argc; i++) {
 		if (strcmp(argv[i], "--debug") == 0) {
-			start_scene = SceneID_DebugScene;
+			start_scene = SceneID_CollisionDebugScene;
+		} else if (strcmp(argv[i], "--fullscreen") == 0) {
+			start_fullscreen = true;
 		} else {
 			LOG_ERROR("Unrecognized command: %s", argv[i]);
 		}
@@ -38,6 +42,9 @@ void Game_initialize(Game* game, int argc, char** argv) {
 		.window = Window_initialize(SCREEN_WIDTH, SCREEN_HEIGHT),
 		.system_font = Raylib_LoadFont(system_font_path),
 	};
+	if (start_fullscreen) {
+		Window_toggle_fullscreen(&game->window);
+	}
 
 	/* Load start scene */
 	Game_switch_scene(game, start_scene);
@@ -71,7 +78,14 @@ void Game_update(Game* game) {
 		game->show_debug_overlay = !game->show_debug_overlay;
 	}
 
+	UIInput input = {
+		.up_pressed = IsKeyPressed(KEY_UP),
+		.down_pressed = IsKeyPressed(KEY_DOWN),
+		.select_pressed = IsKeyPressed(KEY_ENTER),
+	};
+	UI_begin(input);
 	Scene_update(game);
+	UI_end();
 }
 
 void Game_render(const Game* game) {

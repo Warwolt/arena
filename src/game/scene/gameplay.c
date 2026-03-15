@@ -2,6 +2,7 @@
 
 #include "core/for_each.h"
 #include "game.h"
+#include "platform/assert.h"
 #include "platform/logging.h"
 
 #include <raylib.h>
@@ -64,10 +65,10 @@ void Gameplay_initialize(Game* game) {
 				.zoom = 1.0f,
 			},
 		.bg_texture_id = ResourceManager_load_texture(&game->resources, "resource/image/grass_tile.png"),
-		.player_id = add_physical_object(&game->entities, Vector2Zero(), player_sprite, Shape_circle((Circle) { .radius = 16 })),
-		.donut_id = add_physical_object(&game->entities, (Vector2) { -48, 0 }, donut_sprite, Shape_circle((Circle) { .radius = 8 })),
-		.donut2_id = add_physical_object(&game->entities, (Vector2) { -112, 0 }, donut_sprite, Shape_circle((Circle) { .radius = 8 })),
-		.coffe_id = add_physical_object(&game->entities, (Vector2) { 48, 0 }, coffee_sprite, Shape_circle((Circle) { .radius = 8 })),
+		.player_id = add_physical_object(&game->entities, Vector2Zero(), player_sprite, Shape_from_circle((Circle) { .radius = 16 })),
+		.donut_id = add_physical_object(&game->entities, (Vector2) { -48, 0 }, donut_sprite, Shape_from_circle((Circle) { .radius = 8 })),
+		.donut2_id = add_physical_object(&game->entities, (Vector2) { -112, 0 }, donut_sprite, Shape_from_circle((Circle) { .radius = 8 })),
+		.coffe_id = add_physical_object(&game->entities, (Vector2) { 48, 0 }, coffee_sprite, Shape_from_circle((Circle) { .radius = 8 })),
 	};
 }
 
@@ -280,6 +281,10 @@ void Gameplay_render(const Game* game) {
 						case ShapeType_Circle:
 							DrawCircle(position.x, position.y, collision_shape.circle.radius, ColorAlpha(GREEN, 0.5f));
 							DrawCircleLines(position.x, position.y, collision_shape.circle.radius, GREEN);
+							break;
+
+						case ShapeType_Rectangle:
+							ASSERT(false, "TODO implement");
 							break;
 					}
 				}

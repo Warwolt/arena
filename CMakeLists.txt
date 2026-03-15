@@ -26,12 +26,14 @@ set(SRC
     src/core/arena.c
     src/core/array_map.c
     src/core/sparse_array.c
+    src/core/geometry.c
     src/engine/entity.c
     src/engine/resource.c
     src/engine/ui.c
     src/game.c
     src/game/scene.c
     src/game/scene/debug.c
+    src/game/scene/debug/collision_debug.c
     src/game/scene/gameplay.c
     src/game/scene/main_menu.c
     src/platform/assert.c

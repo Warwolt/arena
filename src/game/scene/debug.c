@@ -79,7 +79,6 @@ void DebugScene_update(Game* game) {
 				if (game->input.action_is_pressed[InputAction_Back]) {
 					MenuStack_pop_menu(&scene->menu_stack);
 				}
-
 				break;
 
 			case DebugMenu_Physics:
@@ -97,7 +96,6 @@ void DebugScene_update(Game* game) {
 				break;
 		}
 	}
-	UI_end();
 }
 
 void DebugScene_render(const Game* game) {
