@@ -2,20 +2,17 @@ Goal:
 - Get a basic game up and running (Main menu, level, victory, game over)
 
 # TODO
-- Merge "Window" and "Screen" structs together, they represent the same thing
 - DebugScene: add static collision resolution test screen
-- Disable F12 screenshot in Raylib fork
 - Integrate ImGui so we can visualize system states
   - The game is low resolution so we probably should use multi viewports (https://github.com/ocornut/imgui/wiki/Multi-Viewports)
 - Settings screen, toggle fullscreen on/off
 - When loading already loaded resource, return existing ID (needs HashMap)
 - Add bounds checking to ArrayMap and SparseArray by adding a `capacity` parameter to the methods
 - Bug: Fix hot reloading requiring 2 reloads before change takes effect? (Note: not sure how to repro this yet)
-
-# Doing
-- DebugScene: add static collision detection test screen
+- Disable F12 screenshot in Raylib fork
 
 # Done
+- DebugScene: add static collision detection test screen
 - Add semantic key bindings and use those instead of raw keys
 - Add viewport relative mouse input
 - Move fixed resolution viewport handling into Window struct
