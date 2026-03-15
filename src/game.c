@@ -35,7 +35,7 @@ void Game_initialize(Game* game, int argc, char** argv) {
 	/* Initialize game */
 	const char* system_font_path = "resource/font/ModernDOS8x16.ttf";
 	*game = (Game) {
-		.screen = Raylib_LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT),
+		.window = Window_initialize(SCREEN_WIDTH, SCREEN_HEIGHT),
 		.system_font = Raylib_LoadFont(system_font_path),
 	};
 
@@ -53,12 +53,14 @@ void Game_initialize(Game* game, int argc, char** argv) {
 void Game_shutdown(Game* game) {
 	Raylib_UnloadFont(game->system_font);
 	ResourceManager_unload_resources(&game->resources);
+	Window_deinitialize(&game->window);
 	Raylib_CloseWindow();
 	LOG_INFO("Game shutdown");
 }
 
 void Game_update(Game* game) {
 	game->should_quit = Raylib_WindowShouldClose();
+	Window_update(&game->window);
 
 	if (Raylib_IsKeyPressed(KEY_F11)) {
 		Window_toggle_fullscreen(&game->window);
@@ -72,8 +74,8 @@ void Game_update(Game* game) {
 }
 
 void Game_render(const Game* game) {
-	/* Render onto screen texture */
-	Raylib_BeginTextureMode(game->screen);
+	/* Render game to fixed resolution viewport */
+	Raylib_BeginTextureMode(game->window.viewport);
 	{
 		Scene_render(game);
 
@@ -92,26 +94,19 @@ void Game_render(const Game* game) {
 	}
 	Raylib_EndTextureMode();
 
-	/* Render window */
+	/* Render viewport onto application window */
 	Raylib_BeginDrawing();
 	{
 		// Draw background
 		Raylib_ClearBackground(BLACK);
 
-		// Draw stretched screen texture
-		Rectangle screen = Game_screen_rect(game);
-		int window_width = Raylib_GetScreenWidth();
-		int window_height = Raylib_GetScreenHeight();
-		int scale = min(window_width / screen.width, window_height / screen.height);
-		int scaled_width = scale * screen.width;
-		int scaled_height = scale * screen.height;
-		Rectangle scaled_screen_rect = {
-			.x = (window_width - scaled_width) / 2,
-			.y = (window_height - scaled_height) / 2,
-			.width = scaled_width,
-			.height = scaled_height,
+		Rectangle viewport_rect = {
+			.x = 0,
+			.y = 0,
+			.width = game->window.viewport.texture.width,
+			.height = -game->window.viewport.texture.height,
 		};
-		Raylib_DrawTexturePro(game->screen.texture, (Rectangle) { 0, 0, screen.width, -screen.height }, scaled_screen_rect, Vector2Zero(), 0, WHITE);
+		Raylib_DrawTexturePro(game->window.viewport.texture, viewport_rect, game->window.letterbox, Vector2Zero(), 0, WHITE);
 	}
 	Raylib_EndDrawing();
 }
@@ -135,13 +130,4 @@ void Game_draw_text(const Game* game, const char* text, int x, int y, int font_s
 
 int Game_measure_text_width(const Game* game, const char* text, int font_size) {
 	return Raylib_MeasureTextEx(game->system_font, text, font_size, 0).x;
-}
-
-Rectangle Game_screen_rect(const Game* game) {
-	return (Rectangle) {
-		.x = 0,
-		.y = 0,
-		.width = game->screen.texture.width,
-		.height = game->screen.texture.height,
-	};
 }

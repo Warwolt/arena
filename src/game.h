@@ -14,7 +14,6 @@ typedef struct Game {
 	bool show_debug_overlay;
 	Font system_font;
 	Window window;
-	RenderTexture screen;
 	ResourceManager resources;
 	EntityManager entities;
 	Scene scene;
@@ -29,5 +28,3 @@ void Game_quit(Game* game);
 void Game_switch_scene(Game* game, SceneID scene_id);
 void Game_draw_text(const Game* game, const char* text, int x, int y, int font_size, Color color);
 int Game_measure_text_width(const Game* game, const char* text, int font_size);
-
-Rectangle Game_screen_rect(const Game* game);

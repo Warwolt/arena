@@ -38,8 +38,7 @@ static int compare_position_ids_by_y_coordinate(EntityManager* entities, const E
 }
 
 void Gameplay_initialize(Game* game) {
-	const int screen_width = game->screen.texture.width;
-	const int screen_height = game->screen.texture.height;
+	const Rectangle window = Window_rectangle(&game->window);
 
 	const Sprite player_sprite = {
 		.texture_id = ResourceManager_load_texture(&game->resources, "resource/image/pill.png"),
@@ -55,12 +54,12 @@ void Gameplay_initialize(Game* game) {
 	};
 
 	game->scene.gameplay = (Gameplay) {
-		.room_width = screen_width * 2,
-		.room_height = screen_height * 2,
+		.room_width = window.width * 2,
+		.room_height = window.height * 2,
 		.camera =
 			(Camera2D) {
 				.target = Vector2Zero(),
-				.offset = (Vector2) { screen_width / 2, screen_height / 2 },
+				.offset = (Vector2) { window.width / 2, window.height / 2 },
 				.rotation = 0.0f,
 				.zoom = 1.0f,
 			},
@@ -84,6 +83,7 @@ void Gameplay_update(Game* game) {
 		.x = room_width / 2,
 		.y = room_height / 2,
 	};
+	const Rectangle window = Window_rectangle(&game->window);
 
 	if (Raylib_IsKeyPressed(KEY_ESCAPE)) {
 		gameplay->is_paused = !gameplay->is_paused;
@@ -147,12 +147,12 @@ void Gameplay_update(Game* game) {
 			Vector2 player_position = { 0 };
 			EntityManager_get_position(&game->entities, gameplay->player_id, &player_position);
 			const Vector2 camera_top_left_bound = {
-				.x = room_top_left.x + game->screen.texture.width / 2,
-				.y = room_top_left.y + game->screen.texture.height / 2,
+				.x = room_top_left.x + window.width / 2,
+				.y = room_top_left.y + window.height / 2,
 			};
 			const Vector2 camera_bottom_right_bound = {
-				.x = room_bottom_right.x - game->screen.texture.width / 2,
-				.y = room_bottom_right.y - game->screen.texture.height / 2,
+				.x = room_bottom_right.x - window.width / 2,
+				.y = room_bottom_right.y - window.height / 2,
 
 			};
 			gameplay->camera.target = Vector2Clamp(player_position, camera_top_left_bound, camera_bottom_right_bound);
@@ -220,19 +220,14 @@ void Gameplay_update(Game* game) {
 
 void Gameplay_render(const Game* game) {
 	const Gameplay* gameplay = &game->scene.gameplay;
+	const Rectangle window = Window_rectangle(&game->window);
 	const Vector2 room_top_left = (Vector2) {
 		.x = -gameplay->room_width / 2,
 		.y = -gameplay->room_height / 2,
 	};
-	const Vector2 screen_middle = {
-		.x = game->screen.texture.width / 2,
-		.y = game->screen.texture.height / 2,
-	};
-	const Rectangle screen_rect = {
-		.x = 0,
-		.y = 0,
-		.width = game->screen.texture.width,
-		.height = game->screen.texture.height,
+	const Vector2 window_middle = {
+		.x = window.width / 2,
+		.y = window.height / 2,
 	};
 
 	/* Render in camera */
@@ -298,8 +293,8 @@ void Gameplay_render(const Game* game) {
 		const int menu_width = 300;
 		const int menu_height = 200;
 		const Rectangle menu_rect = {
-			.x = screen_middle.x - menu_width / 2,
-			.y = screen_middle.y - menu_height / 2,
+			.x = window_middle.x - menu_width / 2,
+			.y = window_middle.y - menu_height / 2,
 			.width = menu_width,
 			.height = menu_height,
 		};
@@ -311,9 +306,9 @@ void Gameplay_render(const Game* game) {
 		const int font_size_small = 32;
 
 		const int title_padding = 12;
-		const int top_margin = (screen_rect.height - font_size_big - title_padding - 2 * font_size_small) / 2;
+		const int top_margin = (window.height - font_size_big - title_padding - 2 * font_size_small) / 2;
 
-		Raylib_DrawRectangleRec(screen_rect, ColorAlpha(BLACK, 0.25f));
+		Raylib_DrawRectangleRec(window, ColorAlpha(BLACK, 0.25f));
 		Raylib_DrawRectangleRec(menu_rect, BLACK);
 		{
 			const char* text = "Paused";
