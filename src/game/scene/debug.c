@@ -10,6 +10,7 @@
 
 typedef enum DebugMenu {
 	DebugMenu_Main,
+	DebugMenu_Input,
 	DebugMenu_Physics,
 } DebugMenu;
 
@@ -22,7 +23,7 @@ void MenuStack_pop_menu(MenuStack* stack) {
 	stack->num_menus = max(stack->num_menus - 1, 0);
 }
 
-int MenuStack_current_menu(MenuStack* stack) {
+int MenuStack_current_menu(const MenuStack* stack) {
 	if (stack->num_menus > 0) {
 		return stack->menus[stack->num_menus - 1];
 	}
@@ -35,52 +36,71 @@ void MenuStack_update(MenuStack* stack) {
 }
 
 void DebugScene_initialize(Game* game) {
-	DebugScene* debug_scene = &game->scene.debug_scene;
-	MenuStack_push_menu(&debug_scene->menu_stack, DebugMenu_Main);
+	DebugScene* scene = &game->scene.debug_scene;
+	MenuStack_push_menu(&scene->menu_stack, DebugMenu_Main);
 }
 
 void DebugScene_update(Game* game) {
-	DebugScene* debug_scene = &game->scene.debug_scene;
-	MenuStack_update(&debug_scene->menu_stack);
+	DebugScene* scene = &game->scene.debug_scene;
+	MenuStack_update(&scene->menu_stack);
 
-	if (debug_scene->menu_stack.has_pushed_menu) {
-		UI_reset_next_keyboard_focus();
-	}
+	// testing
+	UIInput input = {
+		.up_pressed = game->input.action_is_pressed[InputAction_Up],
+		.down_pressed = game->input.action_is_pressed[InputAction_Down],
+		.select_pressed = game->input.action_is_pressed[InputAction_Select],
+	};
+	UI_begin(input);
+	{
+		if (scene->menu_stack.has_pushed_menu) {
+			UI_reset_next_keyboard_focus();
+		}
 
-	switch (MenuStack_current_menu(&debug_scene->menu_stack)) {
-		case DebugMenu_Main:
-			UI_menu_begin("Debug");
-			{
-				if (Raylib_IsKeyPressed(KEY_ESCAPE)) {
-					Game_quit(game);
+		switch (MenuStack_current_menu(&scene->menu_stack)) {
+			case DebugMenu_Main:
+				UI_menu_begin("Debug");
+				{
+					if (game->input.action_is_pressed[InputAction_Back]) {
+						Game_quit(game);
+					}
+
+					if (UI_menu_item("Input")) {
+						MenuStack_push_menu(&scene->menu_stack, DebugMenu_Input);
+					}
+
+					if (UI_menu_item("Physics")) {
+						MenuStack_push_menu(&scene->menu_stack, DebugMenu_Physics);
+					}
 				}
+				UI_menu_end();
+				break;
 
-				if (UI_menu_item("Physics")) {
-					MenuStack_push_menu(&debug_scene->menu_stack, DebugMenu_Physics);
+			case DebugMenu_Input:
+				if (game->input.action_is_pressed[InputAction_Back]) {
+					MenuStack_pop_menu(&scene->menu_stack);
 				}
-			}
-			UI_menu_end();
-			break;
+				break;
 
-		case DebugMenu_Physics:
-			UI_menu_begin("Physics Debug");
-			{
-				if (Raylib_IsKeyPressed(KEY_ESCAPE)) {
-					MenuStack_pop_menu(&debug_scene->menu_stack);
-				}
+			case DebugMenu_Physics:
+				UI_menu_begin("Physics Debug");
+				{
+					if (game->input.action_is_pressed[InputAction_Back]) {
+						MenuStack_pop_menu(&scene->menu_stack);
+					}
 
-				if (UI_menu_item("Collisions")) {
-					Game_switch_scene(game, SceneID_CollisionDebugScene);
+					UI_menu_item("Item 1");
+					UI_menu_item("Item 2");
+					UI_menu_item("Item 3");
 				}
-			}
-			UI_menu_end();
-			break;
+				UI_menu_end();
+				break;
+		}
 	}
 }
 
 void DebugScene_render(const Game* game) {
-	const DebugScene* debug_scene = &game->scene.debug_scene;
-	const Rectangle screen_rect = Game_screen_rect(game);
+	const DebugScene* scene = &game->scene.debug_scene;
+	const Rectangle window = Window_rectangle(&game->window);
 	const int font_size = 32;
 
 	Raylib_ClearBackground(BLACK);
@@ -100,13 +120,13 @@ void DebugScene_render(const Game* game) {
 
 		/* Draw menu title */
 		int menu_label_width = Game_measure_text_width(game, menu->label, font_size);
-		Game_draw_text(game, menu->label, (screen_rect.width - menu_label_width) / 2, 2 * font_size, font_size, WHITE);
+		Game_draw_text(game, menu->label, (window.width - menu_label_width) / 2, 2 * font_size, font_size, WHITE);
 
 		/* Draw menu items */
 		for (int j = 0; j < menu->num_items; j++) {
 			const UIMenuItem* item = &UI_view()->menus[i].items[j];
-			const int margin_left = (screen_rect.width - menu_width) / 2;
-			const int margin_top = (screen_rect.height - menu_height) / 2;
+			const int margin_left = (window.width - menu_width) / 2;
+			const int margin_top = (window.height - menu_height) / 2;
 			const int pos_x = margin_left;
 			const int pos_y = margin_top + j * font_size;
 			if (item->is_focused) {
@@ -116,5 +136,32 @@ void DebugScene_render(const Game* game) {
 				Game_draw_text(game, item->label, pos_x, pos_y, font_size, WHITE);
 			}
 		}
+	}
+
+	switch (MenuStack_current_menu(&scene->menu_stack)) {
+		case DebugMenu_Main:
+			break;
+		case DebugMenu_Input: {
+			/* Mouse position */
+			{
+				char text[256] = { 0 };
+				snprintf(text, 256, "Mouse position: (%d,%d)", game->input.mouse.x, game->input.mouse.y);
+				Game_draw_text(game, text, 1, 1, font_size, WHITE);
+			}
+
+			/* Action input */
+			{
+				char text[256] = { 0 };
+				int offset = snprintf(text, 256, "Input actions: ");
+				for (int action = 0; action < InputAction_Count; action++) {
+					if (game->input.action_is_down[action]) {
+						offset += snprintf(text + offset, 256 - offset, "%s ", InputAction_to_string(action));
+					}
+				}
+				Game_draw_text(game, text, 1, 1 + font_size, font_size, WHITE);
+			}
+		} break;
+		case DebugMenu_Physics:
+			break;
 	}
 }

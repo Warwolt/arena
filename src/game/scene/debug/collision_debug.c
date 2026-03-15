@@ -94,9 +94,9 @@ void CollisionDebugScene_update(Game* game) {
 
 void CollisionDebugScene_render(const Game* game) {
 	const CollisionDebugScene* scene = &game->scene.collision_debug_scene;
-	const Vector2 screen_middle = {
-		.x = game->screen.texture.width / 2,
-		.y = game->screen.texture.height / 2,
+	const Vector2 window_middle = {
+		.x = Window_width(&game->window) / 2,
+		.y = Window_height(&game->window) / 2,
 	};
 
 	Raylib_ClearBackground(BLACK);
@@ -110,7 +110,7 @@ void CollisionDebugScene_render(const Game* game) {
 		switch (shape->type) {
 			case ShapeType_Circle: {
 				const Circle* circle = &shape->circle;
-				const Vector2 center = Vector2Add(circle->center, screen_middle);
+				const Vector2 center = Vector2Add(circle->center, window_middle);
 				Raylib_DrawCircleV(center, circle->radius, Raylib_ColorAlpha(color, 0.5f));
 				Raylib_DrawCircleLinesV(center, circle->radius, color);
 			} break;
@@ -118,8 +118,8 @@ void CollisionDebugScene_render(const Game* game) {
 			case ShapeType_Rectangle: {
 				const Rectangle* rectangle = &shape->rectangle;
 				Vector2 position = {
-					.x = screen_middle.x + rectangle->x - rectangle->width / 2,
-					.y = screen_middle.y + rectangle->y - rectangle->height / 2,
+					.x = window_middle.x + rectangle->x - rectangle->width / 2,
+					.y = window_middle.y + rectangle->y - rectangle->height / 2,
 				};
 				Raylib_DrawRectangle(position.x, position.y, rectangle->width, rectangle->height, Raylib_ColorAlpha(color, 0.5f));
 				Raylib_DrawRectangleLines(position.x, position.y, rectangle->width, rectangle->height, color);

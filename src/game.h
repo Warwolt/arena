@@ -3,6 +3,7 @@
 #include "engine/entity.h"
 #include "engine/resource.h"
 #include "game/scene.h"
+#include "platform/input.h"
 #include "platform/window.h"
 
 #include <raylib.h>
@@ -12,12 +13,12 @@
 typedef struct Game {
 	bool should_quit;
 	bool show_debug_overlay;
-	Font system_font;
+	Font system_font; // FIXME: move into ResourceManager?
 	Window window;
-	RenderTexture screen;
+	Input input;
 	ResourceManager resources;
 	EntityManager entities;
-	Scene scene;
+	Scene scene; // FIXME: turn into a "SceneManager" that can push multiple scenes
 } Game;
 
 __declspec(dllexport) void Game_initialize(Game* game, int argc, char** argv);
@@ -29,5 +30,3 @@ void Game_quit(Game* game);
 void Game_switch_scene(Game* game, SceneID scene_id);
 void Game_draw_text(const Game* game, const char* text, int x, int y, int font_size, Color color);
 int Game_measure_text_width(const Game* game, const char* text, int font_size);
-
-Rectangle Game_screen_rect(const Game* game);
