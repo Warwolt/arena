@@ -2,6 +2,7 @@
 
 #include "core/for_each.h"
 #include "game.h"
+#include "platform/assert.h"
 #include "platform/logging.h"
 
 #include <raylib.h>
@@ -285,6 +286,10 @@ void Gameplay_render(const Game* game) {
 						case ShapeType_Circle:
 							DrawCircle(position.x, position.y, collision_shape.circle.radius, ColorAlpha(GREEN, 0.5f));
 							DrawCircleLines(position.x, position.y, collision_shape.circle.radius, GREEN);
+							break;
+
+						case ShapeType_Rectangle:
+							ASSERT(false, "TODO implement");
 							break;
 					}
 				}

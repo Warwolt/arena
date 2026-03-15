@@ -20,16 +20,18 @@ const char* debug_page_title[] = {
 };
 
 static void change_scene_page(CollisionDebugScene* scene, DebugPage page) {
-	const float shape_width = 100;
+	const float shape_size = 100;
 	*scene = (CollisionDebugScene) { 0 };
 	scene->page = page;
 	switch (page) {
 		case DebugPage_CircleCircle:
-			scene->shapes[scene->num_shapes++] = Shape_from_circle((Circle) { .center = { .x = 0, .y = 0 }, .radius = shape_width });
-			scene->shapes[scene->num_shapes++] = Shape_from_circle((Circle) { .center = { .x = 0, .y = 0 }, .radius = shape_width });
+			scene->shapes[scene->num_shapes++] = Shape_from_circle((Circle) { .center = { .x = 0, .y = 0 }, .radius = shape_size / 2 });
+			scene->shapes[scene->num_shapes++] = Shape_from_circle((Circle) { .center = { .x = 0, .y = 0 }, .radius = shape_size / 2 });
 			break;
 
 		case DebugPage_CircleRectangle:
+			scene->shapes[scene->num_shapes++] = Shape_from_circle((Circle) { .center = { .x = 0, .y = 0 }, .radius = shape_size / 2 });
+			scene->shapes[scene->num_shapes++] = Shape_from_rectangle((Rectangle) { .x = 0, .y = 0, .width = shape_size, .height = shape_size });
 			break;
 
 		case DebugPage_Count:
@@ -60,6 +62,21 @@ void CollisionDebugScene_update(Game* game) {
 		return;
 	}
 
+	// FIXME: Debug why DebugPage_CircleRectangle isn't working correctly.
+	//
+	// Make the shapes follow the mouse cursor position.
+	// It'll be easier to debug stuff if we can move the shape manually.
+	// Right now circle-rectangle case isn't working right, some positioning is off (by some offset).
+	//
+	// We need a resolution relative mouse position.
+	// This means taking scaling into account, and taking letterboxing into account.
+	// Right now we're just computing that info when rendering, but we should move it into the game update.
+	// (Probably make it part of the Window struct?)
+	//
+	// Vector2 Window_relative_cursor_position(const Window* window, Vector2 global_mouse_pos);
+	//
+	// input.mouse_pos = Window_relative_cursor_position(&window, Raylib_GetMousePosition())
+
 	if (scene->num_shapes >= 2) {
 		Shape* shape1 = &scene->shapes[0];
 		Shape* shape2 = &scene->shapes[1];
@@ -89,13 +106,23 @@ void CollisionDebugScene_render(const Game* game) {
 	Game_draw_text(game, text, 1, 1 + 16, 16, WHITE);
 	for (int i = 0; i < sizeof(scene->shapes) / sizeof(*scene->shapes); i++) {
 		const Shape* shape = &scene->shapes[i];
+		const Color color = scene->is_overlapping ? RED : GREEN;
 		switch (shape->type) {
 			case ShapeType_Circle: {
 				const Circle* circle = &shape->circle;
 				const Vector2 center = Vector2Add(circle->center, screen_middle);
-				const Color color = scene->is_overlapping ? RED : GREEN;
 				Raylib_DrawCircleV(center, circle->radius, Raylib_ColorAlpha(color, 0.5f));
 				Raylib_DrawCircleLinesV(center, circle->radius, color);
+			} break;
+
+			case ShapeType_Rectangle: {
+				const Rectangle* rectangle = &shape->rectangle;
+				Vector2 position = {
+					.x = screen_middle.x + rectangle->x - rectangle->width / 2,
+					.y = screen_middle.y + rectangle->y - rectangle->height / 2,
+				};
+				Raylib_DrawRectangle(position.x, position.y, rectangle->width, rectangle->height, Raylib_ColorAlpha(color, 0.5f));
+				Raylib_DrawRectangleLines(position.x, position.y, rectangle->width, rectangle->height, color);
 			} break;
 		}
 	}
