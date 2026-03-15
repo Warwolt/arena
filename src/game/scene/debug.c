@@ -144,9 +144,24 @@ void DebugScene_render(const Game* game) {
 		case DebugMenu_Main:
 			break;
 		case DebugMenu_Input: {
-			char text[256] = { 0 };
-			snprintf(text, 256, "Mouse position: (%d,%d)", game->input.mouse.x, game->input.mouse.y);
-			Game_draw_text(game, text, 1, 1, font_size, WHITE);
+			/* Mouse position */
+			{
+				char text[256] = { 0 };
+				snprintf(text, 256, "Mouse position: (%d,%d)", game->input.mouse.x, game->input.mouse.y);
+				Game_draw_text(game, text, 1, 1, font_size, WHITE);
+			}
+
+			/* Action input */
+			{
+				char text[256] = { 0 };
+				int offset = snprintf(text, 256, "Input actions: ");
+				for (int action = 0; action < InputAction_Count; action++) {
+					if (game->input.action_is_down[action]) {
+						offset += snprintf(text + offset, 256 - offset, "%s ", InputAction_to_string(action));
+					}
+				}
+				Game_draw_text(game, text, 1, 1 + font_size, font_size, WHITE);
+			}
 		} break;
 		case DebugMenu_Physics:
 			break;
