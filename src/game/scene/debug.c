@@ -144,7 +144,7 @@ void DebugScene_render(const Game* game) {
 		case DebugMenu_Main:
 			break;
 		case DebugMenu_Input: {
-			char text[256] = {0};
+			char text[256] = { 0 };
 			snprintf(text, 256, "Mouse position: (%d,%d)", game->input.mouse.x, game->input.mouse.y);
 			Game_draw_text(game, text, 1, 1, font_size, WHITE);
 		} break;

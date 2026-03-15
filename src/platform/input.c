@@ -31,16 +31,19 @@ void Input_update(Input* input, const Window* window) {
 	input->mouse.y = (global_mouse.y - window->letterbox.y) / window->scale;
 
 	/* Action input */
+	// clang-format off
 	int key_bindings[InputAction_Count][2] = {
-		[InputAction_Up] = {'W', KEY_UP},
-		[InputAction_Down] = {'S', KEY_DOWN},
-		[InputAction_Left] = {'A', KEY_LEFT},
-		[InputAction_Right] = {'D', KEY_RIGHT},
-		[InputAction_Select] = {KEY_ENTER},
-		[InputAction_Back] = {KEY_ESCAPE},
-		[InputAction_ToggleFullscreen] = {KEY_F11},
-		[InputAction_ShowDebugOverlay] = {KEY_F3},
+		[InputAction_Up] = { 'W', KEY_UP },
+		[InputAction_Down] = { 'S', KEY_DOWN },
+		[InputAction_Left] = { 'A', KEY_LEFT },
+		[InputAction_Right] = { 'D', KEY_RIGHT },
+		[InputAction_Select] = { KEY_ENTER },
+		[InputAction_Back] = { KEY_ESCAPE },
+		[InputAction_ToggleFullscreen] = { KEY_F11 },
+		[InputAction_ShowDebugOverlay] = { KEY_F3 },
 	};
+	// clang-format on
+
 	// pressed
 	for (int action = 0; action < InputAction_Count; action++) {
 		bool any_key_pressed = false;
