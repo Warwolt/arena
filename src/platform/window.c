@@ -13,12 +13,16 @@ void Window_deinitialize(Window* window) {
 }
 
 void Window_update(Window* window) {
-	/* Update the paint rect for the viewport */
 	int screen_width = Raylib_GetScreenWidth();
 	int screen_height = Raylib_GetScreenHeight();
 	int viewport_width = window->viewport.texture.width;
 	int viewport_height = window->viewport.texture.height;
 
+	/* Update the letterbox for the viewport */
+	// The "letterbox" is the rectangle in the application window where the
+	// viewport is being rendered. The viewport is upscaled as much as possible
+	// to fit the window size with maintained aspect ratio, with black matte to
+	// the sides if needed.
 	int scale = min(screen_width / viewport_width, screen_height / viewport_height);
 	int scaled_width = scale * viewport_width;
 	int scaled_height = scale * viewport_height;
