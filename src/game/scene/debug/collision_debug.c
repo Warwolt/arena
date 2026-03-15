@@ -26,12 +26,13 @@ static void change_scene_page(CollisionDebugScene* scene, DebugPage page) {
 		case DebugPage_CircleCircle:
 			scene->shapes[scene->num_shapes++] = Shape_from_circle((Circle) { .center = { .x = 0, .y = 0 }, .radius = shape_size / 2 });
 			scene->shapes[scene->num_shapes++] = Shape_from_circle((Circle) { .center = { .x = 0, .y = 0 }, .radius = shape_size / 2 });
-			scene->shapes[scene->num_shapes++] = Shape_from_circle((Circle) { .center = { .x = 0, .y = 1.5 * shape_size }, .radius = shape_size / 2 });
+			scene->shapes[scene->num_shapes++] = Shape_from_circle((Circle) { .center = { .x = 0, .y = 0 }, .radius = shape_size / 2 });
 			break;
 
 		case DebugPage_CircleRectangle:
 			scene->shapes[scene->num_shapes++] = Shape_from_circle((Circle) { .center = { .x = 0, .y = 0 }, .radius = shape_size / 2 });
-			scene->shapes[scene->num_shapes++] = Shape_from_rectangle((Rectangle) { .x = -shape_size / 2, .y = -shape_size / 2, .width = shape_size, .height = shape_size });
+			scene->shapes[scene->num_shapes++] = Shape_from_rectangle(Rectangle_centered_at((Vector2) { .x = 0, .y = 0 }, shape_size, shape_size));
+			scene->shapes[scene->num_shapes++] = Shape_from_rectangle(Rectangle_centered_at((Vector2) { .x = 0, .y = 0 }, shape_size, shape_size));
 			break;
 
 		case DebugPage_Count:
@@ -115,7 +116,7 @@ void CollisionDebugScene_update(Game* game) {
 		Shape* shape3 = &scene->shapes[2];
 		const float period = 4.0f; // seconds
 		const float freq = 1 / period;
-		const float amplitude = 2.2 * Shape_width(shape3);
+		const float amplitude = 1.1 * Shape_width(shape3);
 		const float t = scene->time_now * freq * 2 * PI;
 		Shape_set_position(shape3, (Vector2) { roundf(cosf(t) * amplitude), roundf(sinf(t) * amplitude) });
 	}

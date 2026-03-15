@@ -20,6 +20,8 @@ typedef struct Shape {
 	};
 } Shape;
 
+Rectangle Rectangle_centered_at(Vector2 center, int width, int height);
+
 Shape Shape_from_circle(Circle circle);
 Shape Shape_from_rectangle(Rectangle rectangle);
 

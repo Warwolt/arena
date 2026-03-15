@@ -1,5 +1,14 @@
 #include "core/geometry.h"
 
+Rectangle Rectangle_centered_at(Vector2 center, int width, int height) {
+	return (Rectangle) {
+		.x = center.x - width / 2,
+		.y = center.y - height / 2,
+		.width = width,
+		.height = height,
+	};
+}
+
 Shape Shape_from_circle(Circle circle) {
 	return (Shape) {
 		.type = ShapeType_Circle,
@@ -17,7 +26,7 @@ Shape Shape_from_rectangle(Rectangle rectangle) {
 float Shape_width(const Shape* shape) {
 	switch (shape->type) {
 		case ShapeType_Circle:
-			return shape->circle.radius;
+			return 2 * shape->circle.radius;
 
 		case ShapeType_Rectangle:
 			return shape->rectangle.width;
