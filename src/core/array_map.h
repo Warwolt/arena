@@ -24,33 +24,40 @@
 		size_t num_values;                         \
 	}
 
-#define ArrayMap_insert(map, key, value)            \
-	ArrayMap_insert_impl(                           \
-		sizeof((map)->values[0]),                   \
-		(char(*)[ARRAY_MAP_KEY_LENGTH])(map)->keys, \
-		(char*)(map)->values,                       \
-		&(map)->num_values,                         \
-		(key),                                      \
-		(char*)&(value)                             \
+#define ArrayMap_insert(map, key, value)             \
+	ArrayMap_insert_impl(                            \
+		sizeof((map)->values[0]),                    \
+		(char (*)[ARRAY_MAP_KEY_LENGTH])(map)->keys, \
+		(char*)(map)->values,                        \
+		&(map)->num_values,                          \
+		(key),                                       \
+		(char*)&(value)                              \
 	)
 
-#define ArrayMap_remove(map, key)                   \
-	ArrayMap_remove_impl(                           \
-		sizeof((map)->values[0]),                   \
-		(char(*)[ARRAY_MAP_KEY_LENGTH])(map)->keys, \
-		(char*)(map)->values,                       \
-		&(map)->num_values,                         \
-		(key)                                       \
+#define ArrayMap_remove(map, key)                    \
+	ArrayMap_remove_impl(                            \
+		sizeof((map)->values[0]),                    \
+		(char (*)[ARRAY_MAP_KEY_LENGTH])(map)->keys, \
+		(char*)(map)->values,                        \
+		&(map)->num_values,                          \
+		(key)                                        \
 	)
 
-#define ArrayMap_get(map, key, value_out) \
-	ArrayMap_get_impl(sizeof((map)->values[0]), (char(*)[ARRAY_MAP_KEY_LENGTH])(map)->keys, (char*)(map)->values, &(map)->num_values, (key), (char*)(value_out))
+#define ArrayMap_get(map, key, value_out)            \
+	ArrayMap_get_impl(                               \
+		sizeof((map)->values[0]),                    \
+		(char (*)[ARRAY_MAP_KEY_LENGTH])(map)->keys, \
+		(char*)(map)->values,                        \
+		&(map)->num_values,                          \
+		(key),                                       \
+		(char*)(value_out)                           \
+	)
 
 #define ArrayMap_get_ptr(map, key, out_ptr) \
 	ArrayMap_get_ptr_impl(sizeof((map)->values[0]), (map)->keys, (char*)((map)->values), &(map)->num_values, (key), (void**)(out_ptr))
 
-#define ArrayMap_contains(map, key)                                                              \
-	ArrayMap_contains_impl((char(*)[ARRAY_MAP_KEY_LENGTH])(map)->keys, (map)->num_values, (key))
+#define ArrayMap_contains(map, key)                                                               \
+	ArrayMap_contains_impl((char (*)[ARRAY_MAP_KEY_LENGTH])(map)->keys, (map)->num_values, (key))
 
 bool ArrayMap_insert_impl(size_t elem_size, char (*map_keys)[ARRAY_MAP_KEY_LENGTH], char* map_values, size_t* map_num_values, const char* key, char* value);
 void ArrayMap_remove_impl(size_t elem_size, char (*map_keys)[ARRAY_MAP_KEY_LENGTH], char* map_values, size_t* map_num_values, const char* key);
