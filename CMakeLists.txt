@@ -59,11 +59,7 @@ target_link_libraries(Library ${LIB})
 set_target_properties(Library PROPERTIES OUTPUT_NAME "Game")
 
 # Main
-add_executable(Executable
-    src/main.c
-    src/platform/win32.c
-    src/platform/logging.c
-)
+add_executable(Executable src/main.c)
 target_include_directories(Executable PUBLIC src lib)
 target_link_libraries(Executable Library)
 set_property(TARGET Executable PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
