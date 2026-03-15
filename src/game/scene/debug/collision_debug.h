@@ -13,6 +13,7 @@ typedef struct CollisionDebugScene {
 	Shape shapes[DEBUG_SHAPES_MAX];
 	int num_shapes;
 	bool is_overlapping;
+	bool manual_control;
 	int page;
 } CollisionDebugScene;
 
