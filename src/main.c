@@ -1,7 +1,8 @@
 #include "game.h"
 
-#include "platform/logging.h"
-#include "platform/win32.h"
+// include source files because DLL doesn't export logging or win32
+#include "platform/logging.c"
+#include "platform/win32.c"
 
 #include <libloaderapi.h>
 #include <stdio.h>
