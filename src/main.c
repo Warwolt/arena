@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
 	Win32_get_executable_directory(executable_directory);
 
 	/* Get library path */
-	const char* library_name = "Game.dll";
+	const char* library_name = "GameLib.dll";
 	char library_path[MAX_PATH] = { 0 };
 	snprintf(library_path, MAX_PATH, "%s\\%s", executable_directory, library_name);
 
@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
 	}
 
 	/* Copy library */
-	const char* library_copy_name = "Game-hot-reload.dll";
+	const char* library_copy_name = "GameLib-hot-reload.dll";
 	char library_copy_path[MAX_PATH] = { 0 };
 	snprintf(library_copy_path, MAX_PATH, "%s\\%s", executable_directory, library_copy_name);
 	Win32_copy_file(library_path, library_copy_path);
