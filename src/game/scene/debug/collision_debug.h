@@ -6,13 +6,13 @@
 
 typedef struct Game Game;
 
-#define DEBUG_SHAPES_MAX 2
+#define DEBUG_SHAPES_MAX 3
 
 typedef struct CollisionDebugScene {
 	float time_now;
-	Shape shapes[DEBUG_SHAPES_MAX];
 	int num_shapes;
-	bool is_overlapping;
+	Shape shapes[DEBUG_SHAPES_MAX];
+	bool shape_is_overlapping[DEBUG_SHAPES_MAX];
 	bool manual_control;
 	int page;
 } CollisionDebugScene;

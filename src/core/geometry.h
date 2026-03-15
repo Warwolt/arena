@@ -23,8 +23,7 @@ typedef struct Shape {
 Shape Shape_from_circle(Circle circle);
 Shape Shape_from_rectangle(Rectangle rectangle);
 
-// position is relative to center of shape
-void Shape_set_position(Shape* shape, Vector2 pos);
+void Shape_set_position(Shape* shape, Vector2 pos); // position is relative to center of shape
 
 float Shape_width(const Shape* shape);
 bool Shape_is_overlapping_shape(const Shape* lhs, const Shape* rhs);

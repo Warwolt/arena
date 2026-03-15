@@ -19,13 +19,14 @@ const char* debug_page_title[] = {
 };
 
 static void change_scene_page(CollisionDebugScene* scene, DebugPage page) {
-	const float shape_size = 200;
+	const float shape_size = 100;
 	*scene = (CollisionDebugScene) { 0 };
 	scene->page = page;
 	switch (page) {
 		case DebugPage_CircleCircle:
 			scene->shapes[scene->num_shapes++] = Shape_from_circle((Circle) { .center = { .x = 0, .y = 0 }, .radius = shape_size / 2 });
 			scene->shapes[scene->num_shapes++] = Shape_from_circle((Circle) { .center = { .x = 0, .y = 0 }, .radius = shape_size / 2 });
+			scene->shapes[scene->num_shapes++] = Shape_from_circle((Circle) { .center = { .x = 0, .y = 1.5 * shape_size }, .radius = shape_size / 2 });
 			break;
 
 		case DebugPage_CircleRectangle:
@@ -90,10 +91,8 @@ void CollisionDebugScene_update(Game* game) {
 		scene->manual_control = !scene->manual_control;
 	}
 
-	if (scene->num_shapes >= 2) {
+	if (scene->num_shapes >= 1) {
 		Shape* shape1 = &scene->shapes[0];
-		Shape* shape2 = &scene->shapes[1];
-
 		if (scene->manual_control) {
 			/* Move first shape with mouse */
 			Rectangle window = Window_rectangle(&game->window);
@@ -109,9 +108,27 @@ void CollisionDebugScene_update(Game* game) {
 			const float amplitude = 2.2 * Shape_width(shape1);
 			Shape_set_position(shape1, (Vector2) { roundf(sinf(scene->time_now * freq * 2 * PI) * amplitude), 0 });
 		}
+	}
 
-		/* Check collisions */
-		scene->is_overlapping = Shape_is_overlapping_shape(shape1, shape2);
+	if (scene->num_shapes >= 3) {
+		// rotate third shape
+		Shape* shape3 = &scene->shapes[2];
+		const float period = 4.0f; // seconds
+		const float freq = 1 / period;
+		const float amplitude = 2.2 * Shape_width(shape3);
+		const float t = scene->time_now * freq * 2 * PI;
+		Shape_set_position(shape3, (Vector2) { roundf(cosf(t) * amplitude), roundf(sinf(t) * amplitude) });
+	}
+
+	/* Check collisions */
+	memset(scene->shape_is_overlapping, 0, sizeof(scene->shape_is_overlapping));
+	for (int i = 0; i < scene->num_shapes; i++) {
+		for (int j = i + 1; j < scene->num_shapes; j++) {
+			if (Shape_is_overlapping_shape(&scene->shapes[i], &scene->shapes[j])) {
+				scene->shape_is_overlapping[i] = true;
+				scene->shape_is_overlapping[j] = true;
+			}
+		}
 	}
 }
 
@@ -130,7 +147,7 @@ void CollisionDebugScene_render(const Game* game) {
 	/* Draw shapes */
 	for (int i = 0; i < sizeof(scene->shapes) / sizeof(*scene->shapes); i++) {
 		const Shape* shape = &scene->shapes[i];
-		const Color color = scene->is_overlapping ? RED : GREEN;
+		const Color color = scene->shape_is_overlapping[i] ? RED : GREEN;
 		draw_debug_shape(game, shape, color);
 	}
 }
