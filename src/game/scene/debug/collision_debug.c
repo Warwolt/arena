@@ -7,7 +7,7 @@
 #include <raymath.h>
 #include <stdio.h>
 
-#define NULL_SHAPE ((int)-1)
+#define SHAPE_NONE ((int)-1)
 
 typedef enum DebugPage {
 	DebugPage_CircleCircle,
@@ -22,7 +22,7 @@ const char* debug_page_title[] = {
 
 static void change_scene_page(CollisionDebugScene* scene, DebugPage page) {
 	const float shape_size = 100;
-	*scene = (CollisionDebugScene) { .mouse_grabed_shape = NULL_SHAPE };
+	*scene = (CollisionDebugScene) { .mouse_grabed_shape = SHAPE_NONE };
 	scene->page = page;
 	switch (page) {
 		case DebugPage_CircleCircle:
@@ -134,7 +134,7 @@ void CollisionDebugScene_update(Game* game) {
 		/* Grab or let go of shape */
 		if (Raylib_IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 			/* If not controlling a shape, try to grab currently hovered shape */
-			if (scene->mouse_grabed_shape == NULL_SHAPE) {
+			if (scene->mouse_grabed_shape == SHAPE_NONE) {
 				for (int i = 0; i < scene->num_shapes; i++) {
 					Shape* shape = &scene->shapes[i];
 					bool is_hovering_shape = Shape_is_overlapping_point(shape, world_mouse_position);
@@ -146,12 +146,12 @@ void CollisionDebugScene_update(Game* game) {
 			}
 			/* If controlling a shape, let go of it */
 			else {
-				scene->mouse_grabed_shape = NULL_SHAPE;
+				scene->mouse_grabed_shape = SHAPE_NONE;
 			}
 		}
 
 		/* Update position of grabbed shape */
-		if (scene->mouse_grabed_shape != NULL_SHAPE) {
+		if (scene->mouse_grabed_shape != SHAPE_NONE) {
 			Shape* shape = &scene->shapes[scene->mouse_grabed_shape];
 			Shape_set_position(shape, world_mouse_position);
 		}
