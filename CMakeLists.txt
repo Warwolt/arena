@@ -26,6 +26,7 @@ set(SRC
     src/core/arena.c
     src/core/array_map.c
     src/core/sparse_array.c
+    src/core/geometry.c
     src/engine/entity.c
     src/engine/resource.c
     src/engine/ui.c
