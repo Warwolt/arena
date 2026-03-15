@@ -75,12 +75,6 @@ void CollisionDebugScene_initialize(Game* game) {
 void CollisionDebugScene_update(Game* game) {
 	CollisionDebugScene* scene = &game->scene.collision_debug_scene;
 	scene->time_now += Raylib_GetFrameTime();
-
-	// FIXME:
-	// The mouse position in Input is relative to top left corner.
-	// Wouldn't it be easiest if the collision shapes here also use a top-left
-	// origin based coordinate system?
-	// I don't really see any good reason to have 2 coordinate systems.
 	Rectangle window = Window_rectangle(&game->window);
 	Vector2 world_mouse_position = {
 		.x = game->input.mouse.x - window.width / 2,
