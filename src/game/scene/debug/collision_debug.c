@@ -7,6 +7,8 @@
 #include <raymath.h>
 #include <stdio.h>
 
+#define NULL_SHAPE ((int)-1)
+
 typedef enum DebugPage {
 	DebugPage_CircleCircle,
 	DebugPage_CircleRectangle,
@@ -20,7 +22,7 @@ const char* debug_page_title[] = {
 
 static void change_scene_page(CollisionDebugScene* scene, DebugPage page) {
 	const float shape_size = 100;
-	*scene = (CollisionDebugScene) { 0 };
+	*scene = (CollisionDebugScene) { .mouse_grabed_shape = NULL_SHAPE };
 	scene->page = page;
 	switch (page) {
 		case DebugPage_CircleCircle:
@@ -74,6 +76,17 @@ void CollisionDebugScene_update(Game* game) {
 	CollisionDebugScene* scene = &game->scene.collision_debug_scene;
 	scene->time_now += Raylib_GetFrameTime();
 
+	// FIXME:
+	// The mouse position in Input is relative to top left corner.
+	// Wouldn't it be easiest if the collision shapes here also use a top-left
+	// origin based coordinate system?
+	// I don't really see any good reason to have 2 coordinate systems.
+	Rectangle window = Window_rectangle(&game->window);
+	Vector2 world_mouse_position = {
+		.x = game->input.mouse.x - window.width / 2,
+		.y = game->input.mouse.y - window.height / 2,
+	};
+
 	if (game->input.action_is_pressed[InputAction_Back]) {
 		Game_quit(game);
 	}
@@ -88,37 +101,60 @@ void CollisionDebugScene_update(Game* game) {
 		return;
 	}
 
-	if (Raylib_IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-		scene->manual_control = !scene->manual_control;
-	}
-
-	if (scene->num_shapes >= 1) {
-		Shape* shape1 = &scene->shapes[0];
-		if (scene->manual_control) {
-			/* Move first shape with mouse */
-			Rectangle window = Window_rectangle(&game->window);
-			Vector2 world_mouse_position = {
-				.x = game->input.mouse.x - window.width / 2,
-				.y = game->input.mouse.y - window.height / 2,
-			};
-			Shape_set_position(shape1, world_mouse_position);
-		} else {
-			/* Oscillate first shape */
+	/* Move shapes along paths */
+	{
+		/* Oscillate first shape */
+		if (scene->num_shapes >= 1 && scene->mouse_grabed_shape != 0) {
+			Shape* shape1 = &scene->shapes[0];
 			const float period = 6.0f; // seconds
 			const float freq = 1 / period;
 			const float amplitude = 2.2 * Shape_width(shape1);
 			Shape_set_position(shape1, (Vector2) { roundf(sinf(scene->time_now * freq * 2 * PI) * amplitude), 0 });
 		}
+
+		/* Place second shape in center */
+		if (scene->num_shapes >= 2 && scene->mouse_grabed_shape != 1) {
+			Shape* shape2 = &scene->shapes[1];
+			Shape_set_position(shape2, Vector2Zero());
+		}
+
+		/* Rotate third shape */
+		if (scene->num_shapes >= 3 && scene->mouse_grabed_shape != 2) {
+			Shape* shape3 = &scene->shapes[2];
+			const float period = 4.0f; // seconds
+			const float freq = 1 / period;
+			const float amplitude = 1.1 * Shape_width(shape3);
+			const float t = scene->time_now * freq * 2 * PI;
+			Shape_set_position(shape3, (Vector2) { roundf(cosf(t) * amplitude), roundf(sinf(t) * amplitude) });
+		}
 	}
 
-	if (scene->num_shapes >= 3) {
-		// rotate third shape
-		Shape* shape3 = &scene->shapes[2];
-		const float period = 4.0f; // seconds
-		const float freq = 1 / period;
-		const float amplitude = 1.1 * Shape_width(shape3);
-		const float t = scene->time_now * freq * 2 * PI;
-		Shape_set_position(shape3, (Vector2) { roundf(cosf(t) * amplitude), roundf(sinf(t) * amplitude) });
+	/* Update manually controlled shape */
+	{
+		/* Grab or let go of shape */
+		if (Raylib_IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+			/* If not controlling a shape, try to grab currently hovered shape */
+			if (scene->mouse_grabed_shape == NULL_SHAPE) {
+				for (int i = 0; i < scene->num_shapes; i++) {
+					Shape* shape = &scene->shapes[i];
+					bool is_hovering_shape = Shape_is_overlapping_point(shape, world_mouse_position);
+					if (is_hovering_shape) {
+						scene->mouse_grabed_shape = i;
+						break;
+					}
+				}
+			}
+			/* If controlling a shape, let go of it */
+			else {
+				scene->mouse_grabed_shape = NULL_SHAPE;
+			}
+		}
+
+		/* Update position of grabbed shape */
+		if (scene->mouse_grabed_shape != NULL_SHAPE) {
+			Shape* shape = &scene->shapes[scene->mouse_grabed_shape];
+			Shape_set_position(shape, world_mouse_position);
+		}
 	}
 
 	/* Check collisions */

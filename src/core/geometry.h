@@ -29,3 +29,4 @@ void Shape_set_position(Shape* shape, Vector2 pos); // position is relative to c
 
 float Shape_width(const Shape* shape);
 bool Shape_is_overlapping_shape(const Shape* lhs, const Shape* rhs);
+bool Shape_is_overlapping_point(const Shape* shape, Vector2 point);

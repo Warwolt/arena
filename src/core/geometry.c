@@ -90,3 +90,14 @@ bool Shape_is_overlapping_shape(const Shape* lhs, const Shape* rhs) {
 	}
 	return false;
 }
+
+bool Shape_is_overlapping_point(const Shape* shape, Vector2 point) {
+	switch (shape->type) {
+		case ShapeType_Circle:
+			return Raylib_CheckCollisionPointCircle(point, shape->circle.center, shape->circle.radius);
+
+		case ShapeType_Rectangle:
+			return Raylib_CheckCollisionPointRec(point, shape->rectangle);
+	}
+	return false;
+}
