@@ -85,21 +85,21 @@ void Gameplay_update(Game* game) {
 	};
 	const Rectangle window = Window_rectangle(&game->window);
 
-	if (Raylib_IsKeyPressed(KEY_ESCAPE)) {
+	if (game->input.action_is_pressed[InputAction_Back]) {
 		gameplay->is_paused = !gameplay->is_paused;
 	}
 
 	/* Show pause menu */
 	if (gameplay->is_paused) {
-		if (Raylib_IsKeyPressed(KEY_DOWN) || Raylib_IsKeyPressed('S')) {
+		if (game->input.action_is_pressed[InputAction_Down]) {
 			gameplay->focused_pause_menu_item = (PauseMenuItem_Count + gameplay->focused_pause_menu_item + 1) % PauseMenuItem_Count;
 		}
 
-		if (Raylib_IsKeyPressed(KEY_UP) || Raylib_IsKeyPressed('W')) {
+		if (game->input.action_is_pressed[InputAction_Up]) {
 			gameplay->focused_pause_menu_item = (PauseMenuItem_Count + gameplay->focused_pause_menu_item - 1) % PauseMenuItem_Count;
 		}
 
-		if (Raylib_IsKeyPressed(KEY_ENTER)) {
+		if (game->input.action_is_pressed[InputAction_Select]) {
 			switch (gameplay->focused_pause_menu_item) {
 				case PauseMenuItem_Continue:
 					gameplay->is_paused = false;
@@ -113,27 +113,27 @@ void Gameplay_update(Game* game) {
 	/* Update scene */
 	else {
 		/* Increment time */
-		gameplay->time_now += Raylib_GetFrameTime();
+		const float delta_time = Raylib_GetFrameTime();
+		gameplay->time_now += delta_time;
 
 		/* Move player */
 		{
 			Vector2 input_vec = Vector2Zero();
-			if (Raylib_IsKeyDown('A')) {
+			if (game->input.action_is_down[InputAction_Left]) {
 				input_vec = Vector2Add(input_vec, (Vector2) { -1, 0 });
 			}
-			if (Raylib_IsKeyDown('D')) {
+			if (game->input.action_is_down[InputAction_Right]) {
 				input_vec = Vector2Add(input_vec, (Vector2) { 1, 0 });
 			}
-			if (Raylib_IsKeyDown('W')) {
+			if (game->input.action_is_down[InputAction_Up]) {
 				input_vec = Vector2Add(input_vec, (Vector2) { 0, -1 });
 			}
-			if (Raylib_IsKeyDown('S')) {
+			if (game->input.action_is_down[InputAction_Down]) {
 				input_vec = Vector2Add(input_vec, (Vector2) { 0, 1 });
 			}
 			input_vec = Vector2Normalize(input_vec);
 
 			Vector2 player_pos = Vector2Zero();
-			const float delta_time = Raylib_GetFrameTime();
 			const float player_speed = 300; // px / second
 			EntityManager_get_position(&game->entities, gameplay->player_id, &player_pos);
 

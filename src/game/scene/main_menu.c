@@ -28,7 +28,7 @@ void MainMenu_initialize(Game* game) {
 void MainMenu_update(Game* game) {
 	MainMenu* main_menu = &game->scene.main_menu;
 
-	if (Raylib_IsKeyPressed(KEY_ENTER)) {
+	if (game->input.action_is_pressed[InputAction_Select]) {
 		switch (main_menu->focused_menu_item) {
 			case MenuItem_Play:
 				Game_switch_scene(game, SceneID_Gameplay);
@@ -40,16 +40,16 @@ void MainMenu_update(Game* game) {
 		}
 	}
 
-	if (Raylib_IsKeyPressed(KEY_ESCAPE)) {
+	if (game->input.action_is_pressed[InputAction_Back]) {
 		game->should_quit = true;
 	}
 
-	if (Raylib_IsKeyPressed(KEY_DOWN) || Raylib_IsKeyPressed('S')) {
-		main_menu->focused_menu_item = (MenuItem_Count + main_menu->focused_menu_item + 1) % MenuItem_Count;
+	if (game->input.action_is_pressed[InputAction_Up]) {
+		main_menu->focused_menu_item = (MenuItem_Count + main_menu->focused_menu_item - 1) % MenuItem_Count;
 	}
 
-	if (Raylib_IsKeyPressed(KEY_UP) || Raylib_IsKeyPressed('W')) {
-		main_menu->focused_menu_item = (MenuItem_Count + main_menu->focused_menu_item - 1) % MenuItem_Count;
+	if (game->input.action_is_pressed[InputAction_Down]) {
+		main_menu->focused_menu_item = (MenuItem_Count + main_menu->focused_menu_item + 1) % MenuItem_Count;
 	}
 }
 
