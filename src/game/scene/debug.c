@@ -46,9 +46,9 @@ void DebugScene_update(Game* game) {
 
 	// testing
 	UIInput input = {
-		.up_pressed = Raylib_IsKeyPressed(KEY_UP),
-		.down_pressed = Raylib_IsKeyPressed(KEY_DOWN),
-		.select_pressed = Raylib_IsKeyPressed(KEY_ENTER),
+		.up_pressed = game->input.action_is_pressed[InputAction_Up],
+		.down_pressed = game->input.action_is_pressed[InputAction_Down],
+		.select_pressed = game->input.action_is_pressed[InputAction_Select],
 	};
 	UI_begin(input);
 	{
@@ -76,7 +76,7 @@ void DebugScene_update(Game* game) {
 				break;
 
 			case DebugMenu_Input:
-				if (Raylib_IsKeyPressed(KEY_ESCAPE)) {
+				if (game->input.action_is_pressed[InputAction_Back]) {
 					MenuStack_pop_menu(&scene->menu_stack);
 				}
 
@@ -85,7 +85,7 @@ void DebugScene_update(Game* game) {
 			case DebugMenu_Physics:
 				UI_menu_begin("Physics Debug");
 				{
-					if (Raylib_IsKeyPressed(KEY_ESCAPE)) {
+					if (game->input.action_is_pressed[InputAction_Back]) {
 						MenuStack_pop_menu(&scene->menu_stack);
 					}
 
@@ -144,7 +144,7 @@ void DebugScene_render(const Game* game) {
 		case DebugMenu_Main:
 			break;
 		case DebugMenu_Input: {
-			char text[256] = { 0 };
+			char text[256] = {0};
 			snprintf(text, 256, "Mouse position: (%d,%d)", game->input.mouse.x, game->input.mouse.y);
 			Game_draw_text(game, text, 1, 1, font_size, WHITE);
 		} break;
