@@ -35,6 +35,7 @@ set(SRC
     src/game/scene/gameplay.c
     src/game/scene/main_menu.c
     src/platform/assert.c
+    src/platform/input.c
     src/platform/logging.c
     src/platform/win32.c
     src/platform/window.c

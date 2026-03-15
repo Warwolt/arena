@@ -11,6 +11,7 @@ typedef struct Window {
 	WINDOWPLACEMENT placement; // used for fullscreen toggling
 	RenderTexture viewport;
 	Rectangle letterbox; // used to draw the viewport to the window
+	int scale; // letterbox:viewport scale
 } Window;
 
 Window Window_initialize(int width, int height);
