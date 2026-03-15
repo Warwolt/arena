@@ -54,7 +54,7 @@ target_link_libraries(Source PUBLIC ${LIB})
 add_library(Library SHARED $<TARGET_OBJECTS:Source>)
 target_include_directories(Library PUBLIC src lib)
 target_link_libraries(Library ${LIB})
-set_target_properties(Library PROPERTIES OUTPUT_NAME "Game")
+set_target_properties(Library PROPERTIES OUTPUT_NAME "GameLib")
 
 # Main
 add_executable(Executable src/main.c)
