@@ -38,6 +38,31 @@ static void change_scene_page(CollisionDebugScene* scene, DebugPage page) {
 	}
 }
 
+static void draw_debug_shape(const Game* game, const Shape* shape, Color color) {
+	const Vector2 window_middle = {
+		.x = Window_width(&game->window) / 2,
+		.y = Window_height(&game->window) / 2,
+	};
+	switch (shape->type) {
+		case ShapeType_Circle: {
+			const Circle* circle = &shape->circle;
+			const Vector2 center = Vector2Add(circle->center, window_middle);
+			Raylib_DrawCircleV(center, circle->radius, Raylib_ColorAlpha(color, 0.5f));
+			Raylib_DrawCircleLinesV(center, circle->radius, color);
+		} break;
+
+		case ShapeType_Rectangle: {
+			const Rectangle* rectangle = &shape->rectangle;
+			Vector2 position = {
+				.x = window_middle.x + rectangle->x,
+				.y = window_middle.y + rectangle->y,
+			};
+			Raylib_DrawRectangle(position.x, position.y, rectangle->width, rectangle->height, Raylib_ColorAlpha(color, 0.5f));
+			Raylib_DrawRectangleLines(position.x, position.y, rectangle->width, rectangle->height, color);
+		} break;
+	}
+}
+
 void CollisionDebugScene_initialize(Game* game) {
 	CollisionDebugScene* scene = &game->scene.collision_debug_scene;
 	change_scene_page(scene, DebugPage_CircleCircle);
@@ -92,36 +117,20 @@ void CollisionDebugScene_update(Game* game) {
 
 void CollisionDebugScene_render(const Game* game) {
 	const CollisionDebugScene* scene = &game->scene.collision_debug_scene;
-	const Vector2 window_middle = {
-		.x = Window_width(&game->window) / 2,
-		.y = Window_height(&game->window) / 2,
-	};
-
 	Raylib_ClearBackground(BLACK);
-	Game_draw_text(game, "Collision Debug (Mouse click to take control)", 1, 1, 16, WHITE);
-	char text[128];
-	snprintf(text, 128, "Page %d/%d: %s", scene->page + 1, DebugPage_Count, debug_page_title[scene->page]);
-	Game_draw_text(game, text, 1, 1 + 16, 16, WHITE);
+
+	/* Draw header */
+	{
+		Game_draw_text(game, "Collision Debug (Mouse click to take control)", 1, 1, 16, WHITE);
+		char text[128];
+		snprintf(text, 128, "Page %d/%d: %s", scene->page + 1, DebugPage_Count, debug_page_title[scene->page]);
+		Game_draw_text(game, text, 1, 1 + 16, 16, WHITE);
+	}
+
+	/* Draw shapes */
 	for (int i = 0; i < sizeof(scene->shapes) / sizeof(*scene->shapes); i++) {
 		const Shape* shape = &scene->shapes[i];
 		const Color color = scene->is_overlapping ? RED : GREEN;
-		switch (shape->type) {
-			case ShapeType_Circle: {
-				const Circle* circle = &shape->circle;
-				const Vector2 center = Vector2Add(circle->center, window_middle);
-				Raylib_DrawCircleV(center, circle->radius, Raylib_ColorAlpha(color, 0.5f));
-				Raylib_DrawCircleLinesV(center, circle->radius, color);
-			} break;
-
-			case ShapeType_Rectangle: {
-				const Rectangle* rectangle = &shape->rectangle;
-				Vector2 position = {
-					.x = window_middle.x + rectangle->x,
-					.y = window_middle.y + rectangle->y,
-				};
-				Raylib_DrawRectangle(position.x, position.y, rectangle->width, rectangle->height, Raylib_ColorAlpha(color, 0.5f));
-				Raylib_DrawRectangleLines(position.x, position.y, rectangle->width, rectangle->height, color);
-			} break;
-		}
+		draw_debug_shape(game, shape, color);
 	}
 }
