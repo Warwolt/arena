@@ -6,7 +6,6 @@ Goal:
 - DebugScene: add static collision resolution test screen
 - Add semantic key bindings and use those instead of raw keys
 - Fork Raylib and disable F12 screenshot (and maybe build as DLL by default?)
-  - Overkill: Prefix all Raylib functions with "Raylib", e.g. Raylib_IsKeyPressed instead of just IsKeyPressed
 - Integrate ImGui so we can visualize system states
   - The game is low resolution so we probably should use multi viewports (https://github.com/ocornut/imgui/wiki/Multi-Viewports)
 - Settings screen, toggle fullscreen on/off
@@ -15,6 +14,7 @@ Goal:
 - Bug: Fix hot reloading requiring 2 reloads before change takes effect? (Note: not sure how to repro this yet)
 
 # Done
+- Move fixed resolution viewport handling into Window struct
 - Bug: Win32_toggle_fullscreen breaks on hot reload due to static variables
 - DebugScene, add place to run very simple debug scenarios for various systems
 - Basic UI system

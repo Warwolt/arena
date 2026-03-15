@@ -109,7 +109,7 @@ void DebugScene_update(Game* game) {
 
 void DebugScene_render(const Game* game) {
 	const DebugScene* debug_scene = &game->scene.debug_scene;
-	const Rectangle screen_rect = Game_screen_rect(game);
+	const Rectangle window = Window_rectangle(&game->window);
 	const int font_size = 32;
 
 	Raylib_ClearBackground(BLACK);
@@ -129,13 +129,13 @@ void DebugScene_render(const Game* game) {
 
 		/* Draw menu title */
 		int menu_label_width = Game_measure_text_width(game, menu->label, font_size);
-		Game_draw_text(game, menu->label, (screen_rect.width - menu_label_width) / 2, 2 * font_size, font_size, WHITE);
+		Game_draw_text(game, menu->label, (window.width - menu_label_width) / 2, 2 * font_size, font_size, WHITE);
 
 		/* Draw menu items */
 		for (int j = 0; j < menu->num_items; j++) {
 			const UIMenuItem* item = &UI_view()->menus[i].items[j];
-			const int margin_left = (screen_rect.width - menu_width) / 2;
-			const int margin_top = (screen_rect.height - menu_height) / 2;
+			const int margin_left = (window.width - menu_width) / 2;
+			const int margin_top = (window.height - menu_height) / 2;
 			const int pos_x = margin_left;
 			const int pos_y = margin_top + j * font_size;
 			if (item->is_focused) {
