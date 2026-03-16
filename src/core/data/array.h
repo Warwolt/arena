@@ -28,25 +28,20 @@ typedef struct ARRAY_NAME {
 	size_t num_values;
 } ARRAY_NAME;
 
-/* Method declarations */
-#define ARRAY_METHOD(name) JOIN(ARRAY_NAME, _##name)
-void ARRAY_METHOD(push)(ARRAY_NAME* array, ARRAY_TYPE item);
-void ARRAY_METHOD(pop)(ARRAY_NAME* array);
-
 /* Method definitions */
-#ifdef DEFINE_ARRAY_IMPLEMENTATION
-void ARRAY_METHOD(push)(ARRAY_NAME* array, ARRAY_TYPE item) {
+#define ARRAY_METHOD(name) JOIN(ARRAY_NAME, _##name)
+
+static inline void ARRAY_METHOD(push)(ARRAY_NAME* array, ARRAY_TYPE item) {
 	ASSERT(array->num_values < ARRAY_CAPACITY, "Trying to push to %s at max num values (capacity is %d)", TO_STRING(ARRAY_NAME), ARRAY_CAPACITY);
 	array->values[array->num_values++] = item;
 }
 
-void ARRAY_METHOD(pop)(ARRAY_NAME* array) {
+static inline void ARRAY_METHOD(pop)(ARRAY_NAME* array) {
 	if (array->num_values > 0) {
 		memset(&array->values[array->num_values - 1], 0, sizeof(ARRAY_TYPE));
 		array->num_values--;
 	}
 }
-#endif DEFINE_ARRAY_IMPLEMENTAION
 
 /* Cleanup */
 #undef ARRAY_NAME

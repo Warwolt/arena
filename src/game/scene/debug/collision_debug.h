@@ -2,6 +2,11 @@
 
 #include "core/geometry.h"
 
+#define ARRAY_NAME ShapeArray
+#define ARRAY_TYPE Shape
+#define ARRAY_CAPACITY 64
+#include "core/data/array.h"
+
 #include <stdbool.h>
 
 typedef struct Game Game;
@@ -13,8 +18,7 @@ typedef struct CollisionDebugScene {
 	int page;
 	int mouse_grabed_shape;
 
-	int num_shapes;
-	Shape shapes[DEBUG_SHAPES_MAX];
+	ShapeArray shapes;
 	bool shape_is_overlapping[DEBUG_SHAPES_MAX];
 } CollisionDebugScene;
 

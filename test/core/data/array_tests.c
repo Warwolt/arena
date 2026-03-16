@@ -3,7 +3,6 @@
 #define ARRAY_NAME TestArray
 #define ARRAY_TYPE int
 #define ARRAY_CAPACITY 64
-#define DEFINE_ARRAY_IMPLEMENTATION
 #include "core/data/array.h"
 
 TEST(ArrayTests, PushItem_ItemGetsPushed) {
