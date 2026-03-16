@@ -70,10 +70,10 @@ set_target_properties(Executable PROPERTIES OUTPUT_NAME "Game")
 # Tests
 add_executable(Tests
     $<TARGET_OBJECTS:Source>
-    test/core/arena_tests.c
-    test/core/array_map_tests.c
-    test/core/array_tests.c
-    test/core/sparse_array_tests.c
+    test/core/data/arena_tests.c
+    test/core/data/array_map_tests.c
+    test/core/data/array_tests.c
+    test/core/data/sparse_array_tests.c
     test/entity_tests.c
     test/main.c
     test/ui_tests.c
