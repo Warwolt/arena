@@ -25,7 +25,6 @@ add_compile_options(
 set(SRC
     src/core/data/arena.c
     src/core/data/array_map.c
-    src/core/data/array.c
     src/core/data/sparse_array.c
     src/core/debug/assert.c
     src/core/debug/logging.c

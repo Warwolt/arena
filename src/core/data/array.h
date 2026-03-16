@@ -1,34 +1,51 @@
 // Array with vector-like methods and bounds checking
-//
-// Interface:
-//
-//  struct Array<T, N> {
-//  	T values[N];
-//  	size_t num_values;
-//      size_t capacity;
-//  };
 
 #pragma once
 
+// FIXME: move to template util header
+#define JOIN2(a, b) a##b
+#define JOIN(a, b) JOIN2(a, b)
+#define TO_STRING2(macro) #macro
+#define TO_STRING(macro) TO_STRING2(macro)
+
+#include "core/debug/assert.h"
+
 #include <stdbool.h>
 #include <stddef.h>
+#include <string.h>
 
-// Array struct
-#define Array(Type, Capacity)  \
-	struct {                   \
-		Type values[Capacity]; \
-		size_t num_values;     \
-		size_t capacity;       \
+#ifndef ARRAY_NAME
+#error #define ARRAY_NAME to be the array type name before including this header!
+#endif
+
+#ifndef ARRAY_TYPE
+#error #define ARRAY_TYPE to be the item type before including this header!
+#endif
+
+#ifndef ARRAY_CAPACITY
+#error #define ARRAY_CAPACITY to be the max number of items before including this header!
+#endif
+
+#define ARRAY_METHOD(name) JOIN(ARRAY_NAME, _##name)
+
+typedef struct ARRAY_NAME {
+	ARRAY_TYPE values[ARRAY_CAPACITY];
+	size_t num_values;
+} ARRAY_NAME;
+
+static inline void ARRAY_METHOD(push)(ARRAY_NAME* array, ARRAY_TYPE item) {
+	ASSERT(array->num_values < ARRAY_CAPACITY, "Trying to push to %s at max num values (capacity is %d)", TO_STRING(ARRAY_NAME), ARRAY_CAPACITY);
+	array->values[array->num_values++] = item;
+}
+
+static inline void ARRAY_METHOD(pop)(ARRAY_NAME* array) {
+	if (array->num_values > 0) {
+		memset(&array->values[array->num_values - 1], 0, sizeof(ARRAY_TYPE));
+		array->num_values--;
 	}
+}
 
-#define Array_initialize(array)                                                   \
-	do {                                                                          \
-		(array)->num_values = 0;                                                  \
-		(array)->capacity = sizeof((array)->values) / sizeof((array)->values[0]); \
-	} while (0)
-
-#define Array_push(array, value) \
-	Array_push_impl(sizeof((array)->values[0]), (char*)(array)->values, &(array)->num_values, (array)->capacity, (char*)value)
-#define Array_pop(array)
-
-bool Array_push_impl(size_t elem_size, char* array_values, size_t* array_num_values, size_t array_capacity, char* value);
+#undef ARRAY_NAME
+#undef ARRAY_TYPE
+#undef ARRAY_CAPACITY
+#undef ARRAY_METHOD
