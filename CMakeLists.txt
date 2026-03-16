@@ -71,7 +71,6 @@ add_executable(Tests
     $<TARGET_OBJECTS:Source>
     test/core/data/arena_tests.c
     test/core/data/array_map_tests.c
-    test/core/data/array_tests.c
     test/core/data/sparse_array_tests.c
     test/entity_tests.c
     test/main.c
