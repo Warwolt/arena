@@ -1,8 +1,8 @@
 #define DEFINE_RKTEST_IMPLEMENTATION
 #include <rktest/rktest.h>
 
-#include "platform/assert.h"
-#include "platform/logging.h"
+#include "core/debug/assert.h"
+#include "core/debug/logging.h"
 
 int main(int argc, const char* argv[]) {
 	initialize_unit_test_logging();

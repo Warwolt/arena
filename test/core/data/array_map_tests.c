@@ -1,6 +1,6 @@
 #include <rktest/rktest.h>
 
-#include "core/array_map.h"
+#include "core/data/array_map.h"
 
 typedef ArrayMap(int, 64) TestArrayMap;
 

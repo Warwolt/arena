@@ -1,7 +1,7 @@
 #include "engine/ui.h"
 
-#include "core/array_map.h"
-#include "platform/assert.h"
+#include "core/data/array_map.h"
+#include "core/debug/assert.h"
 
 #include <string.h>
 

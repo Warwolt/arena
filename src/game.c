@@ -1,7 +1,7 @@
 #include "game.h"
 
+#include "core/debug/logging.h"
 #include "engine/ui.h"
-#include "platform/logging.h"
 #include "platform/win32.h"
 
 #include <raylib.h>
