@@ -3,7 +3,6 @@
 #include "core/debug/logging.h"
 #include "game.h"
 
-
 #include <raylib.h>
 #include <raymath.h>
 
