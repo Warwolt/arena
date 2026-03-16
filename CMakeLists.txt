@@ -25,8 +25,9 @@ add_compile_options(
 set(SRC
     src/core/arena.c
     src/core/array_map.c
-    src/core/sparse_array.c
+    src/core/array.c
     src/core/geometry.c
+    src/core/sparse_array.c
     src/engine/entity.c
     src/engine/resource.c
     src/engine/ui.c
@@ -71,6 +72,7 @@ add_executable(Tests
     $<TARGET_OBJECTS:Source>
     test/core/arena_tests.c
     test/core/array_map_tests.c
+    test/core/array_tests.c
     test/core/sparse_array_tests.c
     test/entity_tests.c
     test/main.c
