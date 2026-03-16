@@ -1,4 +1,4 @@
-#include "platform/assert.h"
+#include "core/debug/assert.h"
 
 #include <stdbool.h>
 #include <windows.h>

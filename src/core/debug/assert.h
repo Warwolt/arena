@@ -1,6 +1,6 @@
 #pragma once
 
-#include "platform/logging.h"
+#include "core/debug/logging.h"
 
 #include <stdio.h>
 

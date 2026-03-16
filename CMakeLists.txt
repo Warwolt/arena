@@ -23,9 +23,11 @@ add_compile_options(
 
 # Source
 set(SRC
-    src/core/arena.c
-    src/core/array_map.c
-    src/core/sparse_array.c
+    src/core/data/arena.c
+    src/core/data/array_map.c
+    src/core/data/sparse_array.c
+    src/core/debug/assert.c
+    src/core/debug/logging.c
     src/core/geometry.c
     src/engine/entity.c
     src/engine/resource.c
@@ -36,9 +38,7 @@ set(SRC
     src/game/scene/debug/collision_debug.c
     src/game/scene/gameplay.c
     src/game/scene/main_menu.c
-    src/platform/assert.c
     src/platform/input.c
-    src/platform/logging.c
     src/platform/win32.c
     src/platform/window.c
 )
@@ -69,11 +69,12 @@ set_target_properties(Executable PROPERTIES OUTPUT_NAME "Game")
 # Tests
 add_executable(Tests
     $<TARGET_OBJECTS:Source>
-    test/arena_tests.c
-    test/array_map_tests.c
+    test/core/data/arena_tests.c
+    test/core/data/array_map_tests.c
+    test/core/data/array_tests.c
+    test/core/data/sparse_array_tests.c
     test/entity_tests.c
     test/main.c
-    test/sparse_array_tests.c
     test/ui_tests.c
 )
 target_include_directories(Tests PUBLIC src lib)

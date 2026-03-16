@@ -1,7 +1,8 @@
 #include "game/scene/main_menu.h"
 
+#include "core/debug/logging.h"
 #include "game.h"
-#include "platform/logging.h"
+
 
 #include <raylib.h>
 #include <raymath.h>

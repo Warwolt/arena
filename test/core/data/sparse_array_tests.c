@@ -1,6 +1,6 @@
 #include <rktest/rktest.h>
 
-#include "core/sparse_array.h"
+#include "core/data/sparse_array.h"
 
 typedef SparseArray(int, 64) TestSparseArray;
 

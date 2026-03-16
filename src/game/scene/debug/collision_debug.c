@@ -26,15 +26,15 @@ static void change_scene_page(CollisionDebugScene* scene, DebugPage page) {
 	scene->page = page;
 	switch (page) {
 		case DebugPage_CircleCircle:
-			scene->shapes[scene->num_shapes++] = Shape_from_circle((Circle) { .center = { .x = 0, .y = 0 }, .radius = shape_size / 2 });
-			scene->shapes[scene->num_shapes++] = Shape_from_circle((Circle) { .center = { .x = 0, .y = 0 }, .radius = shape_size / 2 });
-			scene->shapes[scene->num_shapes++] = Shape_from_circle((Circle) { .center = { .x = 0, .y = 0 }, .radius = shape_size / 2 });
+			ShapeArray_push(&scene->shapes, Shape_from_circle((Circle) { .center = { .x = 0, .y = 0 }, .radius = shape_size / 2 }));
+			ShapeArray_push(&scene->shapes, Shape_from_circle((Circle) { .center = { .x = 0, .y = 0 }, .radius = shape_size / 2 }));
+			ShapeArray_push(&scene->shapes, Shape_from_circle((Circle) { .center = { .x = 0, .y = 0 }, .radius = shape_size / 2 }));
 			break;
 
 		case DebugPage_CircleRectangle:
-			scene->shapes[scene->num_shapes++] = Shape_from_circle((Circle) { .center = { .x = 0, .y = 0 }, .radius = shape_size / 2 });
-			scene->shapes[scene->num_shapes++] = Shape_from_rectangle(Rectangle_centered_at((Vector2) { .x = 0, .y = 0 }, shape_size, shape_size));
-			scene->shapes[scene->num_shapes++] = Shape_from_rectangle(Rectangle_centered_at((Vector2) { .x = 0, .y = 0 }, shape_size, shape_size));
+			ShapeArray_push(&scene->shapes, Shape_from_circle((Circle) { .center = { .x = 0, .y = 0 }, .radius = shape_size / 2 }));
+			ShapeArray_push(&scene->shapes, Shape_from_rectangle(Rectangle_centered_at((Vector2) { .x = 0, .y = 0 }, shape_size, shape_size)));
+			ShapeArray_push(&scene->shapes, Shape_from_rectangle(Rectangle_centered_at((Vector2) { .x = 0, .y = 0 }, shape_size, shape_size)));
 			break;
 
 		case DebugPage_Count:
@@ -98,8 +98,8 @@ void CollisionDebugScene_update(Game* game) {
 	/* Move shapes along paths */
 	{
 		/* Oscillate first shape */
-		if (scene->num_shapes >= 1 && scene->mouse_grabed_shape != 0) {
-			Shape* shape1 = &scene->shapes[0];
+		if (scene->shapes.num_values >= 1 && scene->mouse_grabed_shape != 0) {
+			Shape* shape1 = &scene->shapes.values[0];
 			const float period = 6.0f; // seconds
 			const float freq = 1 / period;
 			const float amplitude = 2.2 * Shape_width(shape1);
@@ -107,14 +107,14 @@ void CollisionDebugScene_update(Game* game) {
 		}
 
 		/* Place second shape in center */
-		if (scene->num_shapes >= 2 && scene->mouse_grabed_shape != 1) {
-			Shape* shape2 = &scene->shapes[1];
+		if (scene->shapes.num_values >= 2 && scene->mouse_grabed_shape != 1) {
+			Shape* shape2 = &scene->shapes.values[1];
 			Shape_set_position(shape2, Vector2Zero());
 		}
 
 		/* Rotate third shape */
-		if (scene->num_shapes >= 3 && scene->mouse_grabed_shape != 2) {
-			Shape* shape3 = &scene->shapes[2];
+		if (scene->shapes.num_values >= 3 && scene->mouse_grabed_shape != 2) {
+			Shape* shape3 = &scene->shapes.values[2];
 			const float period = 4.0f; // seconds
 			const float freq = 1 / period;
 			const float amplitude = 1.1 * Shape_width(shape3);
@@ -129,8 +129,8 @@ void CollisionDebugScene_update(Game* game) {
 		if (Raylib_IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 			/* If not controlling a shape, try to grab currently hovered shape */
 			if (scene->mouse_grabed_shape == SHAPE_NONE) {
-				for (int i = 0; i < scene->num_shapes; i++) {
-					Shape* shape = &scene->shapes[i];
+				for (int i = 0; i < scene->shapes.num_values; i++) {
+					Shape* shape = &scene->shapes.values[i];
 					bool is_hovering_shape = Shape_is_overlapping_point(shape, world_mouse_position);
 					if (is_hovering_shape) {
 						scene->mouse_grabed_shape = i;
@@ -146,16 +146,16 @@ void CollisionDebugScene_update(Game* game) {
 
 		/* Update position of grabbed shape */
 		if (scene->mouse_grabed_shape != SHAPE_NONE) {
-			Shape* shape = &scene->shapes[scene->mouse_grabed_shape];
+			Shape* shape = &scene->shapes.values[scene->mouse_grabed_shape];
 			Shape_set_position(shape, world_mouse_position);
 		}
 	}
 
 	/* Check collisions */
 	memset(scene->shape_is_overlapping, 0, sizeof(scene->shape_is_overlapping));
-	for (int i = 0; i < scene->num_shapes; i++) {
-		for (int j = i + 1; j < scene->num_shapes; j++) {
-			if (Shape_is_overlapping_shape(&scene->shapes[i], &scene->shapes[j])) {
+	for (int i = 0; i < scene->shapes.num_values; i++) {
+		for (int j = i + 1; j < scene->shapes.num_values; j++) {
+			if (Shape_is_overlapping_shape(&scene->shapes.values[i], &scene->shapes.values[j])) {
 				scene->shape_is_overlapping[i] = true;
 				scene->shape_is_overlapping[j] = true;
 			}
@@ -176,8 +176,8 @@ void CollisionDebugScene_render(const Game* game) {
 	}
 
 	/* Draw shapes */
-	for (int i = 0; i < sizeof(scene->shapes) / sizeof(*scene->shapes); i++) {
-		const Shape* shape = &scene->shapes[i];
+	for (int i = 0; i < scene->shapes.num_values; i++) {
+		const Shape* shape = &scene->shapes.values[i];
 		const Color color = scene->shape_is_overlapping[i] ? RED : GREEN;
 		draw_debug_shape(game, shape, color);
 	}

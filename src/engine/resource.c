@@ -1,6 +1,6 @@
 #include "engine/resource.h"
 
-#include "platform/logging.h"
+#include "core/debug/logging.h"
 
 #define DEBUG_RESOURCE_MANAGER false
 
