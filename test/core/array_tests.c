@@ -1,6 +1,6 @@
 #include <rktest/rktest.h>
 
-#include "core/array.h"
+#include "core/data/array.h"
 
 TEST(ArrayTests, Foo) {
 	FAIL();

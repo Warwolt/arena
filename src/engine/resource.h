@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/sparse_array.h"
+#include "core/data/sparse_array.h"
 
 #include <raylib.h>
 

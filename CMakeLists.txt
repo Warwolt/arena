@@ -23,13 +23,13 @@ add_compile_options(
 
 # Source
 set(SRC
-    src/core/arena.c
-    src/core/array_map.c
-    src/core/array.c
+    src/core/data/arena.c
+    src/core/data/array_map.c
+    src/core/data/array.c
+    src/core/data/sparse_array.c
+    src/core/debug/assert.c
     src/core/debug/logging.c
     src/core/geometry.c
-    src/core/debug/assert.c
-    src/core/sparse_array.c
     src/engine/entity.c
     src/engine/resource.c
     src/engine/ui.c
