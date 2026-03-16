@@ -69,11 +69,11 @@ set_target_properties(Executable PROPERTIES OUTPUT_NAME "Game")
 # Tests
 add_executable(Tests
     $<TARGET_OBJECTS:Source>
-    test/arena_tests.c
-    test/array_map_tests.c
+    test/core/arena_tests.c
+    test/core/array_map_tests.c
+    test/core/sparse_array_tests.c
     test/entity_tests.c
     test/main.c
-    test/sparse_array_tests.c
     test/ui_tests.c
 )
 target_include_directories(Tests PUBLIC src lib)
