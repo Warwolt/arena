@@ -1,4 +1,4 @@
-#include "platform/logging.h"
+#include "core/debug/logging.h"
 
 #include <stdbool.h>
 #include <stdio.h>

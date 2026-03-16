@@ -26,6 +26,7 @@ set(SRC
     src/core/arena.c
     src/core/array_map.c
     src/core/array.c
+    src/core/debug/logging.c
     src/core/geometry.c
     src/core/sparse_array.c
     src/engine/entity.c
@@ -39,7 +40,6 @@ set(SRC
     src/game/scene/main_menu.c
     src/platform/assert.c
     src/platform/input.c
-    src/platform/logging.c
     src/platform/win32.c
     src/platform/window.c
 )
