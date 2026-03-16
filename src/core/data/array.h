@@ -1,7 +1,5 @@
 // Array with vector-like methods and bounds checking
 
-#pragma once
-
 #include "core/data/template_util.h"
 #include "core/debug/assert.h"
 
@@ -42,6 +40,9 @@ static inline void ARRAY_METHOD(pop)(ARRAY_NAME* array) {
 		array->num_values--;
 	}
 }
+
+#define Array_for_each(iter, array) \
+	for (typeof (&(array).values[0])(iter) = &((array).values)[0]; (iter) != &((array).values)[(array).num_values]; iter++)
 
 /* Cleanup */
 #undef ARRAY_NAME
