@@ -28,6 +28,7 @@ set(SRC
     src/core/array.c
     src/core/debug/logging.c
     src/core/geometry.c
+    src/core/debug/assert.c
     src/core/sparse_array.c
     src/engine/entity.c
     src/engine/resource.c
@@ -38,7 +39,6 @@ set(SRC
     src/game/scene/debug/collision_debug.c
     src/game/scene/gameplay.c
     src/game/scene/main_menu.c
-    src/platform/assert.c
     src/platform/input.c
     src/platform/win32.c
     src/platform/window.c

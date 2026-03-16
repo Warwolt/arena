@@ -1,8 +1,9 @@
 #include "game/scene/debug.h"
 
+#include "core/debug/assert.h"
 #include "engine/ui.h"
 #include "game.h"
-#include "platform/assert.h"
+
 
 #include <raylib.h>
 #include <stdio.h>
